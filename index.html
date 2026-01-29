@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Entertainment | Theatre & Tickets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Persoonlijke eis: transparantie altijd op 1 */
+        #frozenlogo { 
+            opacity: 1 !important; 
+            visibility: visible !important; 
+            color: #3b82f6; 
+            font-weight: 900; 
+            letter-spacing: 2px;
+        }
+
+        /* Realistisch Theater Layout (4-10-4) */
+        .seat {
+            width: 20px; height: 20px; background: #2a0505; border-radius: 4px;
+            cursor: pointer; transition: all 0.2s; border: 1px solid #4a0a0a;
+        }
+        
+        /* Blauwe Glow uit je screenshot */
+        .seat.selected { 
+            background: #3b82f6 !important; 
+            border-color: #ffffff; 
+            box-shadow: 0 0 15px #3b82f6, 0 0 5px #ffffff;
+            transform: scale(1.1);
+        }
+
+        .row { display: flex; gap: 6px; margin-bottom: 8px; justify-content: center; }
+        .wing-center { perspective: 1000px; margin: 0 30px; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .musical-card { transition: transform 0.3s, border-color 0.3s; border: 1px solid #1a1a1a; }
+        .musical-card:hover { transform: translateY(-10px); border-color: #3b82f6; }
+    </style>
+</head>
+<body>
+
+    <nav class="flex justify-between items-center p-6 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div id="frozenlogo">VIRTUAL ENTERTAINMENT</div>
+        <div class="space-x-6 text-xs font-bold uppercase tracking-widest">
+            <button onclick="showSection('home')" class="hover:text-blue-500">Home</button>
+            <button onclick="alert('Binnenkort beschikbaar!')" class="hover:text-blue-500">Mijn Shows</button>
+        </div>
+    </nav>
+
+    <section id="home" class="py-20 px-10 max-w-7xl mx-auto">
+        <header class="text-center mb-20">
+            <h1 class="text-7xl font-black italic tracking-tighter mb-4">GRAND THEATRE</h1>
+            <p class="text-blue-500 font-bold tracking-[0.5em] text-xs uppercase">Selecteer uw ervaring</p>
+        </header>
+
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="musical-card bg-zinc-950 rounded-[40px] overflow-hidden">
+                <div class="h-64 bg-green-900/10 flex items-center justify-center p-10">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/b/b7/Wicked_musical_logo.png" class="max-h-full">
+                </div>
+                <div class="p-10">
+                    <h2 class="text-4xl font-black mb-4 italic">WICKED</h2>
+                    <p class="text-gray-500 mb-8">Het onvertelde verhaal van de heksen van Oz. Een spectaculaire reis vol magie en vriendschap.</p>
+                    <div class="flex gap-4">
+                        <button onclick="openInfo('wicked')" class="flex-1 bg-white/5 py-4 rounded-2xl font-bold hover:bg-white/10">INFO & TRAILER</button>
+                        <button onclick="openSeating('WICKED')" class="flex-1 bg-blue-600 py-4 rounded-2xl font-bold hover:bg-blue-500">RESERVEER</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="musical-card bg-zinc-950 rounded-[40px] overflow-hidden">
+                <div class="h-64 bg-blue-900/10 flex items-center justify-center p-10">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Frozen_musical_logo.svg/1200px-Frozen_musical_logo.svg.png" class="max-h-full">
+                </div>
+                <div class="p-10">
+                    <h2 class="text-4xl font-black mb-4 italic text-blue-400">FROZEN</h2>
+                    <p class="text-gray-500 mb-8">Laat het los! Beleef de ijskoude magie van Arendelle in dit hartverwarmende verhaal.</p>
+                    <div class="flex gap-4">
+                        <button onclick="openInfo('frozen')" class="flex-1 bg-white/5 py-4 rounded-2xl font-bold hover:bg-white/10">INFO & TRAILER</button>
+                        <button onclick="openSeating('FROZEN')" class="flex-1 bg-blue-600 py-4 rounded-2xl font-bold hover:bg-blue-500">RESERVEER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="info-modal" class="modal" onclick="closeModal(event)">
+        <div class="bg-zinc-900 w-full max-w-4xl rounded-[40px] overflow-hidden border border-white/10" onclick="event.stopPropagation()">
+            <div id="trailer-container" class="aspect-video w-full bg-black">
+                </div>
+            <div class="p-10">
+                <h3 id="info-title" class="text-3xl font-bold mb-4"></h3>
+                <p id="info-text" class="text-gray-400 mb-8 leading-relaxed"></p>
+                <button onclick="closeModal()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold uppercase">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="seating" class="hidden py-20 bg-black min-h-screen">
+        <h2 id="seating-title" class="text-center text-4xl font-black italic mb-10"></h2>
+        <div class="max-w-6xl mx-auto">
+            <div class="w-full bg-gradient-to-b from-white/10 to-transparent h-12 rounded-[100px] mb-20 flex items-center justify-center text-[10px] tracking-[1em] text-gray-500">PODIUM</div>
+            <div class="flex justify-center items-start">
+                <div id="wing-l" class="pt-10"></div>
+                <div id="wing-c" class="wing-center"></div>
+                <div id="wing-r" class="pt-10"></div>
+            </div>
+        </div>
+        
+        <div class="fixed bottom-0 w-full bg-black/90 p-8 border-t border-white/5 backdrop-blur-md">
+            <div class="max-w-4xl mx-auto flex gap-6 items-center">
+                <input type="email" placeholder="Je e-mail voor de tickets" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
+                <button class="bg-blue-600 px-12 py-4 rounded-xl font-bold uppercase italic hover:bg-blue-500" onclick="location.reload()">Bestellen</button>
+                <button onclick="showSection('home')" class="text-gray-500 hover:text-white uppercase text-xs font-bold">Terug</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const musicalData = {
+            wicked: {
+                title: "WICKED THE MUSICAL",
+                info: "Lang voordat Dorothy in Oz arriveert, ontmoeten twee jonge heksen elkaar. De een, geboren met een smaragdgroene huid, is intelligent, vurig en onbegrepen. De ander is mooi, ambitieus en zeer populair. Beleef hun reis naar het worden van de 'Wicked Witch' en 'Glinda the Good'.",
+                trailer: "https://www.youtube.com/embed/S_pTfL9oNIs"
+            },
+            frozen: {
+                title: "FROZEN THE MUSICAL",
+                info: "Beleef de magie van de hitfilm Disney's Frozen live in het theater. Met alle bekende nummers en een spectaculair decor dat je meeneemt naar de ijzige bergen van Arendelle.",
+                trailer: "https://www.youtube.com/embed/7_nSxD6uT_U"
+            }
+        };
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function openInfo(key) {
+            const data = musicalData[key];
+            document.getElementById('info-title').innerText = data.title;
+            document.getElementById('info-text').innerText = data.info;
+            document.getElementById('trailer-container').innerHTML = `<iframe width="100%" height="100%" src="${data.trailer}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById('info-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('info-modal').style.display = 'none';
+            document.getElementById('trailer-container').innerHTML = '';
+        }
+
+        function openSeating(name) {
+            showSection('seating');
+            document.getElementById('seating-title').innerText = name + " - KIES JE STOELEN";
+            renderTheatre();
+        }
+
+        function renderTheatre() {
+            const wings = { 'wing-l': [10, 4, 'L'], 'wing-c': [10, 10, 'C'], 'wing-r': [10, 4, 'R'] };
+            for (let id in wings) {
+                const [rows, cols, pref] = wings[id];
+                const el = document.getElementById(id);
+                el.innerHTML = "";
+                for (let r = 1; r <= rows; r++) {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    for (let c = 1; c <= cols; c++) {
+                        const seat = document.createElement('div');
+                        seat.className = 'seat';
+                        seat.onclick = () => seat.classList.toggle('selected');
+                        row.appendChild(seat);
+                    }
+                    el.appendChild(row);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
