@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Entertainment | Musicals & Tickets</title>
+    <title>Virtual Entertainment | Stage Entertainment Musicals</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        body { background: #020202; color: white; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { background: #020202; color: white; font-family: 'Inter', sans-serif; }
         #frozenlogo { opacity: 1 !important; font-weight: 900; color: #3b82f6; letter-spacing: 2px; }
         
-        /* Realistische seating chart met diepte */
+        /* Realistische seating */
         .seat {
             width: 24px; height: 28px; background: #450a0a; border-radius: 6px 6px 2px 2px;
             cursor: pointer; transition: 0.2s; border-bottom: 4px solid #2a0505;
@@ -30,84 +30,87 @@
 </nav>
 
 <header class="relative h-[60vh] bg-black">
-    <iframe id="trailer-frame" class="w-full h-full pointer-events-none opacity-60" 
-            src="https://www.youtube.com/embed/n_0f78W_9-M?autoplay=1&mute=1&controls=0&loop=1&playlist=n_0f78W_9-M,6S7pYvN8VvE" 
+    <iframe id="trailer-frame" class="w-full h-full pointer-events-none opacity-70" 
+            src="https://www.youtube.com/embed/n_0f78W_9-M?autoplay=1&mute=1&controls=0&loop=1&playlist=n_0f78W_9-M" 
             frameborder="0" allow="autoplay"></iframe>
 </header>
 
 <main class="max-w-7xl mx-auto py-20 px-6">
     <div class="grid md:grid-cols-2 gap-12">
-        <div class="bg-zinc-900 rounded-3xl overflow-hidden border border-white/5 group">
-            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b91e.jpg" class="w-full h-64 object-cover opacity-80 group-hover:opacity-100 transition">
+        <div class="bg-zinc-900 rounded-3xl overflow-hidden border border-white/5 group shadow-2xl">
+            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b91e.jpg" class="w-full h-80 object-cover opacity-90 group-hover:opacity-100 transition duration-500">
             <div class="p-8">
-                <h3 class="text-3xl font-black mb-4 italic">Frozen de Musical</h3>
-                <button onclick="checkAuthAndOpen('Frozen')" class="w-full bg-blue-600 py-4 rounded-xl font-bold">RESERVEER TICKETS</button>
+                <div class="text-blue-400 text-xs font-bold tracking-widest mb-2 uppercase">Stage Entertainment presenteert</div>
+                <h3 class="text-4xl font-black mb-4 italic">Frozen de Musical</h3>
+                <button onclick="checkAuthAndOpen('Frozen')" class="w-full bg-blue-600 py-4 rounded-xl font-bold hover:bg-blue-500 transition">RESERVEER TICKETS</button>
             </div>
         </div>
 
-        <div class="bg-zinc-900 rounded-3xl overflow-hidden border border-white/5 group">
-            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b612.png" class="w-full h-64 object-cover opacity-80 group-hover:opacity-100 transition">
+        <div class="bg-zinc-900 rounded-3xl overflow-hidden border border-white/5 group shadow-2xl">
+            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b612.png" class="w-full h-80 object-cover opacity-90 group-hover:opacity-100 transition duration-500">
             <div class="p-8">
-                <h3 class="text-3xl font-black mb-4 italic text-green-500">Wicked de Musical</h3>
-                <button onclick="checkAuthAndOpen('Wicked')" class="w-full bg-green-600 py-4 rounded-xl font-bold">RESERVEER TICKETS</button>
+                <div class="text-green-400 text-xs font-bold tracking-widest mb-2 uppercase">Stage Entertainment presenteert</div>
+                <h3 class="text-4xl font-black mb-4 italic text-green-500">Wicked</h3>
+                <button onclick="checkAuthAndOpen('Wicked')" class="w-full bg-green-600 py-4 rounded-xl font-bold hover:bg-green-500 transition">RESERVEER TICKETS</button>
             </div>
         </div>
     </div>
 </main>
 
-<div id="auth-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 p-8 rounded-3xl w-full max-w-md border border-white/10 text-center">
-        <h2 class="text-2xl font-black mb-6">ACCOUNT VERPLICHT</h2>
-        <p class="text-gray-400 mb-8 text-sm">Maak een account aan om tickets te kunnen reserveren.</p>
-        <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-black border border-white/10 p-4 rounded-xl mb-4 outline-none">
-        <input type="password" id="login-pass" placeholder="Wachtwoord" class="w-full bg-black border border-white/10 p-4 rounded-xl mb-6 outline-none">
-        <button onclick="handleLogin()" class="w-full bg-white text-black font-bold py-4 rounded-xl mb-4">INLOGGEN / REGISTREREN</button>
-        <button onclick="toggleAuthModal()" class="text-gray-500 text-sm">Annuleren</button>
+<div id="auth-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-zinc-900 p-8 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl">
+        <h2 class="text-2xl font-black mb-2 text-center">ACCOUNT NODIG</h2>
+        <p class="text-gray-400 mb-8 text-center text-sm">Maak een account om je stoelen te reserveren.</p>
+        <input type="email" id="login-email" placeholder="E-mail" class="w-full bg-black border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-blue-500">
+        <input type="password" id="login-pass" placeholder="Wachtwoord" class="w-full bg-black border border-white/10 p-4 rounded-xl mb-6 outline-none focus:border-blue-500">
+        <button onclick="handleLogin()" class="w-full bg-white text-black font-bold py-4 rounded-xl mb-4 hover:bg-gray-200 transition">INLOGGEN / REGISTREREN</button>
+        <button onclick="toggleAuthModal()" class="w-full text-gray-500 text-sm">Terug naar website</button>
     </div>
 </div>
 
 <div id="booking-modal" class="fixed inset-0 bg-black/98 z-[80] hidden flex flex-col items-center justify-center p-6">
-    <div class="w-full max-w-5xl">
-        <h2 id="modal-title" class="text-2xl font-black mb-12 text-center tracking-widest text-blue-500"></h2>
+    <div class="w-full max-w-5xl bg-zinc-900/50 p-10 rounded-[3rem] border border-white/5">
+        <h2 id="modal-title" class="text-3xl font-black mb-12 text-center tracking-widest text-blue-500 italic"></h2>
         
-        <div class="flex justify-center items-center gap-10 mb-16">
+        <div class="flex justify-center items-center gap-10 mb-16 overflow-x-auto p-4">
             <div id="grid-left" class="grid grid-cols-3 gap-3"></div>
-            <div class="pillar"></div> <div id="grid-center" class="grid grid-cols-6 gap-3"></div>
-            <div class="pillar"></div> <div id="grid-right" class="grid grid-cols-3 gap-3"></div>
+            <div class="pillar"></div>
+            <div id="grid-center" class="grid grid-cols-6 gap-3"></div>
+            <div class="pillar"></div>
+            <div id="grid-right" class="grid grid-cols-3 gap-3"></div>
         </div>
 
         <div class="max-w-md mx-auto text-center">
-            <p id="user-info" class="mb-4 text-blue-400 font-bold"></p>
-            <button onclick="confirmBooking()" class="w-full bg-blue-600 py-4 rounded-xl font-black shadow-lg shadow-blue-900/40">BEVESTIG TICKETS</button>
-            <p id="mail-status" class="mt-4 text-xs font-bold"></p>
+            <p id="user-info" class="mb-4 text-blue-400 font-bold text-sm"></p>
+            <button onclick="confirmBooking()" class="w-full bg-blue-600 py-5 rounded-2xl font-black shadow-xl hover:bg-blue-500 transition uppercase tracking-widest">BEVESTIG RESERVERING</button>
+            <p id="mail-status" class="mt-6 text-sm font-bold"></p>
+            <button onclick="closeTheater()" class="mt-4 text-gray-600 hover:text-white transition">Annuleren</button>
         </div>
     </div>
 </div>
 
 <script>
-    // VOORKOM FOUTMELDING: Vul hier je eigen Public Key in!
-    emailjs.init("JOUW_PUBLIC_KEY");
+    // Jouw werkende Public Key
+    emailjs.init("dNtjukp0AyXqRg_jL");
 
     let currentUser = null;
     let selectedSeats = [];
     let currentShow = "";
 
-    function toggleAuthModal() {
-        document.getElementById('auth-modal').classList.toggle('hidden');
-    }
+    function toggleAuthModal() { document.getElementById('auth-modal').classList.toggle('hidden'); }
+    function closeTheater() { document.getElementById('booking-modal').classList.add('hidden'); }
 
     function handleLogin() {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
 
-        // Beheer login check
         if (email === "mick.saarloos12@gmail.com" && pass === "VirtualEntertainmentAdmin") {
             currentUser = { email: email, role: 'admin' };
-            alert("Beheerder ingelogd. Je kunt nu VIP accounts beheren.");
+            alert("Welkom Beheerder Mick.");
         } else if (email && pass) {
             currentUser = { email: email, role: 'user' };
         } else {
-            alert("Vul alle velden in.");
+            alert("Voer geldige gegevens in.");
             return;
         }
 
@@ -116,19 +119,14 @@
     }
 
     function checkAuthAndOpen(show) {
-        if (!currentUser) {
-            toggleAuthModal();
-        } else {
+        if (!currentUser) toggleAuthModal();
+        else {
             currentShow = show;
-            openBooking();
+            document.getElementById('modal-title').innerText = currentShow.toUpperCase();
+            document.getElementById('user-info').innerText = "Tickets voor: " + currentUser.email;
+            document.getElementById('booking-modal').classList.remove('hidden');
+            renderGrid();
         }
-    }
-
-    function openBooking() {
-        document.getElementById('modal-title').innerText = currentShow.toUpperCase();
-        document.getElementById('user-info').innerText = "Ingelogd als: " + currentUser.email;
-        document.getElementById('booking-modal').classList.remove('hidden');
-        renderGrid();
     }
 
     function renderGrid() {
@@ -152,38 +150,34 @@
     }
 
     function confirmBooking() {
-        if (selectedSeats.length === 0) return alert("Kies eerst je stoelen.");
+        if (selectedSeats.length === 0) return alert("Selecteer minstens één stoel.");
         
         const status = document.getElementById('mail-status');
-        status.innerText = "Tickets worden verzonden naar " + currentUser.email + "...";
-        status.className = "mt-4 text-xs font-bold text-blue-400";
+        status.innerText = "Tickets worden nu verstuurd...";
+        status.className = "mt-6 text-sm font-bold text-blue-400";
 
-        emailjs.send("service_ID", "template_ID", {
+        // VERVANG 'service_ID' en 'template_ID' met die van jouw EmailJS dashboard
+        emailjs.send("service_default", "template_default", {
             to_email: currentUser.email,
             show_name: currentShow,
             seats: selectedSeats.join(", ")
         }).then(() => {
-            status.innerText = "GELUKT! Check je inbox.";
-            status.className = "mt-4 text-xs font-bold text-green-500 text-center";
-            setTimeout(() => document.getElementById('booking-modal').classList.add('hidden'), 3000);
+            status.innerText = "GELUKT! De tickets zijn naar je gemaild.";
+            status.className = "mt-6 text-sm font-bold text-green-500 text-center";
+            setTimeout(closeTheater, 3000);
         }).catch((err) => {
-            // Dit vangt de fout uit image_c75098.png op als de key nog fout is
-            status.innerText = "FOUT: " + err.text + ". Controleer je EmailJS Public Key.";
-            status.className = "mt-4 text-xs font-bold text-red-500 text-center";
+            status.innerText = "FOUT: " + err.text;
+            status.className = "mt-6 text-sm font-bold text-red-500 text-center";
         });
     }
 
     function openAdmin() {
         if (currentUser?.role === 'admin') {
-            const vip = prompt("Voer e-mailadres in voor VIP-status:");
-            if (vip) alert(vip + " heeft nu VIP-rechten.");
-        } else {
-            alert("Alleen voor beheerders.");
-        }
+            const vip = prompt("Voer e-mail in voor VIP status:");
+            if (vip) alert(vip + " is nu een VIP account.");
+        } else alert("Geen toegang tot beheer.");
     }
-
-    function closeTheater() { document.getElementById('booking-modal').classList.add('hidden'); }
 </script>
-
 </body>
 </html>
+
