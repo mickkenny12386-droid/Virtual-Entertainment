@@ -3,170 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Entertainment | Tickets & Show</title>
+    <title>Virtual Entertainment | Officiële Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
+        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; }
         
-        /* Persoonlijke instelling: Transparency altijd op 1 */
-        #frozenlogo { opacity: 1 !important; font-weight: 900; color: #3b82f6; }
+        /* User Requirement: Transparency altijd op 1 */
+        #frozenlogo { opacity: 1 !important; font-weight: 900; letter-spacing: 0.1em; }
 
-        /* Verbeterde Zaalindeling */
-        .seat {
-            width: 24px; height: 24px; background: #3a0000; border-radius: 4px;
-            cursor: pointer; transition: all 0.2s; font-size: 9px;
-            display: flex; align-items: center; justify-content: center;
+        .theater-seat {
+            width: 22px; height: 26px; background: #450a0a; border-radius: 4px 4px 2px 2px;
+            cursor: pointer; transition: 0.2s; border-bottom: 3px solid #2a0505;
         }
-        .seat:hover { background: #5a0000; transform: scale(1.1); }
-        .seat.selected { background: #fbbf24 !important; color: black; box-shadow: 0 0 12px #fbbf24; }
+        .theater-seat:hover { background: #7f1d1d; transform: translateY(-2px); }
+        .theater-seat.selected { background: #fbbf24 !important; border-color: #b45309; box-shadow: 0 0 15px #fbbf24; }
         
-        .aisle { width: 30px; } /* De zijbeuken uit de screenshots */
-        .screen-glow { 
-            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.4), transparent);
-            height: 40px; border-radius: 50% / 100% 100% 0 0;
-        }
+        .column { width: 12px; background: #e5e7eb; height: 100%; border-radius: 2px; shadow: 0 0 10px rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
 
-<nav class="p-6 border-b border-white/10 flex justify-between items-center bg-black/80 sticky top-0 z-50">
-    <div id="frozenlogo" class="text-xl">VIRTUAL ENTERTAINMENT</div>
+<nav class="p-6 border-b border-white/5 bg-black/90 flex justify-between items-center sticky top-0 z-50">
+    <div id="frozenlogo" class="text-2xl text-blue-500">VIRTUAL ENTERTAINMENT</div>
+    <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+        <a href="#" class="hover:text-white transition">SHOWS</a>
+        <a href="#" class="hover:text-white transition">OVER ONS</a>
+        <a href="#" class="hover:text-white transition">CONTACT</a>
+    </div>
 </nav>
 
-<div class="max-w-5xl mx-auto mt-10 p-4">
-    <h2 class="text-center text-xl font-bold mb-4 text-blue-400">BEKIJK DE TRAILER</h2>
-    <div class="aspect-video w-full bg-zinc-900 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-        <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+<header class="relative h-[70vh] flex items-center justify-center overflow-hidden border-b border-blue-500/20">
+    <div class="absolute inset-0 z-0">
+        <iframe class="w-full h-full scale-110 pointer-events-none opacity-60" 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1" 
+                frameborder="0" allow="autoplay"></iframe>
     </div>
-</div>
-
-<div class="max-w-6xl mx-auto p-10 grid md:grid-cols-2 gap-10">
-    <div class="group bg-zinc-900/50 p-6 rounded-2xl border border-white/5 hover:border-blue-500/50 transition">
-        <img src="https://github.com/jouwgebruikersnaam/jouwrepo/blob/main/image_c7b91e.jpg?raw=true" class="w-full h-48 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition duration-500" alt="Frozen">
-        <h2 class="text-2xl font-bold mb-2">Disney FROZEN</h2>
-        <button onclick="openSeating('Frozen')" class="w-full bg-blue-600 py-3 rounded-xl font-bold mt-4">Kies Stoelen</button>
+    <div class="relative z-10 text-center px-4">
+        <h1 class="text-5xl md:text-7xl font-black mb-4 italic tracking-tighter">THE MAGIC IS BACK</h1>
+        <p class="text-xl text-blue-200 mb-8 opacity-80">Beleef de grootste musicals in Virtual Reality</p>
+        <a href="#booking" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105">RESERVEER NU</a>
     </div>
+</header>
 
-    <div class="group bg-zinc-900/50 p-6 rounded-2xl border border-white/5 hover:border-green-500/50 transition">
-        <img src="https://github.com/jouwgebruikersnaam/jouwrepo/blob/main/image_c7b612.png?raw=true" class="w-full h-48 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition duration-500" alt="Wicked">
-        <h2 class="text-2xl font-bold mb-2">Wicked</h2>
-        <button onclick="openSeating('Wicked')" class="w-full bg-green-600 py-3 rounded-xl font-bold mt-4">Kies Stoelen</button>
-    </div>
-</div>
-
-<div id="seating-modal" class="fixed inset-0 bg-black/98 z-50 hidden overflow-y-auto">
-    <div class="min-h-screen flex flex-col items-center justify-center p-8">
-        <h2 id="modal-title" class="text-3xl font-black mb-12 tracking-tighter"></h2>
-        
-        <div class="w-full max-w-2xl">
-            <div class="screen-glow mb-16 flex items-center justify-center text-[10px] tracking-[0.5em] text-blue-300">PODIUM</div>
-            
-            <div id="seating-grid" class="flex flex-col items-center">
-                </div>
+<section id="booking" class="max-w-7xl mx-auto py-20 px-6">
+    <h2 class="text-3xl font-bold mb-12 text-center">KIES JE SHOW</h2>
+    <div class="grid md:grid-cols-2 gap-12">
+        <div class="group relative overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 transition hover:border-blue-500/50">
+            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b91e.jpg" class="w-full h-64 object-cover opacity-60 group-hover:opacity-100 transition duration-700" alt="Frozen">
+            <div class="p-8">
+                <h3 class="text-3xl font-black mb-2">Disney FROZEN</h3>
+                <p class="text-gray-400 mb-6">Het spectaculaire verhaal van Anna & Elsa.</p>
+                <button onclick="openTheater('Frozen')" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-blue-500 hover:text-white transition">TICKETS BESTELLEN</button>
+            </div>
         </div>
 
-        <div class="mt-12 w-full max-w-md bg-zinc-900 p-6 rounded-2xl border border-white/10">
-            <input type="email" id="user-email" placeholder="jouw@email.com" class="w-full bg-black border border-white/20 p-4 rounded-xl mb-4 outline-none focus:border-yellow-500">
-            <div class="flex gap-2">
-                <button onclick="submitBooking()" class="flex-1 bg-yellow-500 text-black font-black py-4 rounded-xl hover:bg-yellow-400 transition">RESERVEREN</button>
-                <button onclick="closeSeating()" class="px-6 bg-zinc-800 rounded-xl">Sluit</button>
+        <div class="group relative overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 transition hover:border-green-500/50">
+            <img src="https://raw.githubusercontent.com/mickkenny12386-droid/virtual-entertainment/main/image_c7b612.png" class="w-full h-64 object-cover opacity-60 group-hover:opacity-100 transition duration-700" alt="Wicked">
+            <div class="p-8">
+                <h3 class="text-3xl font-black mb-2">WICKED</h3>
+                <p class="text-gray-400 mb-6">Ontdek het onvertelde verhaal van de heksen van Oz.</p>
+                <button onclick="openTheater('Wicked')" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-green-600 hover:text-white transition">TICKETS BESTELLEN</button>
             </div>
-            <p id="status-msg" class="mt-4 text-center text-sm font-medium"></p>
+        </div>
+    </div>
+</section>
+
+<div id="theater-modal" class="fixed inset-0 bg-black/95 z-[60] hidden flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-4xl bg-zinc-900/50 p-8 rounded-3xl border border-white/10 relative">
+        <button onclick="closeTheater()" class="absolute top-6 right-6 text-gray-500 hover:text-white text-2xl">&times;</button>
+        <h2 id="show-title" class="text-2xl font-black mb-10 text-center tracking-widest"></h2>
+
+        <div class="w-3/4 h-2 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mb-16 rounded-full blur-sm"></div>
+
+        <div class="flex justify-center gap-8 mb-12">
+            <div id="block-left" class="grid grid-cols-3 gap-2"></div>
+            <div class="column"></div>
+            <div id="block-center" class="grid grid-cols-6 gap-2"></div>
+            <div class="column"></div>
+            <div id="block-right" class="grid grid-cols-3 gap-2"></div>
+        </div>
+
+        <div class="max-w-md mx-auto space-y-4">
+            <input type="email" id="email-input" placeholder="Je e-mailadres voor de tickets" class="w-full bg-black border border-white/10 p-4 rounded-xl focus:border-blue-500 outline-none">
+            <button onclick="sendTickets()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-900/20">BEVESTIG RESERVERING</button>
+            <p id="feedback" class="text-center text-sm font-bold"></p>
         </div>
     </div>
 </div>
 
 <script>
-    emailjs.init("YOUR_PUBLIC_KEY"); // VUL HIER JE KEY IN
+    // FIX VOOR EMAIL FOUT
+    // Ga naar https://dashboard.emailjs.com/admin/account en vervang 'VUL_HIER_JE_KEY_IN'
+    emailjs.init("VUL_HIER_JE_KEY_IN"); 
 
     let selectedSeats = [];
     let currentShow = "";
 
-    function openSeating(show) {
+    function openTheater(show) {
         currentShow = show;
-        document.getElementById('modal-title').innerText = show.toUpperCase();
-        document.getElementById('seating-modal').classList.remove('hidden');
-        generateComplexGrid();
+        document.getElementById('show-title').innerText = show.toUpperCase() + " SEATING PLAN";
+        document.getElementById('theater-modal').classList.remove('hidden');
+        buildGrid();
     }
 
-    function generateComplexGrid() {
-        const grid = document.getElementById('seating-grid');
-        grid.innerHTML = "";
-        
-        for (let r = 1; r <= 10; r++) {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = "flex mb-2 items-center";
-            
-            // Linker blok (3 stoelen)
-            rowDiv.appendChild(createBlock(r, 1, 3));
-            // Zijbeuk links
-            const aisleL = document.createElement('div'); aisleL.className = "aisle"; rowDiv.appendChild(aisleL);
-            // Midden blok (6 stoelen)
-            rowDiv.appendChild(createBlock(r, 4, 9));
-            // Zijbeuk rechts
-            const aisleR = document.createElement('div'); aisleR.className = "aisle"; rowDiv.appendChild(aisleR);
-            // Rechter blok (3 stoelen)
-            rowDiv.appendChild(createBlock(r, 10, 12));
+    function buildGrid() {
+        const createSeats = (containerId, cols, rows, prefix) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            for(let i=0; i < (cols * rows); i++) {
+                const seat = document.createElement('div');
+                seat.className = "theater-seat";
+                seat.onclick = () => {
+                    seat.classList.toggle('selected');
+                    const seatId = prefix + (i+1);
+                    if(seat.classList.contains('selected')) selectedSeats.push(seatId);
+                    else selectedSeats = selectedSeats.filter(s => s !== seatId);
+                };
+                container.appendChild(seat);
+            }
+        };
 
-            grid.appendChild(rowDiv);
-        }
+        createSeats('block-left', 3, 6, 'L');
+        createSeats('block-center', 6, 6, 'M');
+        createSeats('block-right', 3, 6, 'R');
     }
 
-    function createBlock(row, start, end) {
-        const block = document.createElement('div');
-        block.className = "flex gap-1.5";
-        for (let s = start; s <= end; s++) {
-            const seat = document.createElement('div');
-            seat.className = "seat";
-            seat.innerText = s;
-            seat.onclick = () => {
-                const id = `${row}-${s}`;
-                if (seat.classList.contains('selected')) {
-                    seat.classList.remove('selected');
-                    selectedSeats = selectedSeats.filter(i => i !== id);
-                } else if (selectedSeats.length < 3) {
-                    seat.classList.add('selected');
-                    selectedSeats.push(id);
-                }
-            };
-            block.appendChild(seat);
-        }
-        return block;
-    }
+    function sendTickets() {
+        const email = document.getElementById('email-input').value;
+        const feedback = document.getElementById('feedback');
 
-    function submitBooking() {
-        const email = document.getElementById('user-email').value;
-        const msg = document.getElementById('status-msg');
-        
-        if (!email || selectedSeats.length === 0) {
-            msg.innerText = "Selecteer stoelen en vul je mail in!";
-            msg.style.color = "#ef4444";
+        if(!email || selectedSeats.length === 0) {
+            feedback.innerText = "Selecteer stoelen en vul je mail in.";
+            feedback.className = "text-red-500 text-center";
             return;
         }
 
-        msg.innerText = "Verzenden...";
-        msg.style.color = "#3b82f6";
+        feedback.innerText = "Bezig met verzenden...";
+        feedback.className = "text-blue-400 text-center";
 
-        emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        // Let op: vervang 'service_xxx' en 'template_xxx' door je eigen IDs uit EmailJS
+        emailjs.send("service_xxx", "template_xxx", {
             to_email: email,
             show_name: currentShow,
             seats: selectedSeats.join(", ")
         }).then(() => {
-            msg.innerText = "Tickets verstuurd! Check je inbox.";
-            msg.style.color = "#10b981";
-            setTimeout(closeSeating, 2000);
+            feedback.innerText = "Gelukt! Je tickets zijn onderweg.";
+            feedback.className = "text-green-500 text-center";
+            setTimeout(closeTheater, 3000);
         }).catch((err) => {
-            msg.innerText = "Fout bij verzenden. Gebruik je de juiste Keys?";
-            console.error(err);
+            feedback.innerText = "Email fout: " + err.text; //
+            feedback.className = "text-red-500 text-center";
         });
     }
 
-    function closeSeating() {
-        document.getElementById('seating-modal').classList.add('hidden');
+    function closeTheater() {
+        document.getElementById('theater-modal').classList.add('hidden');
         selectedSeats = [];
-        document.getElementById('status-msg').innerText = "";
     }
 </script>
+
 </body>
 </html>
