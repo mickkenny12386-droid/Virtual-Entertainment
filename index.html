@@ -3,233 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stage Entertainment | Wicked Edition</title>
+    <title>Stage Entertainment | Premium Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --stage-blue: #002347; /* Dieper, eleganter blauw */
+            --stage-blue: #002347;
             --accent-blue: #00a3e0;
             --white: #ffffff;
-            --glass-bg: rgba(0, 0, 0, 0.6);
+            --seat-free: #333;
+            --seat-selected: #28a745; /* Jouw groene keuze */
+            --seat-occupied: #111;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background-color: #000; color: var(--white); overflow-x: hidden; }
+        body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        /* --- VIDEO ACHTERGROND --- */
-        .video-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        .video-container iframe {
-            width: 100vw; height: 56.25vw; /* 16:9 ratio */
-            min-height: 100vh; min-width: 177.77vh;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            filter: brightness(0.5) contrast(1.1);
-        }
+        /* --- VIDEO BG --- */
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.4); }
+        .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* --- NAVIGATIE --- */
-        nav {
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            height: 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
-            position: fixed;
-            width: 100%;
-            top: 0; z-index: 1000;
-        }
-        .logo { font-family: 'Playfair Display', serif; font-size: 24px; text-transform: uppercase; letter-spacing: 3px; }
-        .nav-menu { display: flex; gap: 25px; list-style: none; font-size: 13px; font-weight: bold; }
-        .nav-menu li { cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .nav-menu li:hover { color: var(--accent-blue); }
-        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        /* --- NAV --- */
+        nav { background: rgba(0,0,0,0.95); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; cursor: pointer; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-blue); }
+        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 11px; }
 
-        /* --- HERO --- */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 10%;
-        }
-        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 700; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
-        .hero-btns { display: flex; gap: 20px; }
-        .btn-white { background: white; color: black; padding: 18px 40px; border: none; font-weight: bold; cursor: pointer; font-size: 15px; border-radius: 2px; }
-        .btn-outline { background: transparent; color: white; border: 2px solid white; padding: 16px 38px; font-weight: bold; cursor: pointer; font-size: 15px; border-radius: 2px; }
+        /* --- PAGES --- */
+        .page { display: none; padding: 120px 5% 50px; min-height: 100vh; }
+        .page.active { display: block; }
 
-        /* --- ZAAL MODAL (VERBETERDE STOELEN) --- */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-box { 
-            background: #050505; 
-            width: 90%; max-width: 900px; 
-            padding: 50px; 
-            border: 1px solid rgba(0,163,224,0.3); 
-            border-radius: 8px;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-        }
-        
-        .stage-view { 
-            width: 70%; height: 20px; 
-            background: linear-gradient(to bottom, #333, #111); 
-            margin: 0 auto 60px; 
-            border-bottom: 3px solid var(--accent-blue); 
-            text-align: center; font-size: 11px; letter-spacing: 8px; color: #777;
-        }
-        
-        .seating-layout { display: flex; justify-content: center; gap: 40px; }
-        .section { display: flex; flex-direction: column; gap: 3px; }
-        .row { display: flex; gap: 3px; }
-        
-        /* Stoelen staan nu veel dichter bij elkaar */
-        .seat { 
-            width: 14px; height: 16px; 
-            background: #220000; 
-            border-radius: 2px 2px 4px 4px; 
-            cursor: pointer; 
-            transition: 0.1s;
-        }
-        .seat:hover { background: var(--accent-blue); transform: scale(1.2); }
-        .seat.selected { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+        /* --- CARDS & GRIDS --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: rgba(20,20,20,0.9); border: 1px solid #333; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+        .card img { width: 100%; height: 350px; object-fit: cover; }
+        .card-info { padding: 20px; }
 
-        /* --- ADMIN PANEEL --- */
-        #admin-panel { display: none; background: rgba(0,0,0,0.9); padding: 30px; position: fixed; top: 80px; left: 5%; right: 5%; z-index: 1100; border: 1px solid var(--accent-blue); }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #111; border: 1px solid #333; color: white; }
+        /* --- SEATING CHART (EXACTE MATEN) --- */
+        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 30px; background: #050505; border-radius: 10px; width: fit-content; }
+        .section { display: flex; flex-direction: column; gap: 6px; }
+        .row { display: flex; gap: 6px; }
+        .seat { width: 22px; height: 25px; background: var(--seat-free); border-radius: 4px 4px 8px 8px; cursor: pointer; }
+        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 10px var(--seat-selected); }
+        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.3; }
+        .stage-line { width: 400px; height: 4px; background: var(--accent-blue); margin: 0 auto 50px; border-radius: 2px; box-shadow: 0 0 15px var(--accent-blue); }
 
-        .main-content { padding: 80px 5%; position: relative; }
-        .show-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        /* --- FORMS --- */
+        .admin-box { max-width: 600px; margin: 0 auto; background: #111; padding: 30px; border-radius: 8px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 4px; }
+        .btn-action { background: var(--white); color: #000; padding: 15px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; text-transform: uppercase; }
+
+        /* --- UTILS --- */
+        .calendar-item { background: #111; padding: 15px; border: 1px solid #222; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .calendar-item:hover { background: var(--stage-blue); }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0&showinfo=0&rel=0" frameborder="0"></iframe>
+    <div class="video-bg">
+        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0" frameborder="0"></iframe>
     </div>
 
     <nav>
-        <div class="logo">Stage</div>
-        <ul class="nav-menu">
-            <li>Shows</li>
-            <li>Theaters</li>
-            <li>Nieuws</li>
-            <li>Service</li>
-        </ul>
-        <div>
-            <button class="beheer-btn" onclick="checkLogin()">BEHEER</button>
+        <div class="logo" onclick="showPage('home')">STAGE</div>
+        <div class="nav-links">
+            <span class="nav-link" onclick="showPage('home')">Shows</span>
+            <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
+            <span class="nav-link" onclick="showPage('news-page')">Nieuws</span>
+            <span class="nav-link" onclick="showPage('account')">👤 My Account</span>
+            <button class="beheer-btn" onclick="loginAdmin()">BEHEER</button>
         </div>
     </nav>
 
-    <header class="hero">
-        <h1>Beleef de mooiste musicals</h1>
-        <div class="hero-btns">
-            <button class="btn-white">Tickets Bestellen</button>
-            <button class="btn-outline">Bekijk de Trailer</button>
-        </div>
-    </header>
-
-    <div id="admin-panel">
-        <h3 style="margin-bottom:15px;">Nieuwe Show Toevoegen</h3>
-        <input type="text" id="s-name" placeholder="Naam Musical">
-        <input type="text" id="s-img" placeholder="Afbeelding URL">
-        <input type="text" id="s-date" placeholder="Datum">
-        <button class="btn-white" onclick="addShow()">Toevoegen</button>
-        <button onclick="document.getElementById('admin-panel').style.display='none'" style="color:white; background:none; border:none; margin-left:10px; cursor:pointer;">Annuleren</button>
-    </div>
-
-    <section class="main-content">
-        <div class="show-grid" id="main-grid"></div>
+    <section id="home" class="page active">
+        <h1 style="text-align: center; margin-bottom: 40px; font-size: 3rem;">Beleef de magie</h1>
+        <div class="grid" id="shows-container"></div>
     </section>
 
-    <div class="modal" id="seat-modal">
-        <div class="modal-box">
-            <h2 id="modal-title" style="text-align:center; margin-bottom:30px; font-family:'Playfair Display';">Kies uw plaatsen</h2>
-            <div class="stage-view">PODIUM</div>
-            
-            <div class="seating-layout">
-                <div class="section" id="left"></div>
-                <div class="section" id="center"></div>
-                <div class="section" id="right"></div>
-            </div>
+    <section id="calendar" class="page">
+        <button onclick="showPage('home')" style="color: gray; background: none; border: none; cursor: pointer; margin-bottom: 20px;">← Terug naar shows</button>
+        <h2 id="cal-title">Kies een datum</h2>
+        <div id="calendar-list" style="margin-top: 30px;"></div>
+    </section>
 
-            <div style="margin-top: 50px; text-align: center;">
-                <button class="btn-white" onclick="closeModal()">Tickets Bevestigen</button>
-            </div>
+    <section id="seating" class="page">
+        <h2 id="seat-title" style="text-align:center;">Kies uw plaatsen</h2>
+        <p id="seat-date" style="text-align:center; color: var(--accent-blue);"></p>
+        <div class="stage-line"></div>
+        <div class="seating-wrapper">
+            <div id="left-wing" class="section"></div>
+            <div id="center-pit" class="section"></div>
+            <div id="right-wing" class="section"></div>
         </div>
-    </div>
+        <div style="text-align:center;">
+            <button class="btn-action" style="width: 300px;" onclick="confirmBooking()">Tickets Bestellen</button>
+        </div>
+    </section>
+
+    <section id="news-page" class="page">
+        <h2>Laatste Nieuws</h2>
+        <div id="news-container" class="grid" style="margin-top:30px;"></div>
+    </section>
+
+    <section id="theaters-page" class="page">
+        <h2>Onze Theaters</h2>
+        <div id="theaters-container" class="grid" style="margin-top:30px;"></div>
+    </section>
+
+    <section id="account" class="page">
+        <h2>Mijn Tickets</h2>
+        <div id="my-tickets" style="margin-top:30px;"></div>
+    </section>
+
+    <section id="admin" class="page">
+        <div class="admin-box">
+            <h2>Beheer Dashboard</h2>
+            <hr style="margin: 20px 0; opacity: 0.1;">
+            
+            <h4>Nieuwe Show</h4>
+            <input type="text" id="adm-show-name" placeholder="Naam Musical">
+            <input type="text" id="adm-show-img" placeholder="Afbeelding URL (PNG)">
+            <button class="btn-action" onclick="addShow()">Show Toevoegen</button>
+
+            <h4 style="margin-top:30px;">Nieuw Theater</h4>
+            <input type="text" id="adm-th-name" placeholder="Naam Theater">
+            <input type="text" id="adm-th-city" placeholder="Stad">
+            <button class="btn-action" onclick="addTheater()">Theater Toevoegen</button>
+
+            <h4 style="margin-top:30px;">Nieuwsbericht</h4>
+            <textarea id="adm-news-text" placeholder="Typ hier je nieuwsbericht..."></textarea>
+            <button class="btn-action" onclick="addNews()">Posten</button>
+            
+            <button onclick="logoutAdmin()" style="margin-top:40px; color:red; background:none; border:none; cursor:pointer;">Uitloggen</button>
+        </div>
+    </section>
 
     <script>
-        let shows = JSON.parse(localStorage.getItem('stage_wicked_shows')) || [];
+        // Data structuren
+        let shows = JSON.parse(localStorage.getItem('stg_shows')) || [];
+        let theaters = JSON.parse(localStorage.getItem('stg_theaters')) || [];
+        let news = JSON.parse(localStorage.getItem('stg_news')) || [];
+        let bookings = JSON.parse(localStorage.getItem('stg_bookings')) || []; // {showId, date, seats[]}
         
-        function checkLogin() {
-            const p = prompt("Wachtwoord:");
-            if(p === "VirtualEntertainment2025!") {
-                document.getElementById('admin-panel').style.display = 'block';
-            }
+        let currentShow = null;
+        let currentDate = null;
+        let selectedSeats = [];
+
+        // Navigatie
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+            if(pageId === 'home') renderShows();
+            if(pageId === 'news-page') renderNews();
+            if(pageId === 'theaters-page') renderTheaters();
+            if(pageId === 'account') renderAccount();
         }
+
+        // Admin Logica
+        function loginAdmin() {
+            const p = prompt("Beheer Wachtwoord:");
+            if(p === "VirtualEntertainment2025!") showPage('admin');
+            else alert("Fout wachtwoord.");
+        }
+        function logoutAdmin() { showPage('home'); }
 
         function addShow() {
-            const name = document.getElementById('s-name').value;
-            const img = document.getElementById('s-img').value;
-            const date = document.getElementById('s-date').value;
-            shows.push({ id: Date.now(), name, img, date });
-            localStorage.setItem('stage_wicked_shows', JSON.stringify(shows));
-            render();
-            document.getElementById('admin-panel').style.display = 'none';
+            const name = document.getElementById('adm-show-name').value;
+            const img = document.getElementById('adm-show-img').value;
+            if(!name || !img) return;
+            shows.push({ id: Date.now(), name, img, dates: ['12 Maart - 20:00', '15 Maart - 14:00', '20 Maart - 20:00'] });
+            save(); renderShows();
+            alert("Show toegevoegd!");
         }
 
-        function render() {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = '';
-            shows.forEach(s => {
-                grid.innerHTML += `
-                    <div style="background:rgba(0,0,0,0.8); border:1px solid #222; border-radius:4px; overflow:hidden;">
-                        <img src="${s.img}" style="width:100%; height:350px; object-fit:cover;">
-                        <div style="padding:20px;">
-                            <h3 style="font-size:22px; color:var(--accent-blue);">${s.name}</h3>
-                            <p style="margin:10px 0; font-size:14px; opacity:0.7;">${s.date}</p>
-                            <button class="btn-white" style="width:100%; padding:10px;" onclick="openSeats('${s.name}')">Zaal Bekijken</button>
-                        </div>
+        function addTheater() {
+            const name = document.getElementById('adm-th-name').value;
+            const city = document.getElementById('adm-th-city').value;
+            theaters.push({ name, city });
+            save();
+            alert("Theater toegevoegd!");
+        }
+
+        function addNews() {
+            const text = document.getElementById('adm-news-text').value;
+            news.push({ date: new Date().toLocaleDateString(), text });
+            save();
+            alert("Nieuws geplaatst!");
+        }
+
+        // Rendering Functions
+        function renderShows() {
+            const container = document.getElementById('shows-container');
+            container.innerHTML = shows.map(s => `
+                <div class="card" onclick="openCalendar(${s.id})">
+                    <img src="${s.img}" onerror="this.src='https://via.placeholder.com/300x450?text=Geen+Foto'">
+                    <div class="card-info">
+                        <h3>${s.name}</h3>
+                        <p style="color:var(--accent-blue); font-size:12px; margin-top:5px;">Bekijk data & tickets</p>
                     </div>
-                `;
-            });
+                </div>
+            `).join('');
         }
 
-        function openSeats(name) {
-            document.getElementById('modal-title').innerText = name;
-            gen('left', 4, 12);
-            gen('center', 12, 12);
-            gen('right', 4, 12);
-            document.getElementById('seat-modal').style.display = 'flex';
+        function renderNews() {
+            document.getElementById('news-container').innerHTML = news.map(n => `
+                <div class="card" style="padding:20px;">
+                    <small>${n.date}</small>
+                    <p style="margin-top:10px;">${n.text}</p>
+                </div>
+            `).reverse().join('');
         }
 
-        function gen(id, cols, rows) {
-            const el = document.getElementById(id);
-            el.innerHTML = '';
-            for(let r=0; r<rows; r++) {
-                const row = document.createElement('div');
-                row.className = 'row';
-                for(let c=0; c<cols; c++) {
+        function renderTheaters() {
+            document.getElementById('theaters-container').innerHTML = theaters.map(t => `
+                <div class="card" style="padding:20px;">
+                    <h3>${t.name}</h3>
+                    <p>${t.city}</p>
+                </div>
+            `).join('');
+        }
+
+        // Boeking Flow
+        function openCalendar(id) {
+            currentShow = shows.find(s => s.id === id);
+            document.getElementById('cal-title').innerText = currentShow.name;
+            const list = document.getElementById('calendar-list');
+            list.innerHTML = currentShow.dates.map(d => {
+                const bookedForThis = bookings.filter(b => b.showId === id && b.date === d);
+                const totalSeats = (3*7*2) + (8*7);
+                const taken = bookedForThis.reduce((acc, b) => acc + b.seats.length, 0);
+                return `
+                <div class="calendar-item" onclick="openSeating('${d}')">
+                    <span>${d}</span>
+                    <span style="color:var(--accent-blue)">${totalSeats - taken} plekken over</span>
+                </div>
+            `}).join('');
+            showPage('calendar');
+        }
+
+        function openSeating(date) {
+            currentDate = date;
+            selectedSeats = [];
+            document.getElementById('seat-title').innerText = currentShow.name;
+            document.getElementById('seat-date').innerText = currentDate;
+            
+            const bookedForThis = bookings.find(b => b.showId === currentShow.id && b.date === currentDate);
+            const takenSeats = bookedForThis ? bookedForThis.seats : [];
+
+            // Genereer secties
+            renderSection('left-wing', 3, 7, takenSeats, 'L');
+            renderSection('center-pit', 8, 7, takenSeats, 'C');
+            renderSection('right-wing', 3, 7, takenSeats, 'R');
+            
+            showPage('seating');
+        }
+
+        function renderSection(containerId, cols, rows, taken, prefix) {
+            const cont = document.getElementById(containerId);
+            cont.innerHTML = '';
+            for(let r=1; r<=rows; r++) {
+                const div = document.createElement('div');
+                div.className = 'row';
+                for(let c=1; c<=cols; c++) {
+                    const id = `${prefix}-${r}-${c}`;
                     const seat = document.createElement('div');
-                    seat.className = 'seat';
-                    seat.onclick = function() { this.classList.toggle('selected'); };
-                    row.appendChild(seat);
+                    seat.className = 'seat' + (taken.includes(id) ? ' occupied' : '');
+                    seat.onclick = () => toggleSeat(seat, id);
+                    div.appendChild(seat);
                 }
-                el.appendChild(row);
+                cont.appendChild(div);
             }
         }
 
-        function closeModal() { document.getElementById('seat-modal').style.display = 'none'; }
-        render();
+        function toggleSeat(el, id) {
+            if(el.classList.contains('occupied')) return;
+            el.classList.toggle('selected');
+            if(selectedSeats.includes(id)) selectedSeats = selectedSeats.filter(s => s !== id);
+            else selectedSeats.push(id);
+        }
+
+        function confirmBooking() {
+            if(selectedSeats.length === 0) return alert("Kies eerst een stoel.");
+            
+            let booking = bookings.find(b => b.showId === currentShow.id && b.date === currentDate);
+            if(booking) {
+                booking.seats = [...booking.seats, ...selectedSeats];
+            } else {
+                bookings.push({ showId: currentShow.id, showName: currentShow.name, date: currentDate, seats: selectedSeats });
+            }
+            save();
+            alert("Tickets succesvol besteld!");
+            showPage('account');
+        }
+
+        function renderAccount() {
+            const cont = document.getElementById('my-tickets');
+            if(bookings.length === 0) {
+                cont.innerHTML = "<p>Je hebt nog geen tickets.</p>";
+                return;
+            }
+            cont.innerHTML = bookings.map(b => `
+                <div class="calendar-item" style="cursor:default">
+                    <div>
+                        <strong>${b.showName}</strong><br>
+                        <small>${b.date}</small>
+                    </div>
+                    <div style="text-align:right">
+                        <span style="color:var(--accent-blue)">Stoelen: ${b.seats.join(', ')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function save() {
+            localStorage.setItem('stg_shows', JSON.stringify(shows));
+            localStorage.setItem('stg_theaters', JSON.stringify(theaters));
+            localStorage.setItem('stg_news', JSON.stringify(news));
+            localStorage.setItem('stg_bookings', JSON.stringify(bookings));
+        }
+
+        // Init
+        renderShows();
     </script>
 </body>
 </html>
