@@ -3,37 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Entertainment | Official</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Virtual Entertainment | Officiële Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --stage-blue: #002347;
+            --stage-dark-blue: #001226;
             --accent-blue: #00a3e0;
-            --dark-bg: #000000;
-            --card-bg: #111111;
-            --text-white: #ffffff;
+            --gold-text: #d4af37;
+            --white: #ffffff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-bg); color: var(--text-white); }
+        body { font-family: 'Montserrat', sans-serif; background-color: #000; color: var(--white); overflow-x: hidden; }
 
-        /* --- HEADER (MATCHT SCREENSHOT) --- */
+        /* --- STAGE NAVIGATIE --- */
         nav {
             background: #000;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 5%;
-            border-bottom: 2px solid var(--stage-blue);
+            padding: 0 5%;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .logo { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        .beheer-btn { background: #8b0000; color: white; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .nav-left { display: flex; align-items: center; gap: 30px; }
+        .brand { font-family: 'Playfair Display', serif; color: var(--gold-text); font-size: 18px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-menu { display: flex; gap: 20px; list-style: none; font-size: 12px; font-weight: bold; }
+        .nav-menu li { cursor: pointer; text-transform: uppercase; }
+        .nav-menu li:hover { color: var(--accent-blue); }
+        .beheer-btn { background: #8b0000; color: white; border: none; padding: 5px 15px; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 2px; }
 
-        /* --- HERO (MATCHT SCREENSHOT) --- */
+        /* --- HERO SECTIE (BLAUW THEMA) --- */
         .hero {
-            height: 60vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1514306191717-452ec28c7814?q=80&w=2070&auto=format&fit=crop');
+            height: 70vh;
+            background: linear-gradient(rgba(0, 35, 71, 0.7), var(--stage-dark-blue)), 
+                        url('https://images.unsplash.com/photo-1514306191717-452ec28c7814?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
+            background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -41,180 +51,191 @@
             text-align: center;
             border-bottom: 5px solid var(--stage-blue);
         }
-        .hero h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 30px; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: 2.8rem; margin-bottom: 30px; font-weight: 700; }
         .hero-btns { display: flex; gap: 15px; }
-        .btn-white { background: white; color: black; padding: 12px 25px; font-weight: bold; border: none; cursor: pointer; }
-        .btn-outline { background: transparent; color: white; border: 1px solid white; padding: 12px 25px; font-weight: bold; cursor: pointer; }
+        .btn-white { background: white; color: black; padding: 15px 35px; border: none; font-weight: bold; cursor: pointer; text-transform: none; font-size: 14px; }
+        .btn-outline { background: transparent; color: white; border: 2px solid white; padding: 13px 33px; font-weight: bold; cursor: pointer; font-size: 14px; }
 
-        /* --- SHOW SECTIE --- */
-        .container { padding: 40px 5%; }
-        .section-header { font-size: 24px; margin-bottom: 30px; text-align: center; font-family: 'Playfair Display', serif; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        /* --- SHOWS SECTIE --- */
+        .main-content { padding: 60px 5%; text-align: center; background: #000; }
+        .main-content h2 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 40px; font-weight: 700; }
+        .show-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
         
-        .no-shows { text-align: center; grid-column: 1 / -1; padding: 50px; color: #666; font-style: italic; }
+        .show-card { background: #111; border-radius: 4px; overflow: hidden; border-bottom: 4px solid var(--stage-blue); transition: 0.3s; text-align: left; }
+        .show-card img { width: 100%; height: 450px; object-fit: cover; }
+        .card-inner { padding: 25px; }
+        .card-inner h3 { font-family: 'Playfair Display', serif; color: var(--gold-text); font-size: 22px; margin-bottom: 10px; }
+        .btn-tickets { background: var(--gold-text); color: black; border: none; width: 100%; padding: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
 
-        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; transition: 0.3s; }
-        .card:hover { border-color: var(--accent-blue); }
-        .card img { width: 100%; height: 380px; object-fit: cover; }
-        .card-content { padding: 20px; }
-        .card-content h3 { color: #d4af37; font-family: 'Playfair Display', serif; margin-bottom: 10px; }
-        .agenda-txt { font-size: 13px; color: #888; margin-bottom: 15px; }
-        .btn-gold { background: #d4af37; color: black; border: none; width: 100%; padding: 10px; font-weight: bold; cursor: pointer; }
-
-        /* --- SEATING MODAL --- */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; overflow-y: auto; padding: 40px; }
-        .modal-content { max-width: 800px; margin: auto; background: #111; padding: 30px; border: 1px solid var(--accent-blue); }
-        .stage-bar { width: 70%; height: 10px; background: var(--accent-blue); margin: 20px auto; box-shadow: 0 0 15px var(--accent-blue); }
-        .row { display: flex; justify-content: center; margin-bottom: 6px; }
-        .seat { width: 25px; height: 25px; background: #333; margin: 3px; border-radius: 3px; cursor: pointer; transition: 0.2s; }
+        /* --- SEATING CHART MODAL --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-box { background: #0a0a0a; width: 90%; max-width: 1000px; padding: 40px; border: 1px solid var(--stage-blue); position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 20px; right: 20px; cursor: pointer; color: #fff; font-size: 24px; }
+        
+        .stage-box { width: 60%; height: 40px; background: #222; margin: 0 auto 50px; border-bottom: 4px solid var(--accent-blue); text-align: center; line-height: 40px; font-size: 12px; letter-spacing: 5px; color: #666; }
+        
+        /* Zaal Layout (gebaseerd op je foto) */
+        .seating-layout { display: flex; justify-content: space-between; gap: 40px; }
+        .side-block { display: flex; flex-direction: column; gap: 8px; }
+        .center-block { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; align-items: center; }
+        .seat-row { display: flex; gap: 5px; }
+        .seat { width: 22px; height: 18px; background: #440000; border-radius: 2px; cursor: pointer; transition: 0.2s; }
         .seat:hover { background: var(--accent-blue); }
-        .seat.selected { background: var(--accent-blue); transform: scale(1.1); }
+        .seat.selected { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
 
-        /* --- ADMIN PANEL --- */
-        .admin-panel { background: #111; padding: 25px; border: 1px dashed var(--accent-blue); margin-bottom: 40px; display: none; }
-        input { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; }
-        .btn-add { background: var(--stage-blue); color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; font-weight: bold; }
+        /* --- ADMIN FORM --- */
+        #admin-panel { display: none; background: #0a0a0a; padding: 30px; border: 1px dashed var(--gold-text); margin: 20px 5%; }
+        .admin-form input { width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: #fff; }
 
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="logo">VIRTUAL ENTERTAINMENT</div>
-    <button class="beheer-btn" onclick="openLogin()">BEHEER</button>
-</nav>
-
-<header class="hero">
-    <h1>Beleef de magie van Virtual Entertainment</h1>
-    <div class="hero-btns">
-        <button class="btn-white">Kies een musical</button>
-        <button class="btn-outline">Blijf op de hoogte</button>
-    </div>
-</header>
-
-<div class="container">
-    <div id="admin-area" class="admin-panel">
-        <h2 style="color:var(--accent-blue); margin-bottom:15px;">Nieuwe Show Toevoegen</h2>
-        <input type="text" id="s-title" placeholder="Titel van de show">
-        <input type="text" id="s-img" placeholder="Afbeelding URL (bijv. van Unsplash)">
-        <input type="text" id="s-date" placeholder="Datum (bijv. 12 Maart - 20:00)">
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="s-rows" placeholder="Aantal rijen" value="6">
-            <input type="number" id="s-cols" placeholder="Stoelen per rij" value="12">
+    <nav>
+        <div class="nav-left">
+            <div class="brand">Virtual Entertainment</div>
+            <ul class="nav-menu">
+                <li>Shows ▾</li>
+                <li>Theaters ▾</li>
+                <li>Groepen & Zakelijk ▾</li>
+                <li>Nieuws</li>
+                <li>Service ▾</li>
+            </ul>
         </div>
-        <button class="btn-add" onclick="addShow()">SHOW PUBLICEREN</button>
-        <button onclick="logout()" style="background:none; border:none; color:gray; cursor:pointer; margin-top:10px;">Uitloggen</button>
-    </div>
+        <div>
+            <span style="font-size: 11px; margin-right: 15px; cursor: pointer;">👤 My Account</span>
+            <button class="beheer-btn" onclick="checkLogin()">BEHEER</button>
+        </div>
+    </nav>
 
-    <h2 class="section-header">Beleef magische momenten bij:</h2>
-    <div class="grid" id="main-grid">
-        <div class="no-shows">Er zijn momenteel geen shows beschikbaar. Log in bij beheer om er een toe te voegen.</div>
-    </div>
-</div>
+    <header class="hero">
+        <h1>Beleef de mooiste musicals</h1>
+        <div class="hero-btns">
+            <button class="btn-white">Kies een musical</button>
+            <button class="btn-outline">Blijf op de hoogte</button>
+        </div>
+    </header>
 
-<div id="seat-modal" class="modal">
-    <div class="modal-content">
-        <h2 id="m-title" style="text-align:center; font-family:'Playfair Display'; color:var(--accent-blue);">Zaalindeling</h2>
-        <div class="stage-bar"></div>
-        <div id="seat-container"></div>
-        <div style="margin-top:30px; text-align:center;">
-            <button class="btn-white" onclick="closeModal()">Tickets Bevestigen</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:gray; margin-left:15px; cursor:pointer;">Sluiten</button>
+    <div id="admin-panel">
+        <h3 style="color:var(--gold-text); margin-bottom:15px;">Beheer: Show toevoegen</h3>
+        <div class="admin-form">
+            <input type="text" id="show-name" placeholder="Naam Musical">
+            <input type="text" id="show-img" placeholder="Afbeelding URL">
+            <input type="text" id="show-date" placeholder="Speeldatum (bijv. 8 feb - 20:00)">
+            <button class="btn-white" style="width:100%" onclick="saveShow()">Publiceer Show</button>
+            <button onclick="logout()" style="background:none; border:none; color:gray; cursor:pointer; margin-top:10px;">Uitloggen</button>
         </div>
     </div>
-</div>
 
-<script>
-    let shows = JSON.parse(localStorage.getItem('ve_data')) || [];
-    let isAdmin = false;
+    <section class="main-content">
+        <h2>Beleef magische momenten bij:</h2>
+        <div class="show-grid" id="show-grid">
+            </div>
+        <div id="empty-state" style="color: #444; margin-top: 40px; font-size: 14px;">
+            Er zijn momenteel geen shows beschikbaar. Log in bij beheer om er een toe te voegen.
+        </div>
+    </section>
 
-    function openLogin() {
-        const pass = prompt("Voer beheerwachtwoord in:");
-        if(pass === "VirtualEntertainment2025!") {
-            isAdmin = true;
-            document.getElementById('admin-area').style.display = 'block';
+    <div class="modal" id="seating-modal">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal()">✕</span>
+            <h2 id="modal-title" style="text-align:center; font-family:'Playfair Display'; margin-bottom:30px;">Zaalselectie</h2>
+            <div class="stage-box">PODIUM</div>
+            
+            <div class="seating-layout">
+                <div class="side-block" id="left-side"></div>
+                <div class="center-block" id="center-main"></div>
+                <div class="side-block" id="right-side"></div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center;">
+                <button class="btn-white" onclick="closeModal()">Stoelen Reserveren</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let shows = JSON.parse(localStorage.getItem('virtual_shows')) || [];
+        let isAdmin = false;
+
+        function checkLogin() {
+            const u = prompt("Gebruiker:");
+            const p = prompt("Wachtwoord:");
+            if(u === "Kenny&Jimi" && p === "VirtualEntertainment2025!") {
+                isAdmin = true;
+                document.getElementById('admin-panel').style.display = 'block';
+                render();
+            } else { alert("Fout!"); }
+        }
+
+        function logout() { isAdmin = false; document.getElementById('admin-panel').style.display = 'none'; render(); }
+
+        function saveShow() {
+            const name = document.getElementById('show-name').value;
+            const img = document.getElementById('show-img').value;
+            const date = document.getElementById('show-date').value;
+            if(!name || !img) return;
+            shows.push({ id: Date.now(), name, img, date });
+            localStorage.setItem('virtual_shows', JSON.stringify(shows));
             render();
-        } else {
-            alert("Toegang geweigerd.");
-        }
-    }
-
-    function logout() {
-        isAdmin = false;
-        document.getElementById('admin-area').style.display = 'none';
-        render();
-    }
-
-    function addShow() {
-        const title = document.getElementById('s-title').value;
-        const img = document.getElementById('s-img').value;
-        const date = document.getElementById('s-date').value;
-        const rows = document.getElementById('s-rows').value;
-        const cols = document.getElementById('s-cols').value;
-
-        if(!title || !img) return alert("Vul a.u.b. alle velden in.");
-
-        shows.push({ id: Date.now(), title, img, date, rows, cols });
-        localStorage.setItem('ve_data', JSON.stringify(shows));
-        render();
-    }
-
-    function deleteShow(id) {
-        shows = shows.filter(s => s.id !== id);
-        localStorage.setItem('ve_data', JSON.stringify(shows));
-        render();
-    }
-
-    function render() {
-        const grid = document.getElementById('main-grid');
-        grid.innerHTML = '';
-
-        if(shows.length === 0) {
-            grid.innerHTML = '<div class="no-shows">Er zijn momenteel geen shows beschikbaar. Log in bij beheer om er een toe te voegen.</div>';
-            return;
         }
 
-        shows.forEach(s => {
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${s.img}" alt="${s.title}">
-                    <div class="card-content">
-                        <h3>${s.title}</h3>
-                        <p class="agenda-txt"><strong>Agenda:</strong><br>${s.date}</p>
-                        <button class="btn-gold" onclick="openSeats(${s.id})">TICKETS & ZAAL</button>
-                        ${isAdmin ? `<button onclick="deleteShow(${s.id})" style="background:red; color:white; border:none; width:100%; margin-top:5px; padding:5px; cursor:pointer; font-size:10px;">VERWIJDEREN</button>` : ''}
+        function render() {
+            const grid = document.getElementById('show-grid');
+            const empty = document.getElementById('empty-state');
+            grid.innerHTML = '';
+            if(shows.length > 0) empty.style.display = 'none';
+            
+            shows.forEach(s => {
+                grid.innerHTML += `
+                    <div class="show-card">
+                        <img src="${s.img}">
+                        <div class="card-inner">
+                            <h3>${s.name}</h3>
+                            <p style="font-size:12px; color:#888;">AGENDA:</p>
+                            <p style="font-size:14px;">${s.date}</p>
+                            <button class="btn-tickets" onclick="openSeating('${s.name}')">Tickets & Zaal</button>
+                            ${isAdmin ? `<button onclick="deleteShow(${s.id})" style="background:red; color:white; border:none; margin-top:10px; cursor:pointer; width:100%; padding:5px;">Verwijder</button>` : ''}
+                        </div>
                     </div>
-                </div>
-            `;
-        });
-    }
-
-    function openSeats(id) {
-        const s = shows.find(x => x.id === id);
-        const container = document.getElementById('seat-container');
-        document.getElementById('m-title').innerText = s.title;
-        container.innerHTML = '';
-
-        for(let r=0; r<s.rows; r++) {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'row';
-            for(let c=0; c<s.cols; c++) {
-                const seat = document.createElement('div');
-                seat.className = 'seat';
-                seat.onclick = () => seat.classList.toggle('selected');
-                rowDiv.appendChild(seat);
-            }
-            container.appendChild(rowDiv);
+                `;
+            });
         }
-        document.getElementById('seat-modal').style.display = 'block';
-    }
 
-    function closeModal() {
-        document.getElementById('seat-modal').style.display = 'none';
-    }
+        function deleteShow(id) {
+            shows = shows.filter(x => x.id !== id);
+            localStorage.setItem('virtual_shows', JSON.stringify(shows));
+            render();
+        }
 
-    render();
-</script>
+        function openSeating(name) {
+            document.getElementById('modal-title').innerText = name;
+            generateSeats('left-side', 4, 8);
+            generateSeats('center-main', 10, 8);
+            generateSeats('right-side', 4, 8);
+            document.getElementById('seating-modal').style.display = 'flex';
+        }
 
+        function generateSeats(id, cols, rows) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            for(let r=0; r<rows; r++) {
+                const row = document.createElement('div');
+                row.className = 'seat-row';
+                // Maak de rijen in het midden steeds iets breder voor het theater effect
+                let actualCols = id === 'center-main' ? cols + (r > 3 ? 2 : 0) : cols;
+                for(let c=0; c<actualCols; c++) {
+                    const seat = document.createElement('div');
+                    seat.className = 'seat';
+                    seat.onclick = function() { this.classList.toggle('selected'); };
+                    row.appendChild(seat);
+                }
+                el.appendChild(row);
+            }
+        }
+
+        function closeModal() { document.getElementById('seating-modal').style.display = 'none'; }
+        render();
+    </script>
 </body>
 </html>
