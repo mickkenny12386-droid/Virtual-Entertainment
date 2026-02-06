@@ -3,251 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Entertainment | Premium Theater</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Virtual Entertainment | Official</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #002347; /* Diepblauw zoals de screenshot rood was */
+            --stage-blue: #002347;
             --accent-blue: #00a3e0;
-            --dark-bg: #010a14;
-            --card-bg: #051629;
+            --dark-bg: #000000;
+            --card-bg: #111111;
             --text-white: #ffffff;
-            --admin-gold: #d4af37;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-white);
-            line-height: 1.6;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-bg); color: var(--text-white); }
 
-        /* --- NAVIGATIE --- */
+        /* --- HEADER (MATCHT SCREENSHOT) --- */
         nav {
+            background: #000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            background: rgba(0, 0, 0, 0.9);
-            border-bottom: 2px solid var(--primary-blue);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            padding: 15px 5%;
+            border-bottom: 2px solid var(--stage-blue);
         }
-        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--accent-blue); text-transform: uppercase; }
-        .nav-links button {
-            background: transparent;
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .nav-links button:hover { background: var(--accent-blue); color: white; }
+        .logo { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .beheer-btn { background: #8b0000; color: white; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        /* --- HERO --- */
+        /* --- HERO (MATCHT SCREENSHOT) --- */
         .hero {
             height: 60vh;
-            background: linear-gradient(rgba(0,35,71,0.8), var(--dark-bg)), url('https://images.unsplash.com/photo-1503095396549-807a8bc36675?q=80&w=2070&auto=format&fit=crop');
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1514306191717-452ec28c7814?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            border-bottom: 5px solid var(--stage-blue);
         }
-        .hero h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; margin-bottom: 20px; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 30px; }
+        .hero-btns { display: flex; gap: 15px; }
+        .btn-white { background: white; color: black; padding: 12px 25px; font-weight: bold; border: none; cursor: pointer; }
+        .btn-outline { background: transparent; color: white; border: 1px solid white; padding: 12px 25px; font-weight: bold; cursor: pointer; }
 
-        /* --- ADMIN LOGIN --- */
-        #login-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        .login-box { background: var(--card-bg); padding: 40px; border: 1px solid var(--accent-blue); text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; background: #010a14; border: 1px solid #1e293b; color: white; }
-
-        /* --- SHOWS & AGENDA --- */
-        .container { padding: 50px 5%; }
+        /* --- SHOW SECTIE --- */
+        .container { padding: 40px 5%; }
+        .section-header { font-size: 24px; margin-bottom: 30px; text-align: center; font-family: 'Playfair Display', serif; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: var(--card-bg); border-radius: 4px; overflow: hidden; border-bottom: 4px solid var(--primary-blue); }
-        .card img { width: 100%; height: 400px; object-fit: cover; }
-        .card-info { padding: 20px; }
-        .agenda-list { margin: 15px 0; font-size: 0.9rem; color: #cbd5e1; }
-
-        /* --- SEATING CHART BUILDER --- */
-        .seating-builder { background: #051629; padding: 20px; margin-top: 20px; border: 1px dashed var(--admin-gold); }
-        .stage { width: 80%; height: 20px; background: var(--accent-blue); margin: 20px auto; text-align: center; font-size: 12px; color: black; font-weight: bold; }
-        .row { display: flex; justify-content: center; margin-bottom: 5px; }
-        .seat { width: 20px; height: 20px; background: #1e293b; margin: 2px; border-radius: 2px; cursor: pointer; }
-        .seat.selected { background: var(--accent-blue); }
-
-        .btn { padding: 10px 20px; cursor: pointer; border: none; font-weight: bold; text-transform: uppercase; }
-        .btn-blue { background: var(--accent-blue); color: white; }
-        .btn-admin { background: var(--admin-gold); color: black; margin-top: 10px; width: 100%; }
         
-        .hidden { display: none !important; }
+        .no-shows { text-align: center; grid-column: 1 / -1; padding: 50px; color: #666; font-style: italic; }
+
+        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #222; transition: 0.3s; }
+        .card:hover { border-color: var(--accent-blue); }
+        .card img { width: 100%; height: 380px; object-fit: cover; }
+        .card-content { padding: 20px; }
+        .card-content h3 { color: #d4af37; font-family: 'Playfair Display', serif; margin-bottom: 10px; }
+        .agenda-txt { font-size: 13px; color: #888; margin-bottom: 15px; }
+        .btn-gold { background: #d4af37; color: black; border: none; width: 100%; padding: 10px; font-weight: bold; cursor: pointer; }
+
+        /* --- SEATING MODAL --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; overflow-y: auto; padding: 40px; }
+        .modal-content { max-width: 800px; margin: auto; background: #111; padding: 30px; border: 1px solid var(--accent-blue); }
+        .stage-bar { width: 70%; height: 10px; background: var(--accent-blue); margin: 20px auto; box-shadow: 0 0 15px var(--accent-blue); }
+        .row { display: flex; justify-content: center; margin-bottom: 6px; }
+        .seat { width: 25px; height: 25px; background: #333; margin: 3px; border-radius: 3px; cursor: pointer; transition: 0.2s; }
+        .seat:hover { background: var(--accent-blue); }
+        .seat.selected { background: var(--accent-blue); transform: scale(1.1); }
+
+        /* --- ADMIN PANEL --- */
+        .admin-panel { background: #111; padding: 25px; border: 1px dashed var(--accent-blue); margin-bottom: 40px; display: none; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; }
+        .btn-add { background: var(--stage-blue); color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; font-weight: bold; }
+
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">Virtual <span>Entertainment</span></div>
-    <div class="nav-links">
-        <button id="admin-btn" onclick="toggleLogin()">Beheer</button>
-        <button id="logout-btn" class="hidden" onclick="logout()">Uitloggen</button>
-    </div>
+    <div class="logo">VIRTUAL ENTERTAINMENT</div>
+    <button class="beheer-btn" onclick="openLogin()">BEHEER</button>
 </nav>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <h2>Admin Toegang</h2>
-        <input type="text" id="user" placeholder="Gebruikersnaam">
-        <input type="password" id="pass" placeholder="Wachtwoord">
-        <button class="btn btn-blue" onclick="login()">Inloggen</button>
-        <button onclick="toggleLogin()" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer;">Annuleren</button>
-    </div>
-</div>
-
 <header class="hero">
-    <h1>Beleef de mooiste shows</h1>
-    <div style="display:flex; gap:20px;">
-        <button class="btn btn-blue">Kies een show</button>
-        <button class="btn" style="background:white; color:black;">Agenda bekijken</button>
+    <h1>Beleef de magie van Virtual Entertainment</h1>
+    <div class="hero-btns">
+        <button class="btn-white">Kies een musical</button>
+        <button class="btn-outline">Blijf op de hoogte</button>
     </div>
 </header>
 
-<div class="container admin-only hidden" id="admin-panel">
-    <h2 style="color:var(--admin-gold)">Show Toevoegen</h2>
-    <input type="text" id="show-title" placeholder="Naam van de show">
-    <input type="text" id="show-img" placeholder="Afbeelding URL">
-    <div style="display:flex; gap:10px;">
-        <input type="number" id="row-count" placeholder="Aantal rijen" value="5">
-        <input type="number" id="seat-count" placeholder="Stoelen per rij" value="10">
-    </div>
-    <button class="btn btn-admin" onclick="addShow()">Show Publiceren</button>
-</div>
-
 <div class="container">
-    <h2 style="margin-bottom:30px;">Actuele Agenda</h2>
-    <div class="grid" id="show-grid"></div>
+    <div id="admin-area" class="admin-panel">
+        <h2 style="color:var(--accent-blue); margin-bottom:15px;">Nieuwe Show Toevoegen</h2>
+        <input type="text" id="s-title" placeholder="Titel van de show">
+        <input type="text" id="s-img" placeholder="Afbeelding URL (bijv. van Unsplash)">
+        <input type="text" id="s-date" placeholder="Datum (bijv. 12 Maart - 20:00)">
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="s-rows" placeholder="Aantal rijen" value="6">
+            <input type="number" id="s-cols" placeholder="Stoelen per rij" value="12">
+        </div>
+        <button class="btn-add" onclick="addShow()">SHOW PUBLICEREN</button>
+        <button onclick="logout()" style="background:none; border:none; color:gray; cursor:pointer; margin-top:10px;">Uitloggen</button>
+    </div>
+
+    <h2 class="section-header">Beleef magische momenten bij:</h2>
+    <div class="grid" id="main-grid">
+        <div class="no-shows">Er zijn momenteel geen shows beschikbaar. Log in bij beheer om er een toe te voegen.</div>
+    </div>
 </div>
 
-<div id="seating-modal" class="modal hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:3000; padding:50px;">
-    <div style="max-width:800px; margin:auto; background:var(--card-bg); padding:30px; border:1px solid var(--accent-blue);">
-        <h2 id="modal-title">Zaalindeling</h2>
-        <div class="stage">PODIUM</div>
-        <div id="seating-area"></div>
-        <button class="btn btn-blue" style="margin-top:20px;" onclick="closeSeating()">Sluiten</button>
+<div id="seat-modal" class="modal">
+    <div class="modal-content">
+        <h2 id="m-title" style="text-align:center; font-family:'Playfair Display'; color:var(--accent-blue);">Zaalindeling</h2>
+        <div class="stage-bar"></div>
+        <div id="seat-container"></div>
+        <div style="margin-top:30px; text-align:center;">
+            <button class="btn-white" onclick="closeModal()">Tickets Bevestigen</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:gray; margin-left:15px; cursor:pointer;">Sluiten</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let shows = JSON.parse(localStorage.getItem('theater_shows')) || [];
+    let shows = JSON.parse(localStorage.getItem('ve_data')) || [];
     let isAdmin = false;
 
-    function toggleLogin() {
-        document.getElementById('login-overlay').style.display = 'flex';
-    }
-
-    function login() {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if(u === "Kenny&Jimi" && p === "VirtualEntertainment2025!") {
+    function openLogin() {
+        const pass = prompt("Voer beheerwachtwoord in:");
+        if(pass === "VirtualEntertainment2025!") {
             isAdmin = true;
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('admin-panel').classList.remove('hidden');
-            document.getElementById('logout-btn').classList.remove('hidden');
-            document.getElementById('admin-btn').classList.add('hidden');
-            renderShows();
+            document.getElementById('admin-area').style.display = 'block';
+            render();
         } else {
-            alert("Onjuiste gegevens");
+            alert("Toegang geweigerd.");
         }
     }
 
     function logout() {
         isAdmin = false;
-        location.reload();
+        document.getElementById('admin-area').style.display = 'none';
+        render();
     }
 
     function addShow() {
-        const title = document.getElementById('show-title').value;
-        const img = document.getElementById('show-img').value;
-        const rows = document.getElementById('row-count').value;
-        const seats = document.getElementById('seat-count').value;
+        const title = document.getElementById('s-title').value;
+        const img = document.getElementById('s-img').value;
+        const date = document.getElementById('s-date').value;
+        const rows = document.getElementById('s-rows').value;
+        const cols = document.getElementById('s-cols').value;
 
-        if(!title || !img) return alert("Vul alles in");
+        if(!title || !img) return alert("Vul a.u.b. alle velden in.");
 
-        shows.push({
-            id: Date.now(),
-            title: title,
-            img: img,
-            rows: rows,
-            seats: seats,
-            dates: ["Vrijdag 20:00", "Zaterdag 15:00", "Zaterdag 20:00"]
-        });
-
-        localStorage.setItem('theater_shows', JSON.stringify(shows));
-        renderShows();
+        shows.push({ id: Date.now(), title, img, date, rows, cols });
+        localStorage.setItem('ve_data', JSON.stringify(shows));
+        render();
     }
 
     function deleteShow(id) {
         shows = shows.filter(s => s.id !== id);
-        localStorage.setItem('theater_shows', JSON.stringify(shows));
-        renderShows();
+        localStorage.setItem('ve_data', JSON.stringify(shows));
+        render();
     }
 
-    function renderShows() {
-        const grid = document.getElementById('show-grid');
+    function render() {
+        const grid = document.getElementById('main-grid');
         grid.innerHTML = '';
-        shows.forEach(show => {
+
+        if(shows.length === 0) {
+            grid.innerHTML = '<div class="no-shows">Er zijn momenteel geen shows beschikbaar. Log in bij beheer om er een toe te voegen.</div>';
+            return;
+        }
+
+        shows.forEach(s => {
             grid.innerHTML += `
                 <div class="card">
-                    <img src="${show.img}" alt="${show.title}">
-                    <div class="card-info">
-                        <h3>${show.title}</h3>
-                        <div class="agenda-list">
-                            <strong>Speeldata:</strong><br>
-                            ${show.dates.map(d => `• ${d}<br>`).join('')}
-                        </div>
-                        <button class="btn btn-blue" style="width:100%" onclick="openSeating(${show.id})">Kies Stoelen</button>
-                        ${isAdmin ? `<button class="btn btn-admin" style="background:red; color:white;" onclick="deleteShow(${show.id})">Verwijder Show</button>` : ''}
+                    <img src="${s.img}" alt="${s.title}">
+                    <div class="card-content">
+                        <h3>${s.title}</h3>
+                        <p class="agenda-txt"><strong>Agenda:</strong><br>${s.date}</p>
+                        <button class="btn-gold" onclick="openSeats(${s.id})">TICKETS & ZAAL</button>
+                        ${isAdmin ? `<button onclick="deleteShow(${s.id})" style="background:red; color:white; border:none; width:100%; margin-top:5px; padding:5px; cursor:pointer; font-size:10px;">VERWIJDEREN</button>` : ''}
                     </div>
                 </div>
             `;
         });
     }
 
-    function openSeating(id) {
-        const show = shows.find(s => s.id == id);
-        const area = document.getElementById('seating-area');
-        area.innerHTML = '';
-        document.getElementById('modal-title').innerText = "Zaalindeling: " + show.title;
+    function openSeats(id) {
+        const s = shows.find(x => x.id === id);
+        const container = document.getElementById('seat-container');
+        document.getElementById('m-title').innerText = s.title;
+        container.innerHTML = '';
 
-        for(let r=0; r<show.rows; r++) {
-            let rowDiv = document.createElement('div');
+        for(let r=0; r<s.rows; r++) {
+            const rowDiv = document.createElement('div');
             rowDiv.className = 'row';
-            for(let s=0; s<show.seats; s++) {
-                let seatDiv = document.createElement('div');
-                seatDiv.className = 'seat';
-                seatDiv.onclick = function() { this.classList.toggle('selected'); };
-                rowDiv.appendChild(seatDiv);
+            for(let c=0; c<s.cols; c++) {
+                const seat = document.createElement('div');
+                seat.className = 'seat';
+                seat.onclick = () => seat.classList.toggle('selected');
+                rowDiv.appendChild(seat);
             }
-            area.appendChild(rowDiv);
+            container.appendChild(rowDiv);
         }
-        document.getElementById('seating-modal').classList.remove('hidden');
+        document.getElementById('seat-modal').style.display = 'block';
     }
 
-    function closeSeating() {
-        document.getElementById('seating-modal').classList.add('hidden');
+    function closeModal() {
+        document.getElementById('seat-modal').style.display = 'none';
     }
 
-    renderShows();
+    render();
 </script>
 
 </body>
