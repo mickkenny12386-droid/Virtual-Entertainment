@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theater Deluxe | Management Portal</title>
+    <style>
+        /* LUXE STYLING (STAGE ENTERTAINMENT STYLE) */
+        :root {
+            --gold: #c5a059;
+            --dark: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--dark);
+            color: var(--white);
+            scroll-behavior: smooth;
+        }
+
+        /* Navigatie */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; }
+        .logo span { color: var(--gold); }
+
+        .nav-links button {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid var(--gold);
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-links button:hover { background: var(--gold); color: black; }
+
+        /* Hero Sectie */
+        .hero {
+            height: 60vh;
+            background: linear-gradient(rgba(0,0,0,0.6), var(--dark)), 
+                        url('https://images.unsplash.com/photo-1503095396549-807a8bc36675?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Shows Grid */
+        .container { padding: 3rem 5%; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .show-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: transform 0.3s;
+        }
+
+        .show-card:hover { transform: translateY(-10px); border-color: var(--gold); }
+        .show-card img { width: 100%; height: 350px; object-fit: cover; }
+        .show-info { padding: 1.5rem; }
+        .show-info h3 { margin: 0; color: var(--gold); }
+
+        /* Admin Sectie (Verborgen standaard) */
+        #admin-section {
+            display: none;
+            background: #222;
+            padding: 2rem;
+            margin: 2rem 5%;
+            border-radius: 10px;
+            border: 2px dashed var(--gold);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+        }
+
+        .btn-add {
+            background: var(--gold);
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Seating Chart */
+        .seating-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .screen {
+            width: 80%;
+            height: 10px;
+            background: #555;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px white;
+        }
+        .row { display: flex; }
+        .seat {
+            width: 20px;
+            height: 20px;
+            background: #444;
+            margin: 3px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .seat.selected { background: var(--gold); }
+        .seat:hover { background: #666; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">STAGE<span>GITHUB</span></div>
+        <div class="nav-links">
+            <button onclick="toggleAdmin()">Beheer Log-in</button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>ONTDEK DE MAGIE</h1>
+        <p>Exclusieve toegang tot de grootste producties</p>
+    </header>
+
+    <section id="admin-section">
+        <h2>Beheer Paneel</h2>
+        <p>Voeg een nieuwe show toe aan de website</p>
+        <input type="text" id="showTitle" placeholder="Naam van de Musical/Show">
+        <input type="text" id="showImg" placeholder="Afbeelding URL (bijv. van Unsplash of Imgur)">
+        <input type="date" id="showDate">
+        <button class="btn-add" onclick="addShow()">Show Toevoegen</button>
+    </section>
+
+    <div class="container">
+        <h2 style="border-left: 4px solid var(--gold); padding-left: 15px;">Nu in het theater</h2>
+        <div class="grid" id="showGrid">
+            </div>
+    </div>
+
+    <div class="container">
+        <h2>Kies uw plaatsen</h2>
+        <div class="seating-container">
+            <div class="screen">PODIUM</div>
+            <div id="seating-area"></div>
+        </div>
+    </div>
+
+    <script>
+        // DATA OPSLAG (Lokaal in de browser)
+        let shows = JSON.parse(localStorage.getItem('myShows')) || [
+            {
+                title: "The Lion King",
+                image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=500&q=60",
+                date: "2024-12-01"
+            },
+            {
+                title: "Frozen de Musical",
+                image: "https://images.unsplash.com/photo-1533488765986-dfa2a9939acd?auto=format&fit=crop&w=500&q=60",
+                date: "2024-12-15"
+            }
+        ];
+
+        // RENDER SHOWS
+        function displayShows() {
+            const grid = document.getElementById('showGrid');
+            grid.innerHTML = '';
+            shows.forEach((show, index) => {
+                grid.innerHTML += `
+                    <div class="show-card">
+                        <img src="${show.image}" alt="${show.title}">
+                        <div class="show-info">
+                            <h3>${show.title}</h3>
+                            <p>Datum: ${show.date}</p>
+                            <button onclick="deleteShow(${index})" style="background:red; color:white; border:none; cursor:pointer; padding:5px;">Verwijderen</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // VOEG SHOW TOE
+        function addShow() {
+            const title = document.getElementById('showTitle').value;
+            const img = document.getElementById('showImg').value;
+            const date = document.getElementById('showDate').value;
+
+            if(title && img && date) {
+                shows.push({ title, image: img, date });
+                localStorage.setItem('myShows', JSON.stringify(shows));
+                displayShows();
+                alert("Show succesvol toegevoegd!");
+            } else {
+                alert("Vul alle velden in.");
+            }
+        }
+
+        function deleteShow(index) {
+            shows.splice(index, 1);
+            localStorage.setItem('myShows', JSON.stringify(shows));
+            displayShows();
+        }
+
+        // TOGGLE ADMIN PANEL
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-section');
+            const pass = prompt("Voer beheer wachtwoord in (probeer: admin123):");
+            if(pass === "admin123") {
+                panel.style.display = panel.style.display === "block" ? "none" : "block";
+            } else {
+                alert("Verkeerd wachtwoord!");
+            }
+        }
+
+        // GENERATE SEATING CHART (10 rijen van 12 stoelen)
+        function createSeating() {
+            const area = document.getElementById('seating-area');
+            for(let r=0; r<8; r++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                for(let s=0; s<12; s++) {
+                    const seat = document.createElement('div');
+                    seat.className = 'seat';
+                    seat.onclick = () => seat.classList.toggle('selected');
+                    row.appendChild(seat);
+                }
+                area.appendChild(row);
+            }
+        }
+
+        // INIT
+        displayShows();
+        createSeating();
+    </script>
+</body>
+</html>
