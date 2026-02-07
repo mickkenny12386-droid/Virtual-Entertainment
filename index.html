@@ -18,42 +18,37 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        /* Video Background */
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.25); }
         .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 
-        /* Nav */
         nav { background: rgba(0,0,0,0.9); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .logo { font-family: 'Playfair Display', serif; font-size: 26px; cursor: pointer; letter-spacing: 2px; }
         .nav-links { display: flex; gap: 25px; align-items: center; }
         .nav-link { cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 700; color: #ddd; }
         .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        /* Pages */
         .page { display: none; padding: 130px 5% 50px; min-height: 100vh; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
         .card { position: relative; height: 450px; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; transition: 0.4s; }
-        .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
         .card-info-overlay { position: absolute; inset: 0; background: rgba(0, 35, 71, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; opacity: 0; transition: 0.4s; backdrop-filter: blur(8px); }
         .card:hover .card-info-overlay { opacity: 1; }
 
-        /* Seating (3-8-3) */
-        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 40px; background: rgba(10,10,10,0.9); border-radius: 15px; border: 1px solid var(--stage-blue); width: fit-content; }
-        .row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .seat { width: 22px; height: 26px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.05); }
-        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 10px var(--seat-selected); }
-        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.2; }
-        .stage-line { width: 500px; height: 4px; background: var(--accent-blue); margin: 0 auto 40px; border-radius: 2px; }
-
-        /* Admin Dashboard */
-        .admin-box { max-width: 600px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 12px; border: 1px solid #333; }
+        .admin-box { max-width: 900px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 12px; border: 1px solid #333; }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 4px; }
         .btn-gold { background: #c5a059; color: #000; padding: 15px; border: none; font-weight: 700; cursor: pointer; width: 100%; border-radius: 4px; text-transform: uppercase; margin-top: 10px; }
-        .manage-item { display: flex; justify-content: space-between; background: #111; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
+        
+        .manage-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid var(--accent-blue); }
+        .del-btn { background: #d00; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 10px; }
+
+        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 40px; background: rgba(10,10,10,0.9); border-radius: 15px; border: 1px solid var(--stage-blue); width: fit-content; }
+        .row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .seat { width: 22px; height: 26px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 10px var(--seat-selected); }
+        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.2; }
     </style>
 </head>
 <body>
@@ -68,12 +63,12 @@
             <span class="nav-link" onclick="showPage('home')">Shows</span>
             <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
             <span class="nav-link" onclick="showPage('news-page')">News</span>
-            <span class="nav-link" onclick="showPage('account')">Account</span>
-            <button class="beheer-btn" onclick="showPage('login-page')">ADMIN</button>
+            <span class="nav-link" onclick="showPage('account')">Mijn Account</span>
+            <button class="beheer-btn" onclick="showPage('login-page')">BEHEER</button>
         </div>
     </nav>
 
-    <section id="home" class="page active"><h1 style="text-align:center; margin-bottom:30px; font-family:'Playfair Display'; font-size:3rem;">Productions</h1><div class="grid" id="shows-cont"></div></section>
+    <section id="home" class="page active"><h1 style="text-align:center; margin-bottom:30px;">Productions</h1><div class="grid" id="shows-cont"></div></section>
     
     <section id="login-page" class="page">
         <div class="admin-box" style="max-width:350px; text-align:center;">
@@ -85,43 +80,51 @@
 
     <section id="admin-dashboard" class="page">
         <div class="admin-box">
-            <h2>Live Management</h2>
-            <hr style="opacity:0.1; margin:20px 0;">
-            <h3>Toevoegen</h3>
-            <input type="text" id="adm-name" placeholder="Show Naam">
-            <input type="text" id="adm-img" placeholder="Afbeelding URL (Poster)">
-            <textarea id="adm-info" placeholder="Omschrijving"></textarea>
-            <input type="text" id="adm-dates" placeholder="Data (bijv. 20 Feb 20:00, 22 Feb 14:00)">
-            <button class="btn-gold" onclick="saveData('shows')">Publiceer Show</button>
-            <hr style="margin:30px 0; opacity:0.1;">
-            <input type="text" id="adm-th-name" placeholder="Theater Naam">
-            <button class="btn-gold" onclick="saveData('theaters')">Theater Opslaan</button>
-            <hr style="margin:30px 0; opacity:0.1;">
-            <textarea id="adm-news" placeholder="Nieuwsbericht tekst..."></textarea>
-            <button class="btn-gold" onclick="saveData('news')">Nieuws Posten</button>
-            <div id="manage-list" style="margin-top:30px;"></div>
+            <h2>Systeem Beheer</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div>
+                    <h3>Voeg toe</h3>
+                    <input type="text" id="adm-name" placeholder="Show Naam">
+                    <input type="text" id="adm-img" placeholder="Afbeelding URL">
+                    <textarea id="adm-info" placeholder="Info"></textarea>
+                    <input type="text" id="adm-dates" placeholder="Data (gescheiden door komma)">
+                    <button class="btn-gold" onclick="saveData('shows')">Show Opslaan</button>
+                    <hr style="margin:20px 0; opacity:0.1;">
+                    <input type="text" id="adm-th-name" placeholder="Theater Naam">
+                    <button class="btn-gold" onclick="saveData('theaters')">Theater Opslaan</button>
+                    <hr style="margin:20px 0; opacity:0.1;">
+                    <textarea id="adm-news" placeholder="Nieuws bericht"></textarea>
+                    <button class="btn-gold" onclick="saveData('news')">News Posten</button>
+                </div>
+                <div>
+                    <h3>Beheer Content (Verwijderen)</h3>
+                    <div id="manage-list"></div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section id="theaters-page" class="page"><h1>Onze Theaters</h1><div class="grid" id="th-cont"></div></section>
-    <section id="news-page" class="page"><h1>Nieuws & Updates</h1><div class="grid" id="news-cont"></div></section>
-    <section id="account" class="page"><h1>Mijn Tickets</h1><div id="ticket-cont"></div></section>
+    <section id="theaters-page" class="page"><h1>Theaters</h1><div class="grid" id="th-cont"></div></section>
+    <section id="news-page" class="page"><h1>Nieuws</h1><div class="grid" id="news-cont"></div></section>
+    
+    <section id="account" class="page">
+        <h1>Mijn Tickets</h1>
+        <p style="margin-bottom:20px; opacity:0.6;">Deze tickets zijn alleen zichtbaar op dit apparaat.</p>
+        <div id="ticket-cont"></div>
+    </section>
 
     <section id="seating-page" class="page">
         <h2 id="seat-head" style="text-align:center;"></h2>
-        <div class="stage-line"></div>
+        <div style="width:500px; height:4px; background:var(--accent-blue); margin:0 auto 40px;"></div>
         <div class="seating-wrapper">
-            <div id="l-wing" class="section"></div>
-            <div id="c-pit" class="section"></div>
-            <div id="r-wing" class="section"></div>
+            <div id="l-wing"></div><div id="c-pit"></div><div id="r-wing"></div>
         </div>
-        <button class="btn-gold" style="max-width:300px; display:block; margin: 30px auto;" onclick="book()">Reserveer Tickets</button>
+        <button class="btn-gold" style="max-width:300px; display:block; margin: 30px auto;" onclick="book()">Bestelling Afronden</button>
     </section>
 
-    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list" style="margin-top:20px;"></div></section>
+    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list"></div></section>
 
     <script>
-        // GEUPDATE CONFIGURATIE MET DE URL UIT JE FOTO
         const firebaseConfig = {
             apiKey: "AIzaSyAS8qIsJTEznHjCOjaP_XzsFzvIryoes18",
             authDomain: "vrtrtr-b9978.firebaseapp.com",
@@ -136,7 +139,6 @@
         let state = { shows: [], theaters: [], news: [], bookings: {} };
         let cur = { show: null, date: null, selected: [] };
 
-        // Realtime Sync
         rtdb.ref('/').on('value', (snap) => {
             const data = snap.val() || {};
             state.shows = data.shows ? Object.values(data.shows) : [];
@@ -144,11 +146,12 @@
             state.news = data.news ? Object.values(data.news) : [];
             state.bookings = data.bookings || {};
             renderAll();
-        }, (err) => alert("Firebase Fout: " + err.message));
+        });
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            if(id === 'account') renderAccount();
         }
 
         function checkAdmin() {
@@ -158,7 +161,6 @@
         function saveData(type) {
             const id = Date.now();
             let payload = { id };
-            
             if(type === 'shows') {
                 payload.name = document.getElementById('adm-name').value;
                 payload.img = document.getElementById('adm-img').value;
@@ -170,41 +172,41 @@
                 payload.text = document.getElementById('adm-news').value;
                 payload.date = new Date().toLocaleDateString();
             }
+            rtdb.ref(type + '/' + id).set(payload).then(() => alert("Opgeslagen!"));
+        }
 
-            rtdb.ref(type + '/' + id).set(payload)
-                .then(() => alert(type + " opgeslagen in de cloud!"))
-                .catch(e => alert("Fout: " + e.message));
+        function deleteItem(type, id) {
+            if(confirm("Zeker weten?")) {
+                rtdb.ref(type + '/' + id).remove();
+            }
         }
 
         function renderAll() {
-            // Home Shows
             document.getElementById('shows-cont').innerHTML = state.shows.map(s => `
                 <div class="card" onclick="openCal(${s.id})">
                     <img src="${s.img}">
-                    <div class="card-info-overlay">
-                        <h3>${s.name}</h3>
-                        <p>${s.info}</p>
-                        <strong>BESTEL TICKETS</strong>
-                    </div>
+                    <div class="card-info-overlay"><h3>${s.name}</h3><p>Bestel Tickets</p></div>
                 </div>
             `).join('');
 
-            // Theaters & News
             document.getElementById('th-cont').innerHTML = state.theaters.map(t => `<div class="card" style="padding:20px; height:auto;"><h3>${t.name}</h3></div>`).join('');
-            document.getElementById('news-cont').innerHTML = state.news.map(n => `<div class="card" style="padding:20px; height:auto;"><small>${n.date}</small><p style="margin-top:10px;">${n.text}</p></div>`).join('');
+            document.getElementById('news-cont').innerHTML = state.news.map(n => `<div class="card" style="padding:20px; height:auto;"><small>${n.date}</small><p>${n.text}</p></div>`).join('');
 
-            // Admin List
-            document.getElementById('manage-list').innerHTML = `
-                <h4>Huidige Shows</h4>
-                ${state.shows.map(s => `<div class="manage-item">${s.name} <button onclick="rtdb.ref('shows/${s.id}').remove()">X</button></div>`).join('')}
-            `;
+            // Admin Beheer Lijst
+            let html = "<h4>Shows</h4>";
+            state.shows.forEach(s => html += `<div class="manage-item">${s.name} <button class="del-btn" onclick="deleteItem('shows', ${s.id})">VERWIJDER</button></div>`);
+            html += "<h4>Theaters</h4>";
+            state.theaters.forEach(t => html += `<div class="manage-item">${t.name} <button class="del-btn" onclick="deleteItem('theaters', ${t.id})">VERWIJDER</button></div>`);
+            html += "<h4>Nieuws</h4>";
+            state.news.forEach(n => html += `<div class="manage-item">${n.text.substring(0,20)}... <button class="del-btn" onclick="deleteItem('news', ${n.id})">VERWIJDER</button></div>`);
+            document.getElementById('manage-list').innerHTML = html;
         }
 
         function openCal(id) {
             cur.show = state.shows.find(s => s.id === id);
             document.getElementById('cal-head').innerText = cur.show.name;
             document.getElementById('cal-list').innerHTML = cur.show.dates.map(d => `
-                <div style="background:rgba(255,255,255,0.05); padding:20px; margin-bottom:10px; cursor:pointer;" onclick="openSeats('${d}')">${d}</div>
+                <div style="background:#111; padding:20px; margin-bottom:10px; cursor:pointer;" onclick="openSeats('${d}')">${d}</div>
             `).join('');
             showPage('calendar-page');
         }
@@ -246,9 +248,30 @@
             const key = cur.show.id + "_" + cur.date.replace(/\s/g, '_');
             const total = [...(state.bookings[key] || []), ...cur.selected];
             rtdb.ref('bookings/' + key).set(total).then(() => {
-                alert("Reservering voltooid!");
-                showPage('home');
+                // Sla lokaal op (alleen voor deze gebruiker)
+                let myTickets = JSON.parse(localStorage.getItem('my_stage_tickets')) || [];
+                myTickets.push({ show: cur.show.name, date: cur.date, seats: cur.selected });
+                localStorage.setItem('my_stage_tickets', JSON.stringify(myTickets));
+                
+                alert("Gereserveerd!");
+                showPage('account');
             });
+        }
+
+        function renderAccount() {
+            const myTickets = JSON.parse(localStorage.getItem('my_stage_tickets')) || [];
+            const cont = document.getElementById('ticket-cont');
+            if(myTickets.length === 0) {
+                cont.innerHTML = "<p>Je hebt nog geen tickets.</p>";
+            } else {
+                cont.innerHTML = myTickets.map(t => `
+                    <div style="background:#111; padding:20px; border-left:4px solid var(--accent-blue); margin-bottom:15px;">
+                        <h3>${t.show}</h3>
+                        <p>Datum: ${t.date}</p>
+                        <p>Stoelen: ${t.seats.join(', ')}</p>
+                    </div>
+                `).join('');
+            }
         }
 
         showPage('home');
