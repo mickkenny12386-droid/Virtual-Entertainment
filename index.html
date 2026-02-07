@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Stage Entertainment | Live System Pro</title>
+    <title>Stage Entertainment | Professional Live System</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -10,7 +10,7 @@
     <style>
         :root {
             --gold: #c5a059; --dark-red: #4a0000;
-            --seat-free: #0055ff; --seat-selected: #28a745; --seat-occupied: #222;
+            --seat-free: #0055ff; --seat-selected: #28a745; --seat-occupied: #111;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,45 +18,44 @@
 
         /* Background */
         .bg-slideshow { position: fixed; inset: 0; z-index: -2; background: #000; }
-        .bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 2s; filter: brightness(0.2); }
+        .bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 2s; filter: brightness(0.25); }
         .bg-img.active { opacity: 1; }
 
         nav { background: rgba(0,0,0,0.95); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 2px solid var(--gold); }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: 700; color: #ddd; }
+        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: 700; color: #ddd; margin-left: 20px; }
 
         .page { display: none; padding: 120px 5% 50px; min-height: 100vh; }
         .page.active { display: block; }
 
-        /* Musical Selector Layout */
-        .content-wrapper { display: flex; gap: 20px; transition: 0.5s; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; flex-grow: 1; transition: 0.5s; }
-        .grid.fade { opacity: 0.1; pointer-events: none; }
+        /* Musical Cards & Panel */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; transition: 0.5s; }
+        .grid.blur { filter: blur(10px); opacity: 0.3; pointer-events: none; }
 
         .card { position: relative; height: 400px; border-radius: 10px; overflow: hidden; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card:hover { transform: scale(1.02); border-color: var(--gold); }
 
-        /* Side Info Panel */
-        #side-panel { width: 0; opacity: 0; background: rgba(15,15,15,0.98); border-left: 3px solid var(--gold); position: fixed; right: 0; top: 75px; height: calc(100vh - 75px); transition: 0.5s; overflow-y: auto; z-index: 900; }
-        #side-panel.open { width: 500px; opacity: 1; padding: 40px; }
+        #side-panel { width: 0; opacity: 0; background: rgba(10,10,10,0.98); border-left: 3px solid var(--gold); position: fixed; right: 0; top: 0; height: 100vh; transition: 0.5s; overflow-y: auto; z-index: 2000; }
+        #side-panel.open { width: 500px; opacity: 1; padding: 80px 40px 40px; }
 
-        /* Seating & Rangen */
-        .theater-box { background: var(--dark-red); padding: 30px; border-radius: 20px; margin-top: 20px; text-align: center; }
-        .row { display: flex; gap: 5px; justify-content: center; margin-bottom: 8px; }
+        /* Seating AFAS */
+        .theater-box { background: var(--dark-red); padding: 30px; border-radius: 20px; margin-top: 20px; }
+        .row { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; }
         .seat { width: 20px; height: 20px; background: var(--seat-free); border-radius: 4px; cursor: pointer; }
-        .seat.selected { background: var(--seat-selected); }
-        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; }
-        
-        .rang-btn { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid var(--gold); color: #fff; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .rang-btn:hover { background: var(--gold); color: #000; }
-        .sold-out { color: #ff4444; font-weight: bold; font-size: 24px; margin: 20px 0; }
+        .seat.selected { background: var(--seat-selected) !important; box-shadow: 0 0 10px var(--seat-selected); }
+        .seat.occupied { background: var(--seat-occupied) !important; cursor: not-allowed; opacity: 0.3; }
 
-        /* Admin Tools */
-        .admin-item { background: #111; padding: 15px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .del-btn { background: #ff4444; color: #fff; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
-        
-        .btn-gold { background: var(--gold); color: #000; padding: 15px; border: none; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 20px; }
+        /* Nieuws Systeem */
+        .news-item { background: #111; border: 1px solid #222; border-radius: 10px; overflow: hidden; margin-bottom: 20px; transition: 0.5s; cursor: pointer; }
+        .news-header { display: flex; align-items: center; gap: 20px; padding: 15px; }
+        .news-header img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
+        .news-body { max-height: 0; overflow: hidden; padding: 0 20px; transition: 0.5s; color: #ccc; line-height: 1.6; }
+        .news-item.expanded { border-color: var(--gold); transform: scale(1.02); }
+        .news-item.expanded .news-body { max-height: 1000px; padding: 20px; }
+
+        /* Buttons */
+        .btn-gold { background: var(--gold); color: #000; padding: 15px; border: none; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 15px; border-radius: 5px; }
+        .rang-btn { background: #222; border: 1px solid var(--gold); color: #fff; padding: 15px; margin: 10px 0; width: 100%; cursor: pointer; font-weight: bold; }
+        .rang-btn:hover { background: var(--gold); color: #000; }
     </style>
 </head>
 <body>
@@ -70,7 +69,6 @@
         <div style="font-family:'Playfair Display'; font-size: 22px; color: var(--gold); cursor:pointer;" onclick="closePanel()">STAGE ENTERTAINMENT</div>
         <div class="nav-links">
             <span class="nav-link" onclick="showPage('home')">Musicals</span>
-            <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
             <span class="nav-link" onclick="showPage('news-page')">Nieuws</span>
             <span class="nav-link" onclick="showPage('account-page')" style="color:var(--gold)">Mijn Account</span>
             <button style="background:#8b0000; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;" onclick="showPage('login-page')">ADMIN</button>
@@ -78,59 +76,49 @@
     </nav>
 
     <section id="home" class="page active">
-        <div class="content-wrapper">
-            <div id="shows-cont" class="grid"></div>
-        </div>
+        <div id="shows-cont" class="grid"></div>
     </section>
 
     <div id="side-panel">
-        <button onclick="closePanel()" style="background:none; border:none; color:#fff; font-size:30px; cursor:pointer; float:right;">&times;</button>
+        <button onclick="closePanel()" style="background:none; border:none; color:#fff; font-size:30px; cursor:pointer; position:absolute; top:20px; right:20px;">&times;</button>
         <div id="side-content"></div>
     </div>
 
-    <section id="theaters-page" class="page">
-        <h1>Onze Theaters</h1>
-        <div id="th-cont" class="grid"></div>
-    </section>
-
     <section id="news-page" class="page">
-        <h1>Nieuws</h1>
-        <div id="news-cont" style="display:flex; flex-direction:column; gap:15px;"></div>
+        <h1>Laatste Nieuws</h1><br>
+        <div id="news-cont"></div>
     </section>
 
     <section id="account-page" class="page">
-        <h1>Mijn Tickets</h1>
+        <h1>Mijn Tickets</h1><br>
         <div id="my-tickets-cont"></div>
     </section>
 
     <section id="login-page" class="page">
-        <div style="max-width:350px; margin:0 auto; background:#111; padding:30px; border-radius:10px; border:1px solid var(--gold);">
-            <h2 style="text-align:center; margin-bottom:20px;">Admin Login</h2>
-            <input type="password" id="admin-pass" placeholder="Wachtwoord" style="width:100%; padding:12px; margin-bottom:15px; background:#000; border:1px solid #444; color:#fff;">
+        <div style="max-width:300px; margin:0 auto; background:#111; padding:30px; border-radius:10px;">
+            <input type="password" id="admin-pass" placeholder="Wachtwoord" style="width:100%; padding:10px; margin-bottom:15px;">
             <button class="btn-gold" onclick="checkAdmin()">Inloggen</button>
         </div>
     </section>
 
     <section id="admin-dashboard" class="page">
-        <div style="max-width:800px; margin:0 auto;">
-            <h2 style="margin-bottom:20px;">Beheer Producties</h2>
-            <div style="background:#111; padding:20px; border-radius:10px; margin-bottom:30px;">
-                <select id="adm-type" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff;">
-                    <option value="shows">Musical Toevoegen</option>
-                    <option value="news">Nieuws Toevoegen</option>
-                    <option value="theaters">Theater Toevoegen</option>
-                </select>
-                <input type="text" id="adm-name" placeholder="Naam/Titel" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff;">
-                <input type="text" id="adm-img" placeholder="Foto URL" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff;">
-                <input type="text" id="adm-dates" placeholder="Datums (bv: 12 Maart, 14 Maart, 20 April)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff;">
-                <select id="adm-theater" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff;">
-                    <option value="AFAS Circustheater">AFAS Circustheater</option>
-                    <option value="Efteling Theater">Efteling Theater</option>
-                </select>
-                <textarea id="adm-info" placeholder="Beschrijving" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff; height:100px;"></textarea>
-                <button class="btn-gold" onclick="saveData()">Item Opslaan</button>
-            </div>
-            <div id="admin-lists"></div>
+        <div style="max-width:600px; margin:0 auto; background:#111; padding:20px; border-radius:10px;">
+            <h3>Beheer Producties & Nieuws</h3>
+            <select id="adm-type" style="width:100%; padding:10px; margin:10px 0;">
+                <option value="shows">Musical</option>
+                <option value="news">Nieuwsbericht</option>
+            </select>
+            <input type="text" id="adm-name" placeholder="Titel" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="adm-img" placeholder="Foto URL" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="adm-dates" placeholder="Datums (bv: 10 Feb, 15 Feb)" style="width:100%; padding:10px; margin-bottom:10px;">
+            <select id="adm-theater" style="width:100%; padding:10px; margin-bottom:10px;">
+                <option value="AFAS Circustheater">AFAS Circustheater</option>
+                <option value="Efteling Theater">Efteling Theater</option>
+            </select>
+            <textarea id="adm-info" placeholder="Beschrijving" style="width:100%; padding:10px; height:100px;"></textarea>
+            <button class="btn-gold" onclick="saveData()">Publiceren</button>
+            <hr style="margin:20px 0; opacity:0.2;">
+            <div id="admin-list"></div>
         </div>
     </section>
 
@@ -145,14 +133,13 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
-        let currentMusical = null;
-        let selectedSeats = [];
-        const mySession = "User_" + Math.floor(Math.random() * 9999);
+        let currentM = null;
+        let selectedS = [];
+        const userKey = "Guest_" + Math.floor(Math.random() * 9999);
 
-        // Background transition
         setInterval(() => {
-            const b1 = document.getElementById('bg1'), b2 = document.getElementById('bg2');
-            b1.classList.toggle('active'); b2.classList.toggle('active');
+            document.getElementById('bg1').classList.toggle('active');
+            document.getElementById('bg2').classList.toggle('active');
         }, 8000);
 
         function showPage(id) {
@@ -160,15 +147,13 @@
             document.getElementById(id).classList.add('active');
             closePanel();
             if(id === 'account-page') loadMyTickets();
-            if(id === 'admin-dashboard') loadAdminLists();
+            if(id === 'admin-dashboard') loadAdminList();
         }
 
-        // Database listener
         rtdb.ref('/').on('value', snap => {
             const data = snap.val() || {};
             renderShows(data.shows);
             renderNews(data.news);
-            renderTheaters(data.theaters);
         });
 
         function renderShows(shows) {
@@ -176,136 +161,127 @@
             cont.innerHTML = "";
             if(!shows) return;
             Object.values(shows).forEach(s => {
-                cont.innerHTML += `
-                    <div class="card" onclick="openPanel('${s.id}')">
-                        <img src="${s.img}">
-                    </div>`;
+                cont.innerHTML += `<div class="card" onclick="openPanel('${s.id}')"><img src="${s.img}"></div>`;
             });
         }
 
         function openPanel(id) {
             rtdb.ref('shows/' + id).once('value', snap => {
                 const s = snap.val();
-                currentMusical = s;
-                document.getElementById('shows-cont').classList.add('fade');
+                currentM = s;
+                selectedS = [];
+                document.getElementById('shows-cont').classList.add('blur');
                 const panel = document.getElementById('side-panel');
-                const content = document.getElementById('side-content');
                 panel.classList.add('open');
+                
+                let bookingHTML = s.theater === "AFAS Circustheater" ? 
+                    `<h3>Kies je stoelen</h3><div class="theater-box" id="seat-grid"></div><button class="btn-gold" onclick="bookAFAS()">Bestellen</button>` :
+                    `<h3>Selecteer Rang</h3><div class="theater-box">
+                        <button class="rang-btn" onclick="bookEfteling('Rang I')">RANG I</button>
+                        <button class="rang-btn" onclick="bookEfteling('Rang II')">RANG II</button>
+                        <button class="rang-btn" onclick="bookEfteling('Rang III')">RANG III</button>
+                    </div>`;
 
-                content.innerHTML = `
-                    <h2 style="color:var(--gold); font-size:30px;">${s.name}</h2>
-                    <p style="margin:20px 0; line-height:1.6; color:#ccc;">${s.info}</p>
-                    <p><strong>Locatie:</strong> ${s.theater}</p>
-                    <p><strong>Beschikbare Datums:</strong> ${s.dates || 'Geen datums'}</p>
-                    <div id="booking-area"></div>
+                document.getElementById('side-content').innerHTML = `
+                    <h2 style="color:var(--gold); font-size:28px;">${s.name}</h2>
+                    <p style="margin:15px 0; color:#ccc;">${s.info}</p>
+                    <p><b>Locatie:</b> ${s.theater}</p>
+                    <p><b>Datums:</b> ${s.dates || 'Alle dagen'}</p>
+                    <hr style="margin:20px 0; opacity:0.2;">
+                    ${bookingHTML}
                 `;
-
-                if(s.theater === "AFAS Circustheater") {
-                    renderAFAS(id);
-                } else {
-                    renderEfteling(id);
-                }
+                if(s.theater === "AFAS Circustheater") loadAFASSeats(id);
             });
         }
 
-        function closePanel() {
-            document.getElementById('side-panel').classList.remove('open');
-            document.getElementById('shows-cont').classList.remove('fade');
-        }
-
-        // AFAS SEATING
-        function renderAFAS(showId) {
-            const area = document.getElementById('booking-area');
-            area.innerHTML = `<h3>Kies je stoelen</h3><div class="theater-box" id="seat-grid"></div><button class="btn-gold" onclick="bookAFAS()">Bestellen</button>`;
+        function loadAFASSeats(showId) {
             const grid = document.getElementById('seat-grid');
-            
             rtdb.ref('seats/' + showId).on('value', snap => {
-                const occupied = snap.val() || {};
+                const taken = snap.val() || {};
                 grid.innerHTML = "";
-                let totalFree = 0;
-
-                for(let r=1; r<=7; r++) {
+                for(let r=1; r<=7; r++){
                     const row = document.createElement('div');
                     row.className = "row";
-                    const createBlock = (count, prefix) => {
-                        for(let s=1; s<=count; s++) {
-                            const sid = `${prefix}-R${r}-S${s}`;
+                    const block = (cnt, pref) => {
+                        for(let s=1; s<=cnt; s++){
+                            const id = `${pref}-R${r}-S${s}`;
                             const seat = document.createElement('div');
-                            seat.className = "seat";
-                            if(occupied[sid]) {
-                                seat.classList.add('occupied');
-                            } else {
-                                totalFree++;
+                            seat.className = "seat " + (taken[id] ? "occupied" : "");
+                            if(!taken[id]) {
                                 seat.onclick = () => {
                                     seat.classList.toggle('selected');
-                                    if(selectedSeats.includes(sid)) selectedSeats = selectedSeats.filter(x => x !== sid);
-                                    else selectedSeats.push(sid);
+                                    if(selectedS.includes(id)) selectedS = selectedS.filter(x => x !== id);
+                                    else selectedS.push(id);
                                 };
                             }
                             row.appendChild(seat);
                         }
                     };
-                    createBlock(3, "L"); row.innerHTML += '<div style="width:20px"></div>';
-                    createBlock(8, "C"); row.innerHTML += '<div style="width:20px"></div>';
-                    createBlock(3, "R");
+                    block(3, "L"); row.innerHTML += '<div style="width:15px"></div>';
+                    block(8, "C"); row.innerHTML += '<div style="width:15px"></div>';
+                    block(3, "R");
                     grid.appendChild(row);
                 }
-                if(totalFree === 0) area.innerHTML = '<div class="sold-out">UITVERKOCHT</div>';
             });
         }
 
-        // EFTELING RANGEN
-        function renderEfteling(showId) {
-            const area = document.getElementById('booking-area');
-            area.innerHTML = `
-                <h3>Selecteer Rang</h3>
-                <div class="theater-box">
-                    <button class="rang-btn" onclick="bookRang('Rang I')">RANG I (Goud)</button>
-                    <button class="rang-btn" onclick="bookRang('Rang II')">RANG II (Zilver)</button>
-                    <button class="rang-btn" onclick="bookRang('Rang III')">RANG III (Brons)</button>
-                </div>
-            `;
-        }
-
         function bookAFAS() {
-            if(selectedSeats.length === 0) return alert("Kies eerst stoelen!");
-            const bid = "T-" + Date.now();
-            selectedSeats.forEach(sid => rtdb.ref('seats/' + currentMusical.id + '/' + sid).set(true));
-            rtdb.ref('bookings/' + mySession + '/' + bid).set({
-                musical: currentMusical.name,
-                theater: currentMusical.theater,
-                info: "Stoelen: " + selectedSeats.join(', '),
-                time: new Date().toLocaleString()
-            }).then(() => { alert("Gereserveerd!"); showPage('account-page'); });
+            if(selectedS.length === 0) return alert("Kies eerst stoelen!");
+            selectedS.forEach(id => rtdb.ref('seats/' + currentM.id + '/' + id).set(true));
+            saveTicket(currentM.name, currentM.theater, "Stoelen: " + selectedS.join(', '));
         }
 
-        function bookRang(rang) {
-            const bid = "T-" + Date.now();
-            rtdb.ref('bookings/' + mySession + '/' + bid).set({
-                musical: currentMusical.name,
-                theater: currentMusical.theater,
-                info: rang,
-                time: new Date().toLocaleString()
-            }).then(() => { alert("Gereserveerd voor " + rang); showPage('account-page'); });
+        function bookEfteling(rang) {
+            saveTicket(currentM.name, currentM.theater, rang);
+        }
+
+        function saveTicket(name, th, info) {
+            const id = "T-" + Date.now();
+            rtdb.ref('bookings/' + userKey + '/' + id).set({
+                name, theater: th, info, date: new Date().toLocaleString()
+            }).then(() => { alert("Gereserveerd!"); showPage('account-page'); });
         }
 
         function loadMyTickets() {
             const cont = document.getElementById('my-tickets-cont');
-            rtdb.ref('bookings/' + mySession).once('value', snap => {
+            rtdb.ref('bookings/' + userKey).once('value', snap => {
                 const data = snap.val();
-                if(!data) { cont.innerHTML = "Je hebt nog geen tickets."; return; }
+                if(!data) { cont.innerHTML = "Geen tickets gevonden."; return; }
                 cont.innerHTML = Object.entries(data).map(([id, t]) => `
-                    <div class="admin-item" style="border-left:5px solid var(--gold)">
-                        <div>
-                            <strong>${t.musical}</strong><br>
-                            <small>${t.theater} - ${t.info}</small>
-                        </div>
+                    <div style="background:#111; padding:15px; border-left:4px solid var(--gold); margin-bottom:10px;">
+                        <b>${t.name}</b><br><small>${t.theater} - ${t.info}</small>
                     </div>
                 `).join('');
             });
         }
 
-        // ADMIN LOGIC
+        function renderNews(news) {
+            const cont = document.getElementById('news-cont');
+            cont.innerHTML = "";
+            if(!news) return;
+            Object.values(news).forEach(n => {
+                const item = document.createElement('div');
+                item.className = "news-item";
+                item.onclick = () => {
+                    item.classList.toggle('expanded');
+                    document.getElementById('news-cont').classList.toggle('blur-others');
+                };
+                item.innerHTML = `
+                    <div class="news-header">
+                        <img src="${n.img || 'https://via.placeholder.com/80'}">
+                        <h3>${n.name}</h3>
+                    </div>
+                    <div class="news-body">${n.info}</div>
+                `;
+                cont.appendChild(item);
+            });
+        }
+
+        function closePanel() {
+            document.getElementById('side-panel').classList.remove('open');
+            document.getElementById('shows-cont').classList.remove('blur');
+        }
+
         function checkAdmin() {
             if(document.getElementById('admin-pass').value === "Virtual2025") showPage('admin-dashboard');
         }
@@ -313,47 +289,34 @@
         function saveData() {
             const type = document.getElementById('adm-type').value;
             const id = Date.now();
-            const data = {
-                id: id,
+            rtdb.ref(type + '/' + id).set({
+                id,
                 name: document.getElementById('adm-name').value,
                 img: document.getElementById('adm-img').value,
                 info: document.getElementById('adm-info').value,
                 theater: document.getElementById('adm-theater').value,
                 dates: document.getElementById('adm-dates').value
-            };
-            rtdb.ref(type + '/' + id).set(data).then(() => { alert("Toegevoegd!"); loadAdminLists(); });
+            }).then(() => { alert("Succes!"); loadAdminList(); });
         }
 
-        function loadAdminLists() {
-            const cont = document.getElementById('admin-lists');
-            cont.innerHTML = "<h3>Huidige Items (Verwijderen)</h3>";
-            ['shows', 'news', 'theaters'].forEach(type => {
+        function loadAdminList() {
+            const cont = document.getElementById('admin-list');
+            cont.innerHTML = "<h4>Verwijderen</h4>";
+            ['shows', 'news'].forEach(type => {
                 rtdb.ref(type).once('value', snap => {
                     if(!snap.val()) return;
                     Object.values(snap.val()).forEach(item => {
-                        cont.innerHTML += `
-                            <div class="admin-item">
-                                <span>[${type}] ${item.name}</span>
-                                <button class="del-btn" onclick="deleteItem('${type}', '${item.id}')">Verwijderen</button>
-                            </div>
-                        `;
+                        cont.innerHTML += `<div style="display:flex; justify-content:space-between; margin:5px 0;">
+                            <span>${item.name}</span>
+                            <button onclick="deleteItem('${type}', '${item.id}')" style="color:red; background:none; border:none; cursor:pointer;">X</button>
+                        </div>`;
                     });
                 });
             });
         }
 
         function deleteItem(type, id) {
-            if(confirm("Zeker weten?")) rtdb.ref(type + '/' + id).remove().then(() => loadAdminLists());
-        }
-
-        // Andere renders
-        function renderNews(news) {
-            const cont = document.getElementById('news-cont');
-            cont.innerHTML = news ? Object.values(news).map(n => `<div class="admin-item"><strong>${n.name}</strong><br>${n.info}</div>`).join('') : "";
-        }
-        function renderTheaters(th) {
-            const cont = document.getElementById('th-cont');
-            cont.innerHTML = th ? Object.values(th).map(t => `<div class="card"><img src="${t.img}"><div style="padding:10px">${t.name}</div></div>`).join('') : "";
+            if(confirm("Verwijderen?")) rtdb.ref(type + '/' + id).remove().then(() => loadAdminList());
         }
 
         showPage('home');
