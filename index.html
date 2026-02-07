@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stage Entertainment | Professional System</title>
+    <title>Stage Entertainment | Premium Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,109 +18,143 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.3); }
-        .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        /* --- VIDEO BACKGROUND --- */
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.4); }
+        .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 
-        nav { background: rgba(0,0,0,0.9); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid #222; }
-        .logo { font-family: 'Playfair Display', serif; font-size: 24px; cursor: pointer; }
-        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: bold; margin-left: 20px; }
-        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
+        /* --- NAVIGATIE --- */
+        nav { background: rgba(0,0,0,0.95); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 26px; cursor: pointer; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 13px; font-weight: 700; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-blue); }
+        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        .page { display: none; padding: 120px 5% 50px; min-height: 100vh; }
+        /* --- PAGINA'S --- */
+        .page { display: none; padding: 130px 5% 50px; min-height: 100vh; }
         .page.active { display: block; }
 
-        /* Login Scherm */
-        .login-box { max-width: 400px; margin: 100px auto; background: rgba(20,20,20,0.95); padding: 40px; border-radius: 8px; border: 1px solid var(--accent-blue); text-align: center; }
-        
-        /* Grid & Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .card { background: rgba(20,20,20,0.9); border: 1px solid #333; border-radius: 8px; overflow: hidden; cursor: pointer; }
-        .card img { width: 100%; height: 350px; object-fit: cover; }
-        .card-info { padding: 20px; }
+        /* --- SHOW CARDS MET BLUR & INFO --- */
+        .section-title { text-align: center; margin-bottom: 50px; font-size: 3.5rem; font-family: 'Playfair Display', serif; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
 
-        /* Seating Chart */
-        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 30px; background: #050505; border-radius: 10px; width: fit-content; }
-        .row { display: flex; gap: 6px; margin-bottom: 6px; }
-        .seat { width: 22px; height: 25px; background: var(--seat-free); border-radius: 4px 4px 8px 8px; cursor: pointer; }
-        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 10px var(--seat-selected); }
-        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.3; }
+        .card { 
+            position: relative; 
+            height: 450px; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.4s ease;
+        }
 
-        /* Forms */
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 4px; }
-        .btn-action { background: var(--white); color: #000; padding: 15px; border: none; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 10px; }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.4s ease; }
+
+        .card-info-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 35, 71, 0.7);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+
+        .card:hover img { filter: blur(8px) brightness(0.5); }
+        .card:hover .card-info-overlay { opacity: 1; }
+        .card:hover { transform: translateY(-10px); }
+
+        .card-info-overlay h3 { font-size: 24px; margin-bottom: 15px; font-family: 'Playfair Display', serif; }
+        .card-info-overlay p { font-size: 14px; line-height: 1.6; color: #ddd; }
+
+        /* --- SEATING CHART --- */
+        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 40px; background: rgba(5,5,5,0.8); border-radius: 15px; border: 1px solid var(--accent-blue); width: fit-content; }
+        .seat { width: 24px; height: 28px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; transition: 0.2s; }
+        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 12px var(--seat-selected); }
+        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.2; }
+        .stage-glow { width: 450px; height: 5px; background: var(--accent-blue); margin: 0 auto 50px; border-radius: 50%; box-shadow: 0 0 20px var(--accent-blue); }
+
+        /* --- FORMS --- */
+        .form-container { max-width: 650px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 10px; border: 1px solid #222; }
+        input, textarea { width: 100%; padding: 15px; margin: 12px 0; background: #000; border: 1px solid #333; color: white; border-radius: 5px; font-family: inherit; }
+        .btn-gold { background: #c5a059; color: #000; padding: 15px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="video-bg">
-        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0" frameborder="0"></iframe>
+        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0&showinfo=0" frameborder="0"></iframe>
     </div>
 
     <nav>
         <div class="logo" onclick="showPage('home')">STAGE</div>
-        <div>
+        <div class="nav-links">
             <span class="nav-link" onclick="showPage('home')">Shows</span>
             <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
             <span class="nav-link" onclick="showPage('news-page')">Nieuws</span>
             <span class="nav-link" onclick="showPage('account')">👤 My Account</span>
-            <button class="beheer-btn" onclick="showPage('login-page')" style="margin-left:20px;">BEHEER</button>
+            <button class="beheer-btn" onclick="showPage('login-page')">BEHEER</button>
         </div>
     </nav>
 
+    <section id="home" class="page active">
+        <h1 class="section-title">Beleef de magie</h1>
+        <div class="grid" id="shows-cont"></div>
+    </section>
+
     <section id="login-page" class="page">
-        <div class="login-box">
-            <h2>Beheer Inloggen</h2>
+        <div class="form-container" style="max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 20px;">Beheer Toegang</h2>
             <input type="password" id="admin-pass" placeholder="Wachtwoord">
-            <button class="btn-action" onclick="checkAdmin()">Inloggen</button>
+            <button class="btn-gold" onclick="checkAdmin()">Inloggen</button>
         </div>
     </section>
 
     <section id="admin-dashboard" class="page">
-        <div style="max-width: 800px; margin: 0 auto; background: #111; padding: 30px; border-radius: 8px;">
-            <h2>Beheer Paneel</h2>
-            <hr style="margin: 20px 0; opacity: 0.2;">
+        <div class="form-container">
+            <h2>Beheer Dashboard</h2>
+            <hr style="opacity: 0.1; margin: 20px 0;">
             
             <h3>Nieuwe Show Toevoegen</h3>
-            <input type="text" id="adm-name" placeholder="Naam van de musical">
-            <input type="text" id="adm-img" placeholder="Link naar PNG/JPG poster">
-            <textarea id="adm-dates" placeholder="Tijden (gescheiden door komma, bijv: 10 Feb 20:00, 12 Feb 14:00)"></textarea>
-            <button class="btn-action" onclick="addShow()">Show Publiceren</button>
+            <input type="text" id="adm-name" placeholder="Naam Musical">
+            <input type="text" id="adm-img" placeholder="Poster Link (PNG/JPG)">
+            <textarea id="adm-info" placeholder="Show informatie (verschijnt bij hover)"></textarea>
+            <textarea id="adm-dates" placeholder="Tijden (bv: 12 Maart 20:00, 15 Maart 14:00)"></textarea>
+            <button class="btn-gold" onclick="addShow()">Opslaan & Publiceren</button>
 
-            <h3 style="margin-top:30px;">Theater Toevoegen</h3>
+            <h3 style="margin-top: 40px;">Theater Toevoegen</h3>
             <input type="text" id="adm-th-name" placeholder="Naam Theater">
-            <button class="btn-action" onclick="addTheater()">Theater Opslaan</button>
+            <button class="btn-gold" onclick="addTheater()">Opslaan</button>
 
-            <h3 style="margin-top:30px;">Nieuws Posten</h3>
-            <textarea id="adm-news" placeholder="Bericht..."></textarea>
-            <button class="btn-action" onclick="addNews()">Bericht Posten</button>
+            <h3 style="margin-top: 40px;">Nieuws Posten</h3>
+            <textarea id="adm-news" placeholder="Nieuwsbericht..."></textarea>
+            <button class="btn-gold" onclick="addNews()">Posten</button>
             
-            <button onclick="showPage('home')" style="margin-top:20px; color: gray; background:none; border:none; cursor:pointer;">Uitloggen</button>
+            <button onclick="showPage('home')" style="margin-top:30px; color: gray; background:none; border:none; cursor:pointer;">Dashboard Sluiten</button>
         </div>
     </section>
 
-    <section id="home" class="page active"><div class="grid" id="shows-cont"></div></section>
-    <section id="theaters-page" class="page"><div class="grid" id="th-cont"></div></section>
-    <section id="news-page" class="page"><div class="grid" id="news-cont"></div></section>
-    <section id="account" class="page"><h2>Mijn Tickets</h2><div id="ticket-cont" style="margin-top:20px;"></div></section>
+    <section id="theaters-page" class="page"><h2>Onze Theaters</h2><div class="grid" id="th-cont" style="margin-top:30px;"></div></section>
+    <section id="news-page" class="page"><h2>Laatste Nieuws</h2><div class="grid" id="news-cont" style="margin-top:30px;"></div></section>
+    <section id="account" class="page"><h2>Mijn Bestellingen</h2><div id="ticket-cont" style="margin-top:30px;"></div></section>
 
-    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list" style="margin-top:20px;"></div></section>
+    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list" style="margin-top:30px;"></div></section>
     <section id="seating-page" class="page">
         <h2 id="seat-head" style="text-align:center;"></h2>
-        <div style="width:400px; height:2px; background:var(--accent-blue); margin: 40px auto; box-shadow: 0 0 10px var(--accent-blue);"></div>
+        <div class="stage-glow"></div>
         <div class="seating-wrapper">
             <div id="l-wing" class="section"></div>
             <div id="c-pit" class="section"></div>
             <div id="r-wing" class="section"></div>
         </div>
-        <button class="btn-action" style="max-width:300px; margin: 20px auto; display:block;" onclick="book()">Bestellen</button>
+        <button class="btn-gold" style="max-width:300px; margin: 30px auto; display:block;" onclick="book()">Reservering Bevestigen</button>
     </section>
 
     <script>
         let db = {
-            shows: JSON.parse(localStorage.getItem('st_shows')) || [],
-            theaters: JSON.parse(localStorage.getItem('st_theaters')) || [],
-            news: JSON.parse(localStorage.getItem('st_news')) || [],
-            bookings: JSON.parse(localStorage.getItem('st_bookings')) || []
+            shows: JSON.parse(localStorage.getItem('st_shows_v2')) || [],
+            theaters: JSON.parse(localStorage.getItem('st_theaters_v2')) || [],
+            news: JSON.parse(localStorage.getItem('st_news_v2')) || [],
+            bookings: JSON.parse(localStorage.getItem('st_bookings_v2')) || []
         };
 
         let cur = { show: null, date: null, selected: [] };
@@ -128,6 +162,7 @@
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
             if(id === 'home') renderHome();
             if(id === 'theaters-page') renderTheaters();
             if(id === 'news-page') renderNews();
@@ -135,33 +170,52 @@
         }
 
         function checkAdmin() {
-            if(document.getElementById('admin-pass').value === "VirtualEntertainment2025!") showPage('admin-dashboard');
-            else alert("Fout!");
+            if(document.getElementById('admin-pass').value === "VirtualEntertainment2025!") {
+                showPage('admin-dashboard');
+                document.getElementById('admin-pass').value = "";
+            } else { alert("Toegang geweigerd."); }
         }
 
         function addShow() {
             const name = document.getElementById('adm-name').value;
             const img = document.getElementById('adm-img').value;
+            const info = document.getElementById('adm-info').value;
             const dates = document.getElementById('adm-dates').value.split(',').map(d => d.trim());
-            db.shows.push({ id: Date.now(), name, img, dates });
-            save(); alert("Show staat online!");
+            if(!name || !img) return;
+            db.shows.push({ id: Date.now(), name, img, info, dates });
+            save(); alert("Musical succesvol toegevoegd!");
+            document.getElementById('adm-name').value = "";
+            document.getElementById('adm-img').value = "";
+            document.getElementById('adm-info').value = "";
+            document.getElementById('adm-dates').value = "";
         }
 
         function addTheater() {
             db.theaters.push({ name: document.getElementById('adm-th-name').value });
-            save(); alert("Theater toegevoegd!");
+            save(); alert("Theater opgeslagen.");
+            document.getElementById('adm-th-name').value = "";
         }
 
         function addNews() {
             db.news.push({ text: document.getElementById('adm-news').value, date: new Date().toLocaleDateString() });
-            save(); alert("Nieuws gepost!");
+            save(); alert("Nieuws gepost.");
+            document.getElementById('adm-news').value = "";
         }
 
         function renderHome() {
-            document.getElementById('shows-cont').innerHTML = db.shows.map(s => `
+            const cont = document.getElementById('shows-cont');
+            if(db.shows.length === 0) {
+                cont.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color: #555;'>Er zijn momenteel geen actieve shows.</p>";
+                return;
+            }
+            cont.innerHTML = db.shows.map(s => `
                 <div class="card" onclick="openCal(${s.id})">
                     <img src="${s.img}">
-                    <div class="card-info"><h3>${s.name}</h3></div>
+                    <div class="card-info-overlay">
+                        <h3>${s.name}</h3>
+                        <p>${s.info || 'Geen extra informatie beschikbaar.'}</p>
+                        <span style="margin-top:20px; font-weight:bold; color:var(--accent-blue);">KLIK VOOR TICKETS</span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -170,14 +224,17 @@
             cur.show = db.shows.find(s => s.id === id);
             document.getElementById('cal-head').innerText = cur.show.name;
             document.getElementById('cal-list').innerHTML = cur.show.dates.map(d => `
-                <div style="background:#111; padding:20px; margin-bottom:10px; cursor:pointer;" onclick="openSeats('${d}')">${d}</div>
+                <div style="background:rgba(255,255,255,0.05); padding:25px; margin-bottom:15px; cursor:pointer; border-radius:8px; border:1px solid #222; transition:0.3s;" 
+                     onclick="openSeats('${d}')" onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor='#222'">
+                    <strong>${d}</strong>
+                </div>
             `).join('');
             showPage('calendar-page');
         }
 
         function openSeats(date) {
             cur.date = date; cur.selected = [];
-            document.getElementById('seat-head').innerText = `${cur.show.name} - ${date}`;
+            document.getElementById('seat-head').innerText = `${cur.show.name} | ${date}`;
             const taken = db.bookings.find(b => b.sid === cur.show.id && b.date === date)?.seats || [];
             
             genSection('l-wing', 3, 7, taken, 'L');
@@ -207,25 +264,32 @@
         }
 
         function book() {
-            if(cur.selected.length === 0) return;
+            if(cur.selected.length === 0) { alert("Selecteer eerst uw stoelen."); return; }
             let b = db.bookings.find(x => x.sid === cur.show.id && x.date === cur.date);
             if(b) b.seats.push(...cur.selected);
             else db.bookings.push({ sid: cur.show.id, sname: cur.show.name, date: cur.date, seats: [...cur.selected] });
-            save(); alert("Gereserveerd!"); showPage('account');
+            save(); alert("Uw reservering is bevestigd!"); showPage('account');
         }
 
         function renderAccount() {
             document.getElementById('ticket-cont').innerHTML = db.bookings.map(b => `
-                <div style="background:#111; padding:15px; border-left:4px solid var(--accent-blue); margin-bottom:10px;">
-                    <h4>${b.sname}</h4><small>${b.date}</small><br>Stoelen: ${b.seats.join(', ')}
+                <div style="background:#0a0a0a; padding:20px; border-left:5px solid var(--accent-blue); margin-bottom:15px; border-radius:4px;">
+                    <h4 style="font-size:18px;">${b.sname}</h4>
+                    <small style="color:#777;">Datum: ${b.date}</small><br>
+                    <span style="color:var(--accent-blue); font-weight:bold;">Stoelen: ${b.seats.join(', ')}</span>
                 </div>
             `).join('');
         }
 
-        function renderNews() { document.getElementById('news-cont').innerHTML = db.news.map(n => `<div class="card" style="padding:20px;"><small>${n.date}</small><p>${n.text}</p></div>`).join(''); }
-        function renderTheaters() { document.getElementById('th-cont').innerHTML = db.theaters.map(t => `<div class="card" style="padding:20px;"><h3>${t.name}</h3></div>`).join(''); }
+        function renderNews() { document.getElementById('news-cont').innerHTML = db.news.map(n => `<div class="card" style="padding:25px; height:auto; background:#0a0a0a;"><small style="color:var(--accent-blue);">${n.date}</small><p style="margin-top:15px;">${n.text}</p></div>`).join(''); }
+        function renderTheaters() { document.getElementById('th-cont').innerHTML = db.theaters.map(t => `<div class="card" style="padding:25px; height:auto; background:#0a0a0a; text-align:center;"><h3>${t.name}</h3></div>`).join(''); }
 
-        function save() { localStorage.setItem('st_shows', JSON.stringify(db.shows)); localStorage.setItem('st_theaters', JSON.stringify(db.theaters)); localStorage.setItem('st_news', JSON.stringify(db.news)); localStorage.setItem('st_bookings', JSON.stringify(db.bookings)); }
+        function save() { 
+            localStorage.setItem('st_shows_v2', JSON.stringify(db.shows)); 
+            localStorage.setItem('st_theaters_v2', JSON.stringify(db.theaters)); 
+            localStorage.setItem('st_news_v2', JSON.stringify(db.news)); 
+            localStorage.setItem('st_bookings_v2', JSON.stringify(db.bookings)); 
+        }
         
         showPage('home');
     </script>
