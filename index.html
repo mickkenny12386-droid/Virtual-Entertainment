@@ -16,69 +16,95 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; }
+        body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        nav { background: rgba(0,0,0,0.95); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        /* Video Background */
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.2); }
+        .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+
+        /* Nav */
+        nav { background: rgba(0,0,0,0.9); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .logo { font-family: 'Playfair Display', serif; font-size: 26px; cursor: pointer; letter-spacing: 2px; }
         .nav-links { display: flex; gap: 25px; align-items: center; }
-        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: 700; }
-        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 4px; font-size: 11px; }
+        .nav-link { cursor: pointer; text-transform: uppercase; font-size: 12px; font-weight: 700; color: #ddd; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent-blue); }
+        .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
+        /* Pages */
         .page { display: none; padding: 130px 5% 50px; min-height: 100vh; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Grid & Cards */
         .section-title { text-align: center; margin-bottom: 50px; font-size: 3.5rem; font-family: 'Playfair Display', serif; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
-        .card { position: relative; height: 450px; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; }
+        .card { position: relative; height: 450px; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; transition: 0.4s; }
         .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card-info-overlay { position: absolute; inset: 0; background: rgba(0, 35, 71, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; opacity: 0; transition: 0.4s; backdrop-filter: blur(8px); }
-        .card:hover img { filter: blur(10px); transform: scale(1.05); }
+        .card:hover img { filter: blur(5px); transform: scale(1.05); }
         .card:hover .card-info-overlay { opacity: 1; }
 
+        /* Seating (3-8-3) */
         .seating-wrapper { display: flex; justify-content: center; align-items: flex-start; gap: 40px; margin: 40px auto; padding: 40px; background: rgba(10,10,10,0.9); border-radius: 15px; border: 1px solid var(--stage-blue); width: fit-content; }
         .section { display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 8px; }
-        .seat { width: 22px; height: 26px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; transition: 0.2s; }
+        .seat { width: 22px; height: 26px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.05); }
         .seat.selected { background: var(--seat-selected); box-shadow: 0 0 12px var(--seat-selected); }
-        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.3; }
+        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.2; }
         .stage-line { width: 500px; height: 4px; background: var(--accent-blue); margin: 0 auto 40px; box-shadow: 0 0 20px var(--accent-blue); border-radius: 2px; }
 
-        .admin-box { max-width: 600px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 12px; border: 1px solid #222; }
-        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 5px; }
-        .btn-gold { background: #c5a059; color: #000; padding: 15px; border: none; font-weight: 700; cursor: pointer; width: 100%; border-radius: 4px; text-transform: uppercase; }
-        .manage-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 12px; margin-bottom: 8px; border-radius: 5px; }
+        /* Admin Dashboard */
+        .admin-box { max-width: 700px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 12px; border: 1px solid #222; }
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 5px; font-family: inherit; }
+        .btn-gold { background: #c5a059; color: #000; padding: 15px; border: none; font-weight: 700; cursor: pointer; width: 100%; border-radius: 4px; text-transform: uppercase; margin-top: 10px; }
+        .manage-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 12px; margin-bottom: 8px; border-radius: 5px; border-left: 3px solid var(--accent-blue); }
+        .del-btn { background: #ff4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <div class="video-bg">
+        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0" frameborder="0"></iframe>
+    </div>
 
     <nav>
         <div class="logo" onclick="showPage('home')">STAGE</div>
         <div class="nav-links">
             <span class="nav-link" onclick="showPage('home')">Shows</span>
-            <span class="nav-link" onclick="showPage('account')">My Account</span>
+            <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
+            <span class="nav-link" onclick="showPage('news-page')">News</span>
+            <span class="nav-link" onclick="showPage('account')">👤 My Account</span>
             <button class="beheer-btn" onclick="showPage('login-page')">ADMIN</button>
         </div>
     </nav>
 
-    <section id="home" class="page active"><h1 class="section-title">Live Shows</h1><div class="grid" id="shows-cont"></div></section>
-
-    <section id="admin-dashboard" class="page">
-        <div class="admin-box">
-            <h2>Add Global Show</h2>
-            <input type="text" id="adm-name" placeholder="Show Name">
-            <input type="text" id="adm-img" placeholder="Poster URL (PNG)">
-            <textarea id="adm-info" placeholder="Description"></textarea>
-            <input type="text" id="adm-dates" placeholder="Dates (e.g. March 1, March 5)">
-            <button class="btn-gold" onclick="addShow()">Publish Live</button>
-            <div id="manage-list" style="margin-top:20px;"></div>
+    <section id="home" class="page active"><h1 class="section-title">Now Playing</h1><div class="grid" id="shows-cont"></div></section>
+    
+    <section id="login-page" class="page">
+        <div class="admin-box" style="max-width:350px; text-align:center;">
+            <h2>Admin Access</h2>
+            <input type="password" id="admin-pass" placeholder="Password">
+            <button class="btn-gold" onclick="checkAdmin()">Login</button>
         </div>
     </section>
 
-    <section id="login-page" class="page">
-        <div class="admin-box" style="max-width:350px; text-align:center;">
-            <h2>Admin Login</h2>
-            <input type="password" id="admin-pass">
-            <button class="btn-gold" onclick="checkAdmin()">Login</button>
+    <section id="admin-dashboard" class="page">
+        <div class="admin-box">
+            <h2>Live Management</h2>
+            <hr style="opacity:0.1; margin:20px 0;">
+            <h3>Add New Show</h3>
+            <input type="text" id="adm-name" placeholder="Musical Name">
+            <input type="text" id="adm-img" placeholder="Poster Image Link (URL)">
+            <textarea id="adm-info" placeholder="Description"></textarea>
+            <input type="text" id="adm-dates" placeholder="Dates (e.g. 15 March 20:00, 16 March 14:00)">
+            <button class="btn-gold" onclick="addShow()">Publish to World</button>
+            <div id="manage-shows" style="margin-top:20px;"></div>
+
+            <h3 style="margin-top:40px;">Theaters & News</h3>
+            <input type="text" id="adm-th-name" placeholder="Theater Name">
+            <button class="btn-gold" onclick="addTheater()">Save Theater</button>
+            <textarea id="adm-news" style="margin-top:20px;" placeholder="News update text..."></textarea>
+            <button class="btn-gold" onclick="addNews()">Post News</button>
         </div>
     </section>
 
@@ -93,10 +119,13 @@
         <button class="btn-gold" style="max-width:300px; display:block; margin: 30px auto;" onclick="book()">Confirm Global Booking</button>
     </section>
 
-    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list"></div></section>
-    <section id="account" class="page"><h2>My Private Tickets</h2><div id="ticket-cont"></div></section>
+    <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list" style="margin-top:30px;"></div></section>
+    <section id="account" class="page"><h2>My Tickets</h2><div id="ticket-cont" style="margin-top:20px;"></div></section>
+    <section id="theaters-page" class="page"><h2>Our Theaters</h2><div class="grid" id="th-cont"></div></section>
+    <section id="news-page" class="page"><h2>Latest Updates</h2><div class="grid" id="news-cont"></div></section>
 
     <script>
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAS8qIsJTEznHjCOjaP_XzsFzvIryoes18",
             authDomain: "vrtrtr-b9978.firebaseapp.com",
@@ -108,17 +137,17 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
-        let globalShows = [];
-        let globalBookings = {};
+        let dbState = { shows: [], theaters: [], news: [], bookings: {} };
         let cur = { show: null, date: null, selected: [] };
 
-        // Listen for global changes
+        // SYNC DATA
         rtdb.ref('/').on('value', (snapshot) => {
-            const data = snapshot.val();
-            globalShows = data?.shows ? Object.values(data.shows) : [];
-            globalBookings = data?.bookings || {};
-            renderHome();
-            if(document.getElementById('admin-dashboard').classList.contains('active')) renderAdmin();
+            const data = snapshot.val() || {};
+            dbState.shows = data.shows ? Object.values(data.shows) : [];
+            dbState.theaters = data.theaters ? Object.values(data.theaters) : [];
+            dbState.news = data.news ? Object.values(data.news) : [];
+            dbState.bookings = data.bookings || {};
+            renderAll();
         });
 
         function showPage(id) {
@@ -131,36 +160,46 @@
             if(document.getElementById('admin-pass').value === "VirtualEntertainment2025!") showPage('admin-dashboard');
         }
 
+        // DATABASE ACTIONS
         function addShow() {
             const id = Date.now();
-            const show = {
-                id,
-                name: document.getElementById('adm-name').value,
+            rtdb.ref('shows/' + id).set({
+                id, name: document.getElementById('adm-name').value,
                 img: document.getElementById('adm-img').value,
                 info: document.getElementById('adm-info').value,
                 dates: document.getElementById('adm-dates').value.split(',').map(d => d.trim())
-            };
-            rtdb.ref('shows/' + id).set(show);
+            });
+        }
+        function addTheater() {
+            const id = Date.now();
+            rtdb.ref('theaters/' + id).set({ id, name: document.getElementById('adm-th-name').value });
+        }
+        function addNews() {
+            const id = Date.now();
+            rtdb.ref('news/' + id).set({ id, text: document.getElementById('adm-news').value, date: new Date().toLocaleDateString() });
         }
 
-        function renderHome() {
-            document.getElementById('shows-cont').innerHTML = globalShows.map(s => `
+        function renderAll() {
+            document.getElementById('shows-cont').innerHTML = dbState.shows.map(s => `
                 <div class="card" onclick="openCal(${s.id})">
                     <img src="${s.img}">
                     <div class="card-info-overlay">
                         <h3>${s.name}</h3>
                         <p>${s.info}</p>
-                        <strong>GET TICKETS</strong>
+                        <strong style="color:var(--accent-blue);">SEE TIMES</strong>
                     </div>
                 </div>
             `).join('');
+            document.getElementById('th-cont').innerHTML = dbState.theaters.map(t => `<div class="card" style="padding:20px; height:auto;"><h3>${t.name}</h3></div>`).join('');
+            document.getElementById('news-cont').innerHTML = dbState.news.map(n => `<div class="card" style="padding:20px; height:auto;"><small>${n.date}</small><p>${n.text}</p></div>`).join('');
+            document.getElementById('manage-shows').innerHTML = dbState.shows.map(s => `<div class="manage-item">${s.name} <button class="del-btn" onclick="rtdb.ref('shows/${s.id}').remove()">X</button></div>`).join('');
         }
 
         function openCal(id) {
-            cur.show = globalShows.find(s => s.id === id);
+            cur.show = dbState.shows.find(s => s.id === id);
             document.getElementById('cal-head').innerText = cur.show.name;
             document.getElementById('cal-list').innerHTML = cur.show.dates.map(d => `
-                <div style="background:#111; padding:20px; margin:10px 0; cursor:pointer;" onclick="openSeats('${d}')">${d}</div>
+                <div style="background:rgba(255,255,255,0.05); padding:20px; margin-bottom:10px; cursor:pointer; border-radius:5px; border: 1px solid #333;" onclick="openSeats('${d}')">${d}</div>
             `).join('');
             showPage('calendar-page');
         }
@@ -169,8 +208,7 @@
             cur.date = date; cur.selected = [];
             document.getElementById('seat-head').innerText = `${cur.show.name} | ${date}`;
             const key = `${cur.show.id}_${date.replace(/\s/g, '_')}`;
-            const booked = globalBookings[key] || [];
-            
+            const booked = dbState.bookings[key] || [];
             genSection('l-wing', 3, 7, booked, 'L');
             genSection('c-pit', 8, 7, booked, 'C');
             genSection('r-wing', 3, 7, booked, 'R');
@@ -201,28 +239,26 @@
         function book() {
             if(!cur.selected.length) return;
             const key = `${cur.show.id}_${cur.date.replace(/\s/g, '_')}`;
-            const existing = globalBookings[key] || [];
+            const existing = dbState.bookings[key] || [];
+            
+            // Firebase update
             rtdb.ref('bookings/' + key).set([...existing, ...cur.selected]);
 
-            let myAcc = JSON.parse(localStorage.getItem('my_acc')) || [];
+            // Local account update
+            let myAcc = JSON.parse(localStorage.getItem('my_live_acc')) || [];
             myAcc.push({ name: cur.show.name, date: cur.date, seats: cur.selected });
-            localStorage.setItem('my_acc', JSON.stringify(myAcc));
+            localStorage.setItem('my_live_acc', JSON.stringify(myAcc));
             
+            alert("Booking Saved Globally!");
             showPage('account');
         }
 
         function renderAccount() {
-            const myAcc = JSON.parse(localStorage.getItem('my_acc')) || [];
+            const myAcc = JSON.parse(localStorage.getItem('my_live_acc')) || [];
             document.getElementById('ticket-cont').innerHTML = myAcc.map(b => `
-                <div style="background:#111; padding:20px; border-left:4px solid #00a3e0; margin-bottom:10px;">
+                <div style="background:rgba(255,255,255,0.05); padding:20px; border-left:4px solid var(--accent-blue); margin-bottom:10px;">
                     <h4>${b.name}</h4><p>${b.date}</p><strong>Seats: ${b.seats.join(', ')}</strong>
                 </div>
-            `).join('');
-        }
-
-        function renderAdmin() {
-            document.getElementById('manage-list').innerHTML = globalShows.map(s => `
-                <div class="manage-item">${s.name} <button class="beheer-btn" onclick="rtdb.ref('shows/${s.id}').remove()">Delete</button></div>
             `).join('');
         }
 
