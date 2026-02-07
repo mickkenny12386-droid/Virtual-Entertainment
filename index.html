@@ -18,7 +18,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        /* YouTube Background */
+        /* Achtergrond Video */
         .video-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none; overflow: hidden;
@@ -40,10 +40,9 @@
         .page { display: none; padding: 120px 5% 50px; min-height: 100vh; }
         .page.active { display: block; }
 
-        /* Grid & Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: rgba(0,0,0,0.7); border-radius: 12px; overflow: hidden; border: 2px solid #222; cursor: pointer; transition: 0.4s; }
-        .card:hover { border-color: var(--main-blue); }
+        .card { background: rgba(0,0,0,0.7); border-radius: 12px; overflow: hidden; border: 2px solid #222; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--main-blue); transform: translateY(-5px); }
         .card img { width: 100%; height: 350px; object-fit: cover; }
 
         /* Side Panel */
@@ -54,17 +53,21 @@
         }
         #side-panel.open { width: 500px; opacity: 1; padding: 100px 40px 40px; }
 
-        /* AFAS Seating Chart FIX */
-        .theater-box { background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; border: 1px solid var(--main-blue); margin-top: 15px; }
-        .row { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; position: relative; z-index: 10; }
-        .seat { width: 22px; height: 22px; background: var(--seat-free); border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        /* AFAS SEATING CHART */
+        .theater-box { background: rgba(0,0,0,0.9); padding: 25px; border-radius: 15px; border: 2px solid var(--main-blue); margin-top: 15px; }
+        .row { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; position: relative; }
+        .seat { width: 22px; height: 22px; background: var(--seat-free); border-radius: 4px; cursor: pointer; position: relative; z-index: 50; }
         .seat.selected { background: var(--seat-selected) !important; box-shadow: 0 0 10px var(--seat-selected); }
         .seat.occupied { background: var(--seat-occupied) !important; cursor: not-allowed; opacity: 0.4; }
-        
-        #timer-display { color: #ffcc00; font-weight: bold; text-align: center; margin-bottom: 10px; }
 
+        /* EFTELING RANG */
+        .rang-row { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333; }
+        .btn-count { background: var(--main-blue); color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+        /* ADMIN & INPUTS */
         .btn-blue { background: var(--main-blue); color: #fff; padding: 15px; border: none; width: 100%; cursor: pointer; font-weight: bold; border-radius: 8px; }
-        .admin-form input, .admin-form select, .admin-form textarea { width: 100%; padding: 10px; margin-bottom: 10px; background: #111; border: 1px solid #333; color: #fff; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; }
+        .date-tag { background: var(--main-blue); padding: 5px 10px; border-radius: 15px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
@@ -79,34 +82,45 @@
             <span class="nav-link" onclick="showPage('home')">Shows</span>
             <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
             <span class="nav-link" onclick="showPage('news-page')">Nieuws</span>
-            <span class="nav-link" onclick="showPage('account-page')">Tickets</span>
-            <span class="nav-link" onclick="showPage('login-page')" style="color:var(--main-blue)">Admin</span>
+            <span class="nav-link" onclick="showPage('account-page')">Mijn Tickets</span>
+            <span class="nav-link" onclick="showPage('login-page')" style="color:var(--main-blue)">Beheer</span>
         </div>
     </nav>
 
     <section id="home" class="page active"><h1>Actuele Shows</h1><div id="shows-cont" class="grid"></div></section>
-    <section id="theaters-page" class="page"><h1>Onze Theaters</h1><div id="th-cont" class="grid"></div></section>
+    <section id="theaters-page" class="page"><h1>Theaters</h1><div id="th-cont" class="grid"></div></section>
     <section id="news-page" class="page"><h1>Nieuws</h1><div id="news-cont"></div></section>
-    <section id="account-page" class="page"><h1>Mijn Tickets</h1><div id="my-tickets-cont"></div></section>
+    <section id="account-page" class="page"><h1>Mijn Reserveringen</h1><div id="my-tickets-cont"></div></section>
 
     <section id="login-page" class="page">
         <div style="max-width:350px; margin:auto; background:rgba(0,0,0,0.8); padding:30px; border:1px solid var(--main-blue);">
-            <h3>Admin Login</h3><br>
-            <input type="password" id="admin-pass" placeholder="Wachtwoord" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white;">
+            <h3>Beheerder Login</h3><br>
+            <input type="password" id="admin-pass" placeholder="Wachtwoord">
             <button class="btn-blue" onclick="checkAdmin()">Inloggen</button>
         </div>
     </section>
 
     <section id="admin-dashboard" class="page">
-        <div class="admin-form" style="max-width:600px; margin:auto; background:rgba(0,0,0,0.9); padding:30px;">
-            <h2>Beheer Systeem</h2><br>
+        <div style="max-width:600px; margin:auto; background:rgba(0,0,0,0.9); padding:30px; border-radius:10px;">
+            <h2>Musical Toevoegen</h2><br>
             <select id="adm-type"><option value="shows">Show</option><option value="theaters">Theater</option><option value="news">Nieuws</option></select>
-            <input type="text" id="adm-name" placeholder="Naam/Titel">
+            <input type="text" id="adm-name" placeholder="Naam">
             <input type="text" id="adm-img" placeholder="Afbeelding URL">
-            <input type="text" id="adm-extra" placeholder="Datums / Verkoop Eindtijd (bv 2026-03-01T20:00:00)">
-            <textarea id="adm-info" placeholder="Beschrijving"></textarea>
-            <button class="btn-blue" onclick="saveData()">Item Opslaan</button>
-            <div id="admin-list" style="margin-top:20px;"></div>
+            <select id="adm-theater-choice"><option>AFAS Circustheater</option><option>Efteling Theater</option></select>
+            
+            <div style="background:#111; padding:15px; border-radius:5px; margin-bottom:10px; border:1px solid #333;">
+                <label>Speeldatums kiezen:</label>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                    <input type="date" id="adm-date-input" style="margin:0;">
+                    <button class="btn-blue" style="width:auto; padding:0 20px;" onclick="addDate()">+</button>
+                </div>
+                <div id="selected-dates" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:5px;"></div>
+            </div>
+
+            <label>Einde Verkoop (Timer):</label>
+            <input type="datetime-local" id="adm-timer">
+            <textarea id="adm-info" placeholder="Informatie"></textarea>
+            <button class="btn-blue" onclick="saveData()">Opslaan</button>
         </div>
     </section>
 
@@ -116,125 +130,148 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://vrtrtr-b9978-default-rtdb.europe-west1.firebasedatabase.app"
-        };
+        const firebaseConfig = { databaseURL: "https://vrtrtr-b9978-default-rtdb.europe-west1.firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
         let currentS = null;
         let selectedSeats = [];
-        const sessionID = "User_" + Math.floor(Math.random() * 9999);
+        let eftCounts = { "Rang 1": 0, "Rang 2": 0, "Rang 3": 0 };
+        let tempDates = [];
+        const userSession = "User_" + Math.floor(Math.random() * 9999);
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             closePanel();
+            if(id === 'account-page') loadTickets();
         }
 
-        // Realtime Data inladen
         rtdb.ref('/').on('value', snap => {
             const d = snap.val() || {};
-            render(d.shows, 'shows-cont', 'shows');
-            render(d.theaters, 'th-cont', 'theaters');
-            renderNews(d.news);
+            renderList(d.shows, 'shows-cont');
+            renderList(d.theaters, 'th-cont');
+            if(d.news) document.getElementById('news-cont').innerHTML = Object.values(d.news).map(n => `<div style="background:rgba(0,0,0,0.6); padding:20px; margin-bottom:10px; border-left:4px solid var(--main-blue);"><h3>${n.name}</h3><p>${n.info}</p></div>`).join('');
         });
 
-        function render(obj, contId, type) {
+        function renderList(obj, contId) {
             const cont = document.getElementById(contId);
             cont.innerHTML = "";
             if(!obj) return;
             Object.values(obj).forEach(i => {
-                cont.innerHTML += `<div class="card" onclick="openPanel('${i.id}', '${type}')">
-                    <img src="${i.img}">
-                    <div style="padding:15px;"><h3>${i.name}</h3></div>
-                </div>`;
+                cont.innerHTML += `<div class="card" onclick="openPanel('${i.id}')"><img src="${i.img}"><div style="padding:15px;"><h3>${i.name}</h3><small>${i.theater || ''}</small></div></div>`;
             });
         }
 
-        function renderNews(news) {
-            const cont = document.getElementById('news-cont');
-            cont.innerHTML = news ? Object.values(news).map(n => `<div style="background:rgba(0,0,0,0.6); padding:20px; margin-bottom:10px; border-left:4px solid var(--main-blue);"><h3>${n.name}</h3><p>${n.info}</p></div>`).join('') : "Geen nieuws.";
-        }
-
-        function openPanel(id, type) {
-            rtdb.ref(type + '/' + id).once('value', snap => {
+        function openPanel(id) {
+            rtdb.ref('shows/'+id).once('value', snap => {
                 const s = snap.val(); currentS = s;
-                selectedSeats = [];
-                const panel = document.getElementById('side-panel');
-                panel.classList.add('open');
+                selectedSeats = []; eftCounts = { "Rang 1": 0, "Rang 2": 0, "Rang 3": 0 };
+                document.getElementById('side-panel').classList.add('open');
 
-                let html = `<h2>${s.name}</h2><p style="margin:15px 0;">${s.info}</p><div id="timer-display"></div>`;
+                let dateHtml = s.playDates ? `<p><b>Datums:</b> ${s.playDates.join(', ')}</p>` : '';
+                let html = `<h2>${s.name}</h2><p style="margin:15px 0;">${s.info}</p>${dateHtml}<div id="timer-box" style="color:yellow; font-weight:bold; margin-bottom:10px;"></div>`;
 
-                if(type === 'shows') {
-                    html += `<div class="theater-box" id="seat-grid"></div><button class="btn-blue" style="margin-top:20px;" onclick="book()">Bestellen</button>`;
+                if(s.theater === "AFAS Circustheater") {
+                    html += `<h3>Selecteer Stoelen</h3><div class="theater-box" id="afas-grid"></div><button class="btn-blue" style="margin-top:20px;" onclick="bookAFAS()">Bevestig Stoelen</button>`;
                     document.getElementById('side-content').innerHTML = html;
-                    loadSeats(id);
-                    if(s.extra) startTimer(s.extra);
+                    loadAFAS(id);
                 } else {
+                    html += `<h3>Selecteer Rang</h3><div class="theater-box">`;
+                    ["Rang 1", "Rang 2", "Rang 3"].forEach(r => {
+                        html += `<div class="rang-row"><span>${r}</span><div style="display:flex; align-items:center; gap:10px;">
+                            <button class="btn-count" onclick="updateEft('${r}', -1)">-</button><span id="c-${r}">0</span><button class="btn-count" onclick="updateEft('${r}', 1)">+</button>
+                        </div></div>`;
+                    });
+                    html += `</div><button class="btn-blue" style="margin-top:20px;" onclick="bookEfteling()">Bestel Rangen</button>`;
                     document.getElementById('side-content').innerHTML = html;
                 }
+                if(s.timerEnd) startTimer(s.timerEnd);
             });
         }
 
-        function loadSeats(sid) {
-            const grid = document.getElementById('seat-grid');
+        function loadAFAS(sid) {
+            const grid = document.getElementById('afas-grid');
             rtdb.ref('seats/'+sid).on('value', snap => {
-                const taken = snap.val() || {};
-                grid.innerHTML = "";
+                const taken = snap.val() || {}; grid.innerHTML = "";
                 for(let r=1; r<=8; r++) {
                     const row = document.createElement('div'); row.className = "row";
-                    const block = (num, p) => {
+                    const block = (num, pref) => {
                         for(let s=1; s<=num; s++) {
-                            const id = `${p}-R${r}-S${s}`;
+                            const id = `${pref}-R${r}-S${s}`;
                             const seat = document.createElement('div');
                             seat.className = "seat " + (taken[id] ? "occupied" : "");
-                            if(!taken[id]) seat.onclick = () => {
-                                seat.classList.toggle('selected');
+                            if(!taken[id]) seat.onclick = (e) => {
+                                e.stopPropagation(); seat.classList.toggle('selected');
                                 if(selectedSeats.includes(id)) selectedSeats = selectedSeats.filter(x=>x!==id);
                                 else selectedSeats.push(id);
                             };
                             row.appendChild(seat);
                         }
                     };
-                    block(3, "L"); row.innerHTML += '<div style="width:15px"></div>';
-                    block(8, "C"); row.innerHTML += '<div style="width:15px"></div>';
+                    block(3, "L"); row.innerHTML += '<div style="width:20px"></div>';
+                    block(8, "C"); row.innerHTML += '<div style="width:20px"></div>';
                     block(3, "R"); grid.appendChild(row);
                 }
             });
         }
 
-        function startTimer(target) {
-            const el = document.getElementById('timer-display');
-            const end = new Date(target).getTime();
+        function startTimer(end) {
+            const box = document.getElementById('timer-box');
+            const target = new Date(end).getTime();
             setInterval(() => {
-                const now = new Date().getTime();
-                const dist = end - now;
-                if(dist < 0) { el.innerHTML = "❌ VERKOOP GESLOTEN"; document.getElementById('seat-grid').style.pointerEvents = "none"; return; }
+                const dist = target - new Date().getTime();
+                if(dist < 0) { box.innerHTML = "VERKOOP GESLOTEN"; return; }
                 const d = Math.floor(dist/(1000*60*60*24)), h = Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m = Math.floor((dist%(1000*60*60))/(1000*60)), s = Math.floor((dist%(1000*60))/1000);
-                el.innerHTML = `⏳ Eindigt over: ${d}d ${h}u ${m}m ${s}s`;
+                box.innerHTML = `⏳ Verkoop eindigt over: ${d}d ${h}u ${m}m ${s}s`;
             }, 1000);
         }
 
-        function book() {
-            if(!selectedSeats.length) return alert("Kies stoelen!");
-            selectedSeats.forEach(sid => rtdb.ref('seats/'+currentS.id+'/'+sid).set(true));
-            const tid = "T-"+Date.now();
-            rtdb.ref('bookings/'+sessionID+'/'+tid).set({ sh: currentS.name, det: selectedSeats.join(', ') });
-            alert("Gereserveerd!"); showPage('account-page');
+        function addDate() {
+            const val = document.getElementById('adm-date-input').value;
+            if(val && !tempDates.includes(val)) {
+                tempDates.push(val);
+                document.getElementById('selected-dates').innerHTML = tempDates.map((d, i) => `<div class="date-tag">${d} <span onclick="tempDates.splice(${i},1);addDate()" style="cursor:pointer;">&times;</span></div>`).join('');
+            }
         }
-
-        function checkAdmin() { if(document.getElementById('admin-pass').value === "Virtual2025") showPage('admin-dashboard'); }
 
         function saveData() {
             const type = document.getElementById('adm-type').value;
             const id = Date.now();
             rtdb.ref(type+'/'+id).set({
                 id, name: document.getElementById('adm-name').value, img: document.getElementById('adm-img').value,
-                extra: document.getElementById('adm-extra').value, info: document.getElementById('adm-info').value
-            }).then(() => alert("Opgeslagen!"));
+                theater: document.getElementById('adm-theater-choice').value, playDates: tempDates,
+                timerEnd: document.getElementById('adm-timer').value, info: document.getElementById('adm-info').value
+            }).then(() => { alert("Opgeslagen!"); tempDates = []; showPage('home'); });
         }
 
+        function updateEft(r, d) { eftCounts[r] = Math.max(0, eftCounts[r] + d); document.getElementById('c-'+r).innerText = eftCounts[r]; }
+        
+        function bookAFAS() {
+            if(!selectedSeats.length) return alert("Kies stoelen!");
+            selectedSeats.forEach(sid => rtdb.ref('seats/'+currentS.id+'/'+sid).set(true));
+            saveTicket(currentS.name, "Stoelen: " + selectedSeats.join(', '));
+        }
+
+        function bookEfteling() {
+            let res = Object.entries(eftCounts).filter(e => e[1] > 0).map(e => e[1] + "x " + e[0]).join(', ');
+            if(!res) return alert("Kies aantal!");
+            saveTicket(currentS.name, res);
+        }
+
+        function saveTicket(sh, det) {
+            rtdb.ref('bookings/'+userSession+'/'+Date.now()).set({ sh, det, dt: new Date().toLocaleString() });
+            alert("Bestelling geplaatst!"); showPage('account-page');
+        }
+
+        function loadTickets() {
+            rtdb.ref('bookings/'+userSession).once('value', snap => {
+                const d = snap.val();
+                document.getElementById('my-tickets-cont').innerHTML = d ? Object.values(d).map(t => `<div class="rang-row"><div><b>${t.sh}</b><br>${t.det}</div><small>${t.dt}</small></div>`).join('') : "Geen tickets.";
+            });
+        }
+
+        function checkAdmin() { if(document.getElementById('admin-pass').value === "Virtual2025") showPage('admin-dashboard'); }
         function closePanel() { document.getElementById('side-panel').classList.remove('open'); }
         showPage('home');
     </script>
