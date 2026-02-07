@@ -12,19 +12,19 @@
     <style>
         :root {
             --stage-blue: #002347; --accent-blue: #00a3e0;
-            --seat-free: #333; --seat-selected: #28a745; --seat-occupied: #111;
+            --seat-free: #444; --seat-selected: #28a745; --seat-occupied: #111;
             --sold-out: #d00;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
 
-        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.25); }
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; filter: brightness(0.2); }
         .video-bg iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 
         nav { background: rgba(0,0,0,0.9); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .logo { font-family: 'Playfair Display', serif; font-size: 26px; cursor: pointer; letter-spacing: 2px; }
-        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-link { cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 700; color: #ddd; }
         .beheer-btn { background: #8b0000; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
@@ -32,65 +32,75 @@
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
-        .card { position: relative; height: 450px; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .card { position: relative; height: 400px; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-info-overlay { position: absolute; inset: 0; background: rgba(0, 35, 71, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; opacity: 0; transition: 0.4s; backdrop-filter: blur(8px); }
+        .card-info-overlay { position: absolute; inset: 0; background: rgba(0, 35, 71, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; opacity: 0; transition: 0.4s; }
         .card:hover .card-info-overlay { opacity: 1; }
 
-        .date-item { background:#111; padding:20px; margin-bottom:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; border-radius:8px; }
-        .sold-out-tag { color: var(--sold-out); font-weight: bold; font-size: 12px; }
-
-        .seating-wrapper { display: flex; justify-content: center; gap: 40px; margin: 40px auto; padding: 40px; background: rgba(10,10,10,0.9); border-radius: 15px; border: 1px solid var(--stage-blue); width: fit-content; }
-        .row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .seat { width: 22px; height: 26px; background: var(--seat-free); border-radius: 4px 4px 10px 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
-        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 10px var(--seat-selected); }
-        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.2; }
+        /* Efteling Theater Seating Style */
+        .theater-container { display: flex; flex-direction: column; align-items: center; gap: 20px; background: rgba(20,0,0,0.6); padding: 40px; border-radius: 20px; border: 2px solid #300; }
+        .stage-label { width: 300px; height: 10px; background: #500; border-radius: 5px; margin-bottom: 40px; box-shadow: 0 0 20px #f00; }
+        .seating-block { display: flex; flex-direction: column; gap: 6px; }
+        .row { display: flex; gap: 6px; justify-content: center; }
+        .seat { width: 18px; height: 22px; background: var(--seat-free); border-radius: 3px 3px 8px 8px; cursor: pointer; border: 1px solid #222; }
+        .seat.selected { background: var(--seat-selected); box-shadow: 0 0 8px var(--seat-selected); }
+        .seat.occupied { background: var(--seat-occupied); cursor: not-allowed; opacity: 0.3; }
+        .balkon-label { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; margin: 20px 0 10px; color: #c5a059; }
 
         .admin-box { max-width: 1000px; margin: 0 auto; background: #0a0a0a; padding: 40px; border-radius: 12px; border: 1px solid #333; }
-        .btn-gold { background: #c5a059; color: #000; padding: 12px; border: none; font-weight: 700; cursor: pointer; width: 100%; border-radius: 4px; text-transform: uppercase; margin-top: 5px; }
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        .manage-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 8px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; }
+        .btn-gold { background: #c5a059; color: #000; padding: 12px; border: none; font-weight: 700; cursor: pointer; width: 100%; border-radius: 4px; margin-top: 10px; }
+        input, textarea, select { width: 100%; padding: 10px; margin: 5px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        .manage-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="video-bg">
-        <iframe src="https://www.youtube.com/embed/CxYN6nSSkVs?autoplay=1&mute=1&loop=1&playlist=CxYN6nSSkVs&controls=0" frameborder="0"></iframe>
+        <iframe src="https://www.youtube.com/embed/JUx2EfzEV3c?autoplay=1&mute=1&loop=1&playlist=JUx2EfzEV3c&controls=0" frameborder="0"></iframe>
     </div>
 
     <nav>
         <div class="logo" onclick="showPage('home')">STAGE</div>
         <div class="nav-links">
             <span class="nav-link" onclick="showPage('home')">Shows</span>
-            <span class="nav-link" onclick="showPage('theaters-page')">Theaters</span>
+            <span class="nav-link" onclick="showPage('theaters-page')">Locaties</span>
             <span class="nav-link" onclick="showPage('news-page')">News</span>
-            <span class="nav-link" onclick="showPage('account')">Account</span>
-            <button class="beheer-btn" onclick="showPage('login-page')">BEHEER</button>
+            <span class="nav-link" onclick="showPage('account')">Mijn Account</span>
+            <button class="beheer-btn" onclick="showPage('login-page')">ADMIN</button>
         </div>
     </nav>
 
-    <section id="home" class="page active"><h1 style="text-align:center; margin-bottom:40px;">Productions</h1><div class="grid" id="shows-cont"></div></section>
+    <section id="home" class="page active">
+        <h1 style="text-align:center; margin-bottom:40px;">Huidige Producties</h1>
+        <div class="grid" id="shows-cont"></div>
+    </section>
 
     <section id="theaters-page" class="page">
-        <h1>Onze Locaties</h1>
-        <div style="margin-bottom:40px; border-radius:12px; overflow:hidden; border:1px solid #333;">
-            <iframe width="100%" height="450" src="https://www.youtube.com/embed/msYcybnScms?autoplay=0&mute=1" frameborder="0"></iframe>
-        </div>
+        <h1>Onze Theaters</h1>
         <div class="grid" id="th-cont"></div>
     </section>
 
     <section id="news-page" class="page"><h1>Laatste Nieuws</h1><div class="grid" id="news-cont"></div></section>
     <section id="account" class="page"><h1>Mijn Tickets</h1><div id="ticket-cont"></div></section>
+    
     <section id="calendar-page" class="page"><h2 id="cal-head"></h2><div id="cal-list" style="margin-top:30px;"></div></section>
 
     <section id="seating-page" class="page">
-        <h2 id="seat-head" style="text-align:center;"></h2>
-        <div style="width: 500px; height: 4px; background: var(--accent-blue); margin: 0 auto 40px; border-radius: 2px;"></div>
-        <div class="seating-wrapper">
-            <div id="l-wing"></div><div id="c-pit"></div><div id="r-wing"></div>
+        <h2 id="seat-head" style="text-align:center; margin-bottom:10px;"></h2>
+        <p id="theater-name-sub" style="text-align:center; color:var(--accent-blue); margin-bottom:30px;"></p>
+        
+        <div class="theater-container">
+            <div class="stage-label"></div>
+            
+            <div class="seating-block" id="stalles-pit"></div>
+            
+            <div class="balkon-label">Balkon / Balcony</div>
+            
+            <div class="seating-block" id="balkon-pit"></div>
         </div>
-        <button class="btn-gold" style="max-width:300px; display:block; margin: 30px auto;" onclick="book()">Reserveer Tickets</button>
+        
+        <button class="btn-gold" style="max-width:300px; display:block; margin: 30px auto;" onclick="book()">Tickets Bevestigen</button>
     </section>
 
     <section id="login-page" class="page">
@@ -103,22 +113,25 @@
 
     <section id="admin-dashboard" class="page">
         <div class="admin-box">
-            <h2>Systeem Beheer</h2>
+            <h2>Management Dashboard</h2>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
                 <div>
-                    <h3>Toevoegen</h3>
-                    <input type="text" id="adm-name" placeholder="Show Naam">
-                    <input type="text" id="adm-img" placeholder="Poster URL">
-                    <textarea id="adm-info" placeholder="Info"></textarea>
-                    <input type="text" id="adm-dates" placeholder="Data (komma gescheiden)">
-                    <button class="btn-gold" onclick="saveData('shows')">Show Opslaan</button>
-                    <input type="text" id="adm-th-name" placeholder="Theater Naam" style="margin-top:20px;">
-                    <button class="btn-gold" onclick="saveData('theaters')">Theater Opslaan</button>
-                    <textarea id="adm-news" placeholder="Nieuws..." style="margin-top:20px;"></textarea>
-                    <button class="btn-gold" onclick="saveData('news')">Nieuws Posten</button>
+                    <h3>Creëer Nieuwe Show</h3>
+                    <input type="text" id="adm-name" placeholder="Naam Musical">
+                    <input type="text" id="adm-img" placeholder="Poster Image URL">
+                    <textarea id="adm-info" placeholder="Korte beschrijving"></textarea>
+                    
+                    <label>Kies Theater:</label>
+                    <select id="adm-theater-select"></select>
+                    
+                    <input type="text" id="adm-dates" placeholder="Data (bv: 20 Maart, 21 Maart)">
+                    <button class="btn-gold" onclick="saveData('shows')">Publiceren</button>
                 </div>
                 <div>
-                    <h3>Verwijderen</h3>
+                    <h3>Beheer Locaties & Nieuws</h3>
+                    <input type="text" id="adm-th-name" placeholder="Nieuw Theater Naam">
+                    <button class="btn-gold" onclick="saveData('theaters')">Theater Toevoegen</button>
+                    <hr style="margin:20px 0; opacity:0.1;">
                     <div id="manage-list"></div>
                 </div>
             </div>
@@ -136,7 +149,6 @@
         
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
-        const TOTAL_SEATS = 98;
 
         let state = { shows: [], theaters: [], news: [], bookings: {} };
         let cur = { show: null, date: null, selected: [] };
@@ -145,7 +157,6 @@
             const data = snap.val() || {};
             state.shows = data.shows ? Object.values(data.shows) : [];
             state.theaters = data.theaters ? Object.values(data.theaters) : [];
-            state.news = data.news ? Object.values(data.news) : [];
             state.bookings = data.bookings || {};
             renderAll();
         });
@@ -153,22 +164,27 @@
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'account') renderAccount();
         }
 
         function renderAll() {
+            // Render Shows
             document.getElementById('shows-cont').innerHTML = state.shows.map(s => `
                 <div class="card" onclick="openCal(${s.id})">
-                    <img src="${s.img}"><div class="card-info-overlay"><h3>${s.name}</h3><p>BOEK NU</p></div>
+                    <img src="${s.img}">
+                    <div class="card-info-overlay">
+                        <h3>${s.name}</h3>
+                        <p style="font-size:10px;">${s.theater || 'Onbekend Theater'}</p>
+                        <strong style="margin-top:10px; display:block;">RESERVEREN</strong>
+                    </div>
                 </div>`).join('');
 
-            document.getElementById('th-cont').innerHTML = state.theaters.map(t => `<div class="card" style="padding:20px; height:auto;"><h3>${t.name}</h3></div>`).join('');
-            document.getElementById('news-cont').innerHTML = state.news.map(n => `<div class="card" style="padding:20px; height:auto;"><small>${n.date}</small><p>${n.text}</p></div>`).join('');
+            // Admin theater dropdown
+            document.getElementById('adm-theater-select').innerHTML = state.theaters.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
 
-            let html = "<h4>Beheer</h4>";
+            // Manage List
+            let html = "<h4>Verwijder Items</h4>";
             state.shows.forEach(s => html += `<div class="manage-item">${s.name} <button onclick="rtdb.ref('shows/${s.id}').remove()">X</button></div>`);
             state.theaters.forEach(t => html += `<div class="manage-item">${t.name} <button onclick="rtdb.ref('theaters/${t.id}').remove()">X</button></div>`);
-            state.news.forEach(n => html += `<div class="manage-item">News <button onclick="rtdb.ref('news/${n.id}').remove()">X</button></div>`);
             document.getElementById('manage-list').innerHTML = html;
         }
 
@@ -177,10 +193,10 @@
             document.getElementById('cal-head').innerText = cur.show.name;
             document.getElementById('cal-list').innerHTML = cur.show.dates.map(d => {
                 const key = cur.show.id + "_" + d.replace(/\s/g, '_');
-                const bookedCount = (state.bookings[key] || []).length;
-                const isSoldOut = bookedCount >= TOTAL_SEATS;
-                return `<div class="date-item" onclick="${isSoldOut ? '' : `openSeats('${d}')`}">
-                    <span>${d}</span> ${isSoldOut ? '<span class="sold-out-tag">SOLD OUT</span>' : '<span>Vrij</span>'}
+                const booked = (state.bookings[key] || []).length;
+                const isFull = booked >= 360; // Totaal aantal stoelen in nieuwe indeling
+                return `<div class="date-item" style="background:#111; padding:20px; margin-bottom:10px; cursor:pointer; display:flex; justify-content:space-between;" onclick="${isFull?'':'openSeats(\''+d+'\')'}">
+                    <span>${d}</span> <span>${isFull ? '<b style="color:red">UITVERKOCHT / SOLD OUT</b>' : 'Beschikbaar'}</span>
                 </div>`;
             }).join('');
             showPage('calendar-page');
@@ -189,22 +205,28 @@
         function openSeats(date) {
             cur.date = date; cur.selected = [];
             document.getElementById('seat-head').innerText = date;
+            document.getElementById('theater-name-sub').innerText = cur.show.theater;
             const key = cur.show.id + "_" + date.replace(/\s/g, '_');
             const booked = state.bookings[key] || [];
-            genSection('l-wing', 3, 7, booked, 'L');
-            genSection('c-pit', 8, 7, booked, 'C');
-            genSection('r-wing', 3, 7, booked, 'R');
+
+            // Genereer Stalles (Beneden)
+            genGrid('stalles-pit', 20, 12, booked, 'S');
+            // Genereer Balkon (Boven)
+            genGrid('balkon-pit', 24, 5, booked, 'B');
+            
             showPage('seating-page');
         }
 
-        function genSection(id, c, r, b, p) {
-            const el = document.getElementById(id); el.innerHTML = '';
-            for(let i=1; i<=r; i++) {
+        function genGrid(contId, cols, rows, booked, pref) {
+            const el = document.getElementById(contId); el.innerHTML = '';
+            for(let r=1; r<=rows; r++) {
                 const row = document.createElement('div'); row.className = 'row';
-                for(let j=1; j<=c; j++) {
-                    const sid = p+i+j; const isB = b.includes(sid);
-                    const s = document.createElement('div'); s.className = 'seat'+(isB?' occupied':'');
-                    if(!isB) s.onclick = () => { s.classList.toggle('selected'); toggleS(sid); };
+                for(let c=1; c<=cols; c++) {
+                    const id = pref+r+"-"+c;
+                    const isB = booked.includes(id);
+                    const s = document.createElement('div');
+                    s.className = 'seat' + (isB ? ' occupied' : '');
+                    if(!isB) s.onclick = () => { s.classList.toggle('selected'); toggleS(id); };
                     row.appendChild(s);
                 }
                 el.appendChild(row);
@@ -222,27 +244,34 @@
             const total = [...(state.bookings[key] || []), ...cur.selected];
             rtdb.ref('bookings/' + key).set(total).then(() => {
                 let my = JSON.parse(localStorage.getItem('my_stage_tickets')) || [];
-                my.push({ show: cur.show.name, date: cur.date, seats: cur.selected });
+                my.push({ show: cur.show.name, theater: cur.show.theater, date: cur.date, seats: cur.selected });
                 localStorage.setItem('my_stage_tickets', JSON.stringify(my));
-                alert("Geboekt!"); showPage('home');
+                alert("Reservering succesvol!");
+                showPage('home');
             });
         }
 
-        function renderAccount() {
-            const my = JSON.parse(localStorage.getItem('my_stage_tickets')) || [];
-            document.getElementById('ticket-cont').innerHTML = my.map(t => `<div style="background:#111; padding:20px; margin-bottom:10px;"><h3>${t.show}</h3><p>${t.date}</p><p>${t.seats.join(', ')}</p></div>`).join('');
+        function saveData(type) {
+            const id = Date.now();
+            let p = { id };
+            if(type === 'shows') {
+                p.name = document.getElementById('adm-name').value;
+                p.img = document.getElementById('adm-img').value;
+                p.info = document.getElementById('adm-info').value;
+                p.theater = document.getElementById('adm-theater-select').value;
+                p.dates = document.getElementById('adm-dates').value.split(',');
+            } else if(type === 'theaters') {
+                p.name = document.getElementById('adm-th-name').value;
+            }
+            rtdb.ref(type + '/' + id).set(p).then(() => alert("Opgeslagen!"));
         }
 
-        function checkAdmin() { if(document.getElementById('admin-pass').value === "VirtualEntertainment2025!") showPage('admin-dashboard'); }
-        function saveData(t) {
-            const id = Date.now(); let p = { id };
-            if(t==='shows') { p.name = document.getElementById('adm-name').value; p.img = document.getElementById('adm-img').value; p.info = document.getElementById('adm-info').value; p.dates = document.getElementById('adm-dates').value.split(','); }
-            else if(t==='theaters') p.name = document.getElementById('adm-th-name').value;
-            else { p.text = document.getElementById('adm-news').value; p.date = new Date().toLocaleDateString(); }
-            rtdb.ref(t+'/'+id).set(p).then(() => alert("Klaar!"));
+        function checkAdmin() {
+            if(document.getElementById('admin-pass').value === "VirtualEntertainment2025!") showPage('admin-dashboard');
         }
 
         showPage('home');
     </script>
 </body>
+</html>
 </html>
