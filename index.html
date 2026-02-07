@@ -2,13 +2,13 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Entertainment | Dynamic Booking System</title>
+    <title>Virtual Entertainment | Full Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --blue: #0044ff; --bg: rgba(0,0,0,0.85); }
+        :root { --blue: #0044ff; --red: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
@@ -19,143 +19,109 @@
             overflow-x: hidden;
         }
 
-        /* Pagina Overgangen */
         .page-layer {
-            min-height: 100vh;
-            padding-top: 80px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            min-height: 100vh; padding-top: 80px; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px); transition: opacity 0.5s, transform 0.5s;
         }
 
-        .fade-out { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+        .fade-out { opacity: 0; transform: scale(0.98); pointer-events: none; }
 
-        nav { 
-            background: #000; height: 70px; display: flex; 
-            justify-content: space-between; align-items: center; padding: 0 5%; 
-            position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 2px solid var(--blue); 
-        }
+        nav { background: #000; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 2px solid var(--blue); }
+        .nav-link { cursor: pointer; text-transform: uppercase; font-weight: 700; margin-left: 20px; font-size: 11px; }
 
         .section { padding: 40px 5%; display: none; }
         .section.active { display: block; }
 
-        /* SHOW CARDS */
+        /* GRID & CARDS */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .card { 
-            background: #000; border-radius: 12px; overflow: hidden; position: relative; 
-            height: 480px; border: 1px solid #333; transition: 0.3s;
-        }
+        .card { background: #000; border-radius: 12px; overflow: hidden; position: relative; height: 450px; border: 1px solid #333; transition: 0.3s; }
         .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card-info {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 0;
-            background: linear-gradient(transparent, #000 30%, #000);
-            overflow: hidden; transition: 0.5s ease;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
-        }
+        .card-info { position: absolute; bottom: 0; width: 100%; height: 0; background: linear-gradient(transparent, #000 40%); overflow: hidden; transition: 0.4s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
         .card:hover .card-info { height: 100%; }
-        .card:hover img { filter: brightness(0.3); transform: scale(1.1); }
+        .card:hover img { filter: brightness(0.3); }
 
-        .ticket-btn { 
-            color: var(--blue); font-weight: bold; text-decoration: underline; 
-            cursor: pointer; margin-top: 15px; display: block; border: none; background: none; font-family: inherit;
-        }
+        /* UI ELEMENTS */
+        .btn { background: var(--blue); color: #fff; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-del { background: var(--red); padding: 5px 10px; font-size: 10px; margin-top: 5px; }
+        input, textarea, select { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 10px; font-family: inherit; }
 
-        /* BOEKINGS PAGINA */
-        .booking-container { max-width: 800px; margin: auto; background: rgba(0,0,0,0.9); padding: 40px; border-radius: 20px; border: 1px solid var(--blue); }
-        .date-tile { 
-            background: #111; padding: 20px; margin-bottom: 10px; border-radius: 10px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            cursor: pointer; transition: 0.3s; border: 1px solid #222;
-        }
-        .date-tile:hover { border-color: var(--blue); background: #1a1a1a; }
-        .sold-out { opacity: 0.4; cursor: not-allowed; border-color: red !important; }
-
-        .rang-box { background: #050505; padding: 20px; border-radius: 10px; margin-top: 15px; }
-        .status-tag { font-size: 10px; padding: 3px 8px; border-radius: 3px; font-weight: bold; margin-left: 10px; }
-        .available { background: green; }
-        .full { background: red; }
-
-        /* UI */
-        .btn { background: var(--blue); color: #fff; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        input { width: 100%; padding: 10px; background: #111; border: 1px solid #333; color: #fff; margin-top: 5px; }
-        .admin-item { background: #111; padding: 15px; margin-bottom: 10px; border-radius: 5px; border-left: 4px solid var(--blue); }
+        .admin-box { background: rgba(0,0,0,0.9); padding: 25px; border-radius: 10px; border: 1px solid #222; margin-bottom: 20px; }
+        .list-item { background: #0a0a0a; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
 <div id="main-layer" class="page-layer">
     <nav>
-        <div onclick="goTo('home')" style="cursor:pointer; font-weight:800; color:var(--blue); font-size: 18px;">VIRTUAL ENT.</div>
+        <div onclick="goTo('home')" style="cursor:pointer; font-weight:800; color:var(--blue);">VIRTUAL ENT.</div>
         <div>
-            <span style="cursor:pointer; margin-left:20px;" onclick="goTo('home')">SHOWS</span>
-            <span style="cursor:pointer; margin-left:20px;" onclick="goTo('news')">NIEUWS</span>
-            <span style="cursor:pointer; margin-left:20px;" onclick="goTo('account')">MY ACCOUNT</span>
-            <span style="cursor:pointer; margin-left:20px; opacity:0.3;" onclick="goTo('admin-login')">ADMIN</span>
+            <span class="nav-link" onclick="goTo('home')">Shows</span>
+            <span class="nav-link" onclick="goTo('news-page')">Nieuws</span>
+            <span class="nav-link" onclick="goTo('theaters-page')">Theaters</span>
+            <span class="nav-link" onclick="goTo('account')">Account</span>
+            <span class="nav-link" onclick="goTo('admin-login')" style="opacity:0.4">Admin</span>
         </div>
     </nav>
 
     <section id="home" class="section active">
-        <h2>Beschikbare Musicals</h2><br>
-        <div id="show-list" class="grid"></div>
+        <h2>Musicals</h2><br><div id="show-list" class="grid"></div>
     </section>
 
-    <section id="news" class="section">
-        <h2>Laatste Nieuws</h2><br>
-        <div id="news-list"></div>
+    <section id="news-page" class="section">
+        <h2>Laatste Nieuws</h2><br><div id="news-list" style="max-width:800px; margin:auto;"></div>
+    </section>
+
+    <section id="theaters-page" class="section">
+        <h2>Onze Theaters</h2><br><div id="theater-list" class="grid"></div>
+    </section>
+
+    <section id="account" class="section">
+        <h2>Mijn Tickets</h2><br><div id="my-tickets" style="max-width:600px;"></div>
     </section>
 
     <section id="booking-page" class="section">
-        <button class="btn" style="margin-bottom:20px;" onclick="goTo('home')">← Terug naar overzicht</button>
-        <div class="booking-container">
-            <h1 id="book-title">Show Naam</h1>
-            <p id="book-info" style="color:#888; margin-bottom:30px;"></p>
-            <h3>1. Kies een datum</h3>
-            <div id="date-list" style="margin-top:20px;"></div>
-            
-            <div id="selection-area" style="display:none; margin-top:30px; border-top:1px solid #333; padding-top:30px;">
-                <h3 id="selected-date-text">Geselecteerde datum: -</h3><br>
-                <div class="rang-box">
-                    <p>Rang I (28 tickets max) <span id="s1" class="status-tag"></span></p>
-                    <input type="number" id="q1" value="0" min="0">
-                </div>
-                <div class="rang-box">
-                    <p>Rang II (28 tickets max) <span id="s2" class="status-tag"></span></p>
-                    <input type="number" id="q2" value="0" min="0">
-                </div>
-                <div class="rang-box">
-                    <p>Rang III (42 tickets max) <span id="s3" class="status-tag"></span></p>
-                    <input type="number" id="q3" value="0" min="0">
-                </div>
-                <br>
-                <button class="btn" style="width:100%" onclick="finalBook()">Bevestig Reservering</button>
+        <button class="btn" onclick="goTo('home')">← Terug</button><br><br>
+        <div style="max-width:600px; margin:auto; background:rgba(0,0,0,0.8); padding:30px; border-radius:15px; border:1px solid var(--blue);">
+            <h1 id="book-title">Show</h1>
+            <p id="book-info" style="color:#aaa; margin-bottom:20px;"></p>
+            <div id="date-selection"></div>
+            <div id="ticket-form" style="display:none; margin-top:20px; border-top:1px solid #333; padding-top:20px;">
+                <h4 id="selected-date-label"></h4><br>
+                <label>Rang I (28 tickets)</label><input type="number" id="q1" value="0" min="0">
+                <label>Rang II (28 tickets)</label><input type="number" id="q2" value="0" min="0">
+                <label>Rang III (42 tickets)</label><input type="number" id="q3" value="0" min="0">
+                <button class="btn" style="width:100%" onclick="confirmBooking()">Reservering Afronden</button>
             </div>
         </div>
     </section>
 
-    <section id="account" class="section">
-        <h2>Mijn Reserveringen</h2><br>
-        <div id="my-tickets"></div>
-    </section>
-
     <section id="admin-panel" class="section">
-        <h2>Beheerpaneel</h2><br>
-        <div class="grid">
-            <div style="background:#111; padding:20px; border-radius:10px;">
-                <h3>Nieuwe Show</h3><br>
-                <input id="in-name" placeholder="Naam">
-                <input id="in-img" placeholder="Poster URL">
-                <input id="in-dates" placeholder="Datums (bijv: 12 Feb, 15 Feb)">
-                <textarea id="in-info" placeholder="Info" style="width:100%; background:#000; color:#fff; padding:10px; margin-top:5px;"></textarea>
-                <button class="btn" onclick="addShow()">Online zetten</button>
+        <h2>Management Console</h2><br>
+        <div class="grid" style="align-items: start;">
+            <div class="admin-box">
+                <h3>Toevoegen</h3><br>
+                <select id="adm-type">
+                    <option value="shows">Musical</option>
+                    <option value="news">Nieuwsbericht</option>
+                    <option value="theaters">Theater Locatie</option>
+                </select>
+                <input id="adm-name" placeholder="Naam / Titel">
+                <input id="adm-img" placeholder="Afbeelding URL">
+                <input id="adm-dates" placeholder="Datums (bijv: 1 Feb, 3 Feb) - Alleen voor Shows">
+                <textarea id="adm-info" placeholder="Omschrijving" rows="4"></textarea>
+                <button class="btn" style="width:100%" onclick="saveToFirebase()">Publiceer</button>
             </div>
-            <div id="admin-list"></div>
+            <div>
+                <h3>Beheer Database</h3><br>
+                <div id="admin-manage-list"></div>
+            </div>
         </div>
     </section>
 
     <section id="admin-login" class="section">
         <div style="max-width:300px; margin:auto; text-align:center;">
-            <input type="password" id="pw" placeholder="Wachtwoord">
-            <button class="btn" onclick="if(document.getElementById('pw').value=='Virtual2025') goTo('admin-panel')">Login</button>
+            <input type="password" id="adm-pass" placeholder="Password">
+            <button class="btn" onclick="if(document.getElementById('adm-pass').value=='Virtual2025') goTo('admin-panel')">Login</button>
         </div>
     </section>
 </div>
@@ -165,142 +131,107 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let activeShowId = null;
-    let activeDate = null;
-    const user = "User_" + Math.floor(Math.random()*999);
+    const userKey = "U-" + Math.floor(Math.random()*9999);
+    let activeID = null, activeDate = null;
 
-    // Navigatie met animatie
-    function goTo(pageId) {
-        const layer = document.getElementById('main-layer');
-        layer.classList.add('fade-out');
-        
+    function goTo(id) {
+        document.getElementById('main-layer').classList.add('fade-out');
         setTimeout(() => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            layer.classList.remove('fade-out');
+            document.getElementById(id).classList.add('active');
+            document.getElementById('main-layer').classList.remove('fade-out');
             window.scrollTo(0,0);
-        }, 600);
+        }, 500);
     }
 
-    // Data ophalen
     db.ref('/').on('value', snap => {
-        const data = snap.val() || {};
-        renderShows(data.shows);
-        renderNews(data.news);
-        renderAdmin(data.shows, data.sales);
-        renderMyTickets(data.bookings ? data.bookings[user] : null);
+        const d = snap.val() || {};
+        renderHome(d.shows);
+        renderNews(d.news);
+        renderTheaters(d.theaters);
+        renderAdminList(d);
+        renderMyTickets(d.bookings ? d.bookings[userKey] : null);
     });
 
-    function renderShows(shows) {
+    function renderHome(obj) {
         const c = document.getElementById('show-list'); c.innerHTML = "";
-        for(let id in shows) {
-            let s = shows[id];
-            if(s.status === 'offline') continue;
-            c.innerHTML += `
-                <div class="card">
-                    <img src="${s.img}">
-                    <div class="card-info">
-                        <h3>${s.name}</h3>
-                        <p style="font-size:12px; margin-top:10px;">${s.info.substring(0,100)}...</p>
-                        <button class="ticket-btn" onclick="startBooking('${id}')">Click here for tickets</button>
-                    </div>
-                </div>`;
+        for(let id in obj) {
+            let s = obj[id]; if(s.status == 'offline') continue;
+            c.innerHTML += `<div class="card"><img src="${s.img}"><div class="card-info"><h3>${s.name}</h3><span style="cursor:pointer;color:var(--blue);font-weight:bold;" onclick="openBooking('${id}')">Click here for tickets</span></div></div>`;
         }
     }
 
-    function startBooking(id) {
-        db.ref('shows/'+id).once('value', snap => {
-            const s = snap.val();
-            activeShowId = id;
-            document.getElementById('book-title').innerText = s.name;
-            document.getElementById('book-info').innerText = s.info;
-            
-            const dl = document.getElementById('date-list'); dl.innerHTML = "";
-            s.dates.split(',').forEach(d => {
-                let date = d.trim();
-                dl.innerHTML += `<div class="date-tile" onclick="selectDate('${date}')"><span>${date}</span> <b>Bekijk tickets →</b></div>`;
-            });
-
-            document.getElementById('selection-area').style.display = 'none';
+    function openBooking(id) {
+        db.ref('shows/'+id).once('value', s => {
+            let val = s.val(); activeID = id;
+            document.getElementById('book-title').innerText = val.name;
+            document.getElementById('book-info').innerText = val.info;
+            const dates = val.dates.split(',');
+            document.getElementById('date-selection').innerHTML = dates.map(d => `<button class="btn" style="margin:5px" onclick="selectDate('${d.trim()}')">${d.trim()}</button>`).join('');
+            document.getElementById('ticket-form').style.display = 'none';
             goTo('booking-page');
         });
     }
 
-    function selectDate(date) {
-        activeDate = date;
-        document.getElementById('selected-date-text').innerText = "Geselecteerde datum: " + date;
-        document.getElementById('selection-area').style.display = 'block';
-        
-        // Check voorraad voor deze specifieke datum
-        db.ref('sales/'+activeShowId+'/'+date).on('value', snap => {
-            const v = snap.val() || {r1:0, r2:0, r3:0};
-            setTag('s1', v.r1, 28);
-            setTag('s2', v.r2, 28);
-            setTag('s3', v.r3, 42);
-        });
+    function selectDate(d) {
+        activeDate = d;
+        document.getElementById('selected-date-label').innerText = "Datum: " + d;
+        document.getElementById('ticket-form').style.display = 'block';
     }
 
-    function setTag(id, cur, max) {
-        const el = document.getElementById(id);
-        if(cur >= max) { el.innerText = "UITVERKOCHT"; el.className="status-tag full"; }
-        else { el.innerText = (max-cur) + " Beschikbaar"; el.className="status-tag available"; }
-    }
-
-    function finalBook() {
+    function confirmBooking() {
         const q = [parseInt(document.getElementById('q1').value), parseInt(document.getElementById('q2').value), parseInt(document.getElementById('q3').value)];
-        
-        db.ref('sales/'+activeShowId+'/'+activeDate).transaction(cur => {
-            cur = cur || {r1:0, r2:0, r3:0};
-            if((cur.r1+q[0])>28 || (cur.r2+q[1])>28 || (cur.r3+q[2])>42) return;
-            cur.r1 += q[0]; cur.r2 += q[1]; cur.r3 += q[2];
-            return cur;
-        }).then(res => {
-            if(!res.committed) return alert("Helaas, te weinig plek!");
-            db.ref('bookings/'+user+'/'+Date.now()).set({ show: document.getElementById('book-title').innerText, date: activeDate, t: `R1:${q[0]} R2:${q[1]} R3:${q[2]}` });
-            alert("Reservering voltooid!");
-            goTo('account');
-        });
+        db.ref('bookings/'+userKey+'/'+Date.now()).set({ show: document.getElementById('book-title').innerText, date: activeDate, tickets: q.join('/') });
+        alert("Gereserveerd!"); goTo('account');
     }
 
-    // Admin
-    function addShow() {
+    function saveToFirebase() {
+        const type = document.getElementById('adm-type').value;
         const id = Date.now();
-        db.ref('shows/'+id).set({
-            id, name: document.getElementById('in-name').value,
-            img: document.getElementById('in-img').value,
-            dates: document.getElementById('in-dates').value,
-            info: document.getElementById('in-info').value,
-            status: 'online'
+        db.ref(type+'/'+id).set({
+            id, name: document.getElementById('adm-name').value,
+            img: document.getElementById('adm-img').value,
+            info: document.getElementById('adm-info').value,
+            dates: document.getElementById('adm-dates').value || "",
+            status: 'online',
+            posted: new Date().toLocaleDateString()
+        }).then(() => alert("Gepubliceerd!"));
+    }
+
+    function renderAdminList(data) {
+        const c = document.getElementById('admin-manage-list'); c.innerHTML = "";
+        ['shows', 'news', 'theaters'].forEach(type => {
+            if(!data[type]) return;
+            c.innerHTML += `<h4>${type.toUpperCase()}</h4>`;
+            for(let id in data[type]) {
+                let item = data[type][id];
+                c.innerHTML += `<div class="list-item">
+                    <span>${item.name}</span>
+                    <div>
+                        <button class="btn" style="padding:5px" onclick="db.ref('${type}/${id}/status').set('${item.status=='online'?'offline':'online'}')">Status</button>
+                        <button class="btn btn-del" onclick="db.ref('${type}/${id}').remove()">Verwijder</button>
+                    </div>
+                </div>`;
+            }
         });
     }
 
-    function renderAdmin(shows, sales) {
-        const c = document.getElementById('admin-list'); c.innerHTML = "<h3>Show Beheer</h3><br>";
-        for(let id in shows) {
-            let s = shows[id];
-            c.innerHTML += `
-                <div class="admin-item">
-                    <b>${s.name}</b> [${s.status}]
-                    <button class="btn" style="padding:4px; font-size:10px;" onclick="db.ref('shows/${id}/status').set('${s.status=='online'?'offline':'online'}')">
-                        Switch Status
-                    </button>
-                </div>`;
+    function renderNews(obj) {
+        const c = document.getElementById('news-list'); c.innerHTML = "";
+        for(let id in obj) {
+            c.innerHTML += `<div class="list-item" style="display:block;"><small>${obj[id].posted}</small><h3>${obj[id].name}</h3><p>${obj[id].info}</p></div>`;
         }
     }
 
-    function renderNews(news) {
-        const c = document.getElementById('news-list'); c.innerHTML = "";
-        if(news) Object.values(news).reverse().forEach(n => {
-            c.innerHTML += `<div class="admin-item"><small>${n.posted}</small><h3>${n.name}</h3><p>${n.info}</p></div>`;
-        });
+    function renderTheaters(obj) {
+        const c = document.getElementById('theater-list'); c.innerHTML = "";
+        for(let id in obj) {
+            c.innerHTML += `<div class="card" style="height:300px;"><img src="${obj[id].img}"><div class="card-info"><h3>${obj[id].name}</h3><p style="font-size:11px;">${obj[id].info}</p></div></div>`;
+        }
     }
 
     function renderMyTickets(b) {
-        const c = document.getElementById('my-tickets'); c.innerHTML = "";
-        if(!b) return c.innerHTML = "Geen tickets.";
-        Object.values(b).forEach(t => {
-            c.innerHTML += `<div class="admin-item" style="border-color:green;"><b>${t.show}</b><br>${t.date}<br><small>${t.t}</small></div>`;
-        });
+        const c = document.getElementById('my-tickets'); c.innerHTML = b ? Object.values(b).map(t => `<div class="list-item"><b>${t.show}</b><br>${t.date}</div>`).join('') : "Geen tickets gevonden.";
     }
 </script>
 </body>
