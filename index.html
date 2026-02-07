@@ -2,56 +2,51 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Entertainment | Full Control</title>
+    <title>Virtual Entertainment | Live Stock Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --blue: #0044ff; --red: #ff3333; }
+        :root { --blue: #0044ff; --red: #ff3030; --green: #00ff88; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
             font-family: 'Montserrat', sans-serif; 
             background: url('https://eu-central-1-dotcontrol.graphassets.com/ARqeS7pzaQfsqxPd1pwy9z/MNy8cZEdQPa3MoUePRSi') no-repeat center center fixed; 
             background-size: cover; 
-            color: #fff; 
-            overflow-x: hidden;
+            color: #fff; overflow-x: hidden;
         }
 
-        .page-layer {
-            min-height: 100vh; padding-top: 80px; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px); transition: opacity 0.5s, transform 0.5s;
-        }
-
-        .fade-out { opacity: 0; transform: scale(0.98); pointer-events: none; }
-
+        .page-layer { min-height: 100vh; padding-top: 80px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); transition: 0.5s; }
         nav { background: #000; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 2px solid var(--blue); }
         .nav-link { cursor: pointer; text-transform: uppercase; font-weight: 700; margin-left: 20px; font-size: 11px; }
 
         .section { padding: 40px 5%; display: none; }
         .section.active { display: block; }
 
-        /* GRID & CARDS */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .card { background: #000; border-radius: 12px; overflow: hidden; position: relative; height: 450px; border: 1px solid #333; transition: 0.3s; }
-        .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card-info { position: absolute; bottom: 0; width: 100%; height: 0; background: linear-gradient(transparent, #000 40%); overflow: hidden; transition: 0.4s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
-        .card:hover .card-info { height: 100%; }
-        .card:hover img { filter: brightness(0.3); }
+        .card { background: #000; border-radius: 15px; overflow: hidden; position: relative; height: 450px; border: 1px solid #333; }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-info { position: absolute; bottom: 0; width: 100%; height: 100%; background: linear-gradient(transparent, #000 80%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; opacity: 0; transition: 0.4s; }
+        .card:hover .card-info { opacity: 1; backdrop-filter: blur(5px); }
 
-        /* UI ELEMENTS */
-        .btn { background: var(--blue); color: #fff; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-del { background: var(--red); padding: 5px 10px; font-size: 10px; margin-top: 5px; }
-        input, textarea, select { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 10px; font-family: inherit; }
+        .btn { background: var(--blue); color: #fff; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-red { background: var(--red); }
+        .btn-off { background: #444; }
 
-        .admin-box { background: rgba(0,0,0,0.9); padding: 25px; border-radius: 10px; border: 1px solid #222; margin-bottom: 20px; }
-        .list-item { background: #0a0a0a; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        input, textarea, select { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 10px; }
+        
+        .stock-label { font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .sold-out { color: var(--red); }
+        .in-stock { color: var(--green); }
+
+        .admin-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--blue); }
     </style>
 </head>
 <body>
 
-<div id="main-layer" class="page-layer">
+<div class="page-layer">
     <nav>
         <div onclick="goTo('home')" style="cursor:pointer; font-weight:800; color:var(--blue);">VIRTUAL ENT.</div>
         <div>
@@ -64,64 +59,66 @@
     </nav>
 
     <section id="home" class="section active">
-        <h2>Musicals</h2><br><div id="show-list" class="grid"></div>
+        <h2>Live Musicals</h2><br><div id="show-list" class="grid"></div>
     </section>
 
     <section id="news-page" class="section">
-        <h2>Laatste Nieuws</h2><br><div id="news-list" style="max-width:800px; margin:auto;"></div>
+        <h2>Nieuws Updates</h2><br><div id="news-list" style="max-width:800px; margin:auto;"></div>
     </section>
 
     <section id="theaters-page" class="section">
-        <h2>Onze Theaters</h2><br><div id="theater-list" class="grid"></div>
+        <h2>Locaties</h2><br><div id="theater-list" class="grid"></div>
     </section>
 
     <section id="account" class="section">
-        <h2>Mijn Tickets</h2><br><div id="my-tickets" style="max-width:600px;"></div>
+        <h2>Mijn Reserveringen</h2><br><div id="my-tickets" style="max-width:600px;"></div>
     </section>
 
     <section id="booking-page" class="section">
-        <button class="btn" onclick="goTo('home')">← Terug</button><br><br>
-        <div style="max-width:600px; margin:auto; background:rgba(0,0,0,0.8); padding:30px; border-radius:15px; border:1px solid var(--blue);">
-            <h1 id="book-title">Show</h1>
-            <p id="book-info" style="color:#aaa; margin-bottom:20px;"></p>
-            <div id="date-selection"></div>
-            <div id="ticket-form" style="display:none; margin-top:20px; border-top:1px solid #333; padding-top:20px;">
-                <h4 id="selected-date-label"></h4><br>
-                <label>Rang I (28 tickets)</label><input type="number" id="q1" value="0" min="0">
-                <label>Rang II (28 tickets)</label><input type="number" id="q2" value="0" min="0">
-                <label>Rang III (42 tickets)</label><input type="number" id="q3" value="0" min="0">
-                <button class="btn" style="width:100%" onclick="confirmBooking()">Reservering Afronden</button>
+        <div style="max-width:500px; margin:auto; background:rgba(0,0,0,0.9); padding:30px; border-radius:15px; border:1px solid var(--blue);">
+            <h2 id="book-title">Show</h2><br>
+            <select id="date-select" onchange="loadStock()"></select>
+            
+            <div id="stock-container">
+                <div class="stock-label">Rang I <span id="r1-count"></span></div>
+                <input type="number" id="q1" value="0" min="0">
+                
+                <div class="stock-label">Rang II <span id="r2-count"></span></div>
+                <input type="number" id="q2" value="0" min="0">
+                
+                <div class="stock-label">Rang III <span id="r3-count"></span></div>
+                <input type="number" id="q3" value="0" min="0">
             </div>
+
+            <button class="btn" style="width:100%; margin-top:20px;" onclick="confirmBooking()">Reserveer nu</button>
+            <button class="btn btn-off" style="width:100%; margin-top:10px;" onclick="goTo('home')">Annuleren</button>
         </div>
     </section>
 
     <section id="admin-panel" class="section">
-        <h2>Management Console</h2><br>
+        <h2>Beheer Center</h2><br>
         <div class="grid" style="align-items: start;">
-            <div class="admin-box">
+            <div style="background:#111; padding:20px; border-radius:10px;">
                 <h3>Toevoegen</h3><br>
                 <select id="adm-type">
                     <option value="shows">Musical</option>
                     <option value="news">Nieuwsbericht</option>
-                    <option value="theaters">Theater Locatie</option>
+                    <option value="theaters">Theater</option>
                 </select>
-                <input id="adm-name" placeholder="Naam / Titel">
+                <input id="adm-name" placeholder="Naam">
                 <input id="adm-img" placeholder="Afbeelding URL">
-                <input id="adm-dates" placeholder="Datums (bijv: 1 Feb, 3 Feb) - Alleen voor Shows">
-                <textarea id="adm-info" placeholder="Omschrijving" rows="4"></textarea>
-                <button class="btn" style="width:100%" onclick="saveToFirebase()">Publiceer</button>
+                <input id="adm-dates" placeholder="Datums (bijv: 1 Feb, 3 Feb)">
+                <textarea id="adm-info" placeholder="Informatie"></textarea>
+                <button class="btn" style="width:100%" onclick="saveAdmin()">Opslaan</button>
             </div>
-            <div>
-                <h3>Beheer Database</h3><br>
-                <div id="admin-manage-list"></div>
-            </div>
+            <div id="admin-manage-list"></div>
         </div>
     </section>
 
     <section id="admin-login" class="section">
         <div style="max-width:300px; margin:auto; text-align:center;">
-            <input type="password" id="adm-pass" placeholder="Password">
-            <button class="btn" onclick="if(document.getElementById('adm-pass').value=='Virtual2025') goTo('admin-panel')">Login</button>
+            <input type="password" id="adm-pass" placeholder="Wachtwoord">
+            <button class="btn" onclick="if(document.getElementById('adm-pass').value=='Virtual2025') goTo('admin-panel')">Inloggen</button>
         </div>
     </section>
 </div>
@@ -131,17 +128,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const userKey = "U-" + Math.floor(Math.random()*9999);
-    let activeID = null, activeDate = null;
+    const userID = "U-" + Math.floor(Math.random()*9999);
+    let activeID = null;
 
     function goTo(id) {
-        document.getElementById('main-layer').classList.add('fade-out');
-        setTimeout(() => {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('main-layer').classList.remove('fade-out');
-            window.scrollTo(0,0);
-        }, 500);
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
     }
 
     db.ref('/').on('value', snap => {
@@ -149,43 +142,70 @@
         renderHome(d.shows);
         renderNews(d.news);
         renderTheaters(d.theaters);
-        renderAdminList(d);
-        renderMyTickets(d.bookings ? d.bookings[userKey] : null);
+        renderAdmin(d);
+        renderAccount(d.bookings ? d.bookings[userID] : null);
     });
 
-    function renderHome(obj) {
+    function renderHome(shows) {
         const c = document.getElementById('show-list'); c.innerHTML = "";
-        for(let id in obj) {
-            let s = obj[id]; if(s.status == 'offline') continue;
-            c.innerHTML += `<div class="card"><img src="${s.img}"><div class="card-info"><h3>${s.name}</h3><span style="cursor:pointer;color:var(--blue);font-weight:bold;" onclick="openBooking('${id}')">Click here for tickets</span></div></div>`;
+        for(let id in shows) {
+            let s = shows[id]; if(s.status == 'offline') continue;
+            c.innerHTML += `
+                <div class="card">
+                    <img src="${s.img}">
+                    <div class="card-info">
+                        <h3>${s.name}</h3>
+                        <button class="btn" style="margin-top:15px;" onclick="openBooking('${id}')">Tickets Reserveren</button>
+                    </div>
+                </div>`;
         }
     }
 
     function openBooking(id) {
+        activeID = id;
         db.ref('shows/'+id).once('value', s => {
-            let val = s.val(); activeID = id;
-            document.getElementById('book-title').innerText = val.name;
-            document.getElementById('book-info').innerText = val.info;
-            const dates = val.dates.split(',');
-            document.getElementById('date-selection').innerHTML = dates.map(d => `<button class="btn" style="margin:5px" onclick="selectDate('${d.trim()}')">${d.trim()}</button>`).join('');
-            document.getElementById('ticket-form').style.display = 'none';
+            let v = s.val();
+            document.getElementById('book-title').innerText = v.name;
+            const ds = document.getElementById('date-select'); ds.innerHTML = "";
+            v.dates.split(',').forEach(d => ds.innerHTML += `<option>${d.trim()}</option>`);
+            loadStock();
             goTo('booking-page');
         });
     }
 
-    function selectDate(d) {
-        activeDate = d;
-        document.getElementById('selected-date-label').innerText = "Datum: " + d;
-        document.getElementById('ticket-form').style.display = 'block';
+    function loadStock() {
+        const date = document.getElementById('date-select').value;
+        db.ref('sales/'+activeID+'/'+date).on('value', s => {
+            const v = s.val() || {r1:0, r2:0, r3:0};
+            updateLabel('r1-count', 28 - v.r1);
+            updateLabel('r2-count', 28 - v.r2);
+            updateLabel('r3-count', 42 - v.r3);
+        });
+    }
+
+    function updateLabel(id, left) {
+        const el = document.getElementById(id);
+        el.innerText = left > 0 ? left + " over" : "VOL";
+        el.className = left > 0 ? "in-stock" : "sold-out";
     }
 
     function confirmBooking() {
+        const date = document.getElementById('date-select').value;
         const q = [parseInt(document.getElementById('q1').value), parseInt(document.getElementById('q2').value), parseInt(document.getElementById('q3').value)];
-        db.ref('bookings/'+userKey+'/'+Date.now()).set({ show: document.getElementById('book-title').innerText, date: activeDate, tickets: q.join('/') });
-        alert("Gereserveerd!"); goTo('account');
+        
+        db.ref('sales/'+activeID+'/'+date).transaction(cur => {
+            cur = cur || {r1:0, r2:0, r3:0};
+            if((cur.r1+q[0])>28 || (cur.r2+q[1])>28 || (cur.r3+q[2])>42) return;
+            cur.r1 += q[0]; cur.r2 += q[1]; cur.r3 += q[2];
+            return cur;
+        }).then(res => {
+            if(!res.committed) return alert("Niet genoeg tickets!");
+            db.ref('bookings/'+userID+'/'+Date.now()).set({ show: document.getElementById('book-title').innerText, date, tickets: q.join('/') });
+            alert("Reservering gelukt!"); goTo('account');
+        });
     }
 
-    function saveToFirebase() {
+    function saveAdmin() {
         const type = document.getElementById('adm-type').value;
         const id = Date.now();
         db.ref(type+'/'+id).set({
@@ -193,45 +213,50 @@
             img: document.getElementById('adm-img').value,
             info: document.getElementById('adm-info').value,
             dates: document.getElementById('adm-dates').value || "",
-            status: 'online',
-            posted: new Date().toLocaleDateString()
-        }).then(() => alert("Gepubliceerd!"));
+            status: 'online', posted: new Date().toLocaleString()
+        }).then(() => alert("Opgeslagen!"));
     }
 
-    function renderAdminList(data) {
-        const c = document.getElementById('admin-manage-list'); c.innerHTML = "";
+    function renderAdmin(data) {
+        const c = document.getElementById('admin-manage-list'); c.innerHTML = "<h3>Database Beheer</h3><br>";
         ['shows', 'news', 'theaters'].forEach(type => {
             if(!data[type]) return;
-            c.innerHTML += `<h4>${type.toUpperCase()}</h4>`;
             for(let id in data[type]) {
-                let item = data[type][id];
-                c.innerHTML += `<div class="list-item">
-                    <span>${item.name}</span>
-                    <div>
-                        <button class="btn" style="padding:5px" onclick="db.ref('${type}/${id}/status').set('${item.status=='online'?'offline':'online'}')">Status</button>
-                        <button class="btn btn-del" onclick="db.ref('${type}/${id}').remove()">Verwijder</button>
-                    </div>
-                </div>`;
+                let i = data[type][id];
+                c.innerHTML += `
+                    <div class="admin-item">
+                        <span><b>[${type}]</b> ${i.name}</span>
+                        <div>
+                            <button class="btn btn-off" onclick="db.ref('${type}/${id}/status').set('${i.status=='online'?'offline':'online'}')">Status</button>
+                            <button class="btn btn-red" onclick="db.ref('${type}/${id}').remove()">X</button>
+                        </div>
+                    </div>`;
             }
         });
     }
 
-    function renderNews(obj) {
+    function renderNews(news) {
         const c = document.getElementById('news-list'); c.innerHTML = "";
-        for(let id in obj) {
-            c.innerHTML += `<div class="list-item" style="display:block;"><small>${obj[id].posted}</small><h3>${obj[id].name}</h3><p>${obj[id].info}</p></div>`;
-        }
+        if(!news) return;
+        Object.values(news).reverse().forEach(n => {
+            c.innerHTML += `<div class="admin-item" style="display:block;"><small>${n.posted}</small><h3>${n.name}</h3><p>${n.info}</p></div>`;
+        });
     }
 
-    function renderTheaters(obj) {
+    function renderTheaters(th) {
         const c = document.getElementById('theater-list'); c.innerHTML = "";
-        for(let id in obj) {
-            c.innerHTML += `<div class="card" style="height:300px;"><img src="${obj[id].img}"><div class="card-info"><h3>${obj[id].name}</h3><p style="font-size:11px;">${obj[id].info}</p></div></div>`;
-        }
+        if(!th) return;
+        Object.values(th).forEach(t => {
+            c.innerHTML += `<div class="card" style="height:300px;"><img src="${t.img}"><div class="card-info" style="opacity:1;"><h3>${t.name}</h3><p style="font-size:11px;">${t.info}</p></div></div>`;
+        });
     }
 
-    function renderMyTickets(b) {
-        const c = document.getElementById('my-tickets'); c.innerHTML = b ? Object.values(b).map(t => `<div class="list-item"><b>${t.show}</b><br>${t.date}</div>`).join('') : "Geen tickets gevonden.";
+    function renderAccount(b) {
+        const c = document.getElementById('my-tickets'); c.innerHTML = "";
+        if(!b) return c.innerHTML = "Geen tickets.";
+        Object.values(b).forEach(t => {
+            c.innerHTML += `<div class="admin-item" style="border-color:var(--green);"><b>${t.show}</b><br>${t.date}<br><small>Tickets: ${t.tickets}</small></div>`;
+        });
     }
 </script>
 </body>
