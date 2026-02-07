@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Entertainment | Pro Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Entertainment | Officiële Seating</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -15,244 +16,238 @@
             --occ: #1a1a1a;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: url('https://images.alphacoders.com/134/1343715.png') no-repeat center center fixed; 
-            background-size: cover; 
-            color: #fff; 
+        /* ACHTERGROND FIX */
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%; width: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background: url('https://eu-central-1-dotcontrol.graphassets.com/ARqeS7pzaQfsqxPd1pwy9z/MNy8cZEdQPa3MoUePRSi') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            overflow-x: hidden;
         }
 
-        .overlay { background: rgba(0,0,0,0.85); min-height: 100vh; padding-top: 80px; }
+        /* BLUR EFFECT */
+        .page-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px); /* De mooie blur die je vroeg */
+            -webkit-backdrop-filter: blur(8px);
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
 
-        nav { background: #000; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 9000; border-bottom: 2px solid var(--blue); }
+        /* NAVIGATIE */
+        nav {
+            background: rgba(0, 0, 0, 0.9);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            position: fixed;
+            width: 90%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--blue);
+        }
+
         .nav-link { cursor: pointer; text-transform: uppercase; font-weight: 700; margin-left: 20px; font-size: 13px; }
 
-        .section { padding: 40px 5%; display: none; }
+        .section { padding: 100px 5% 40px; display: none; }
         .section.active { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: #000; border: 1px solid #333; cursor: pointer; border-radius: 8px; overflow: hidden; transition: 0.3s; }
-        .card:hover { border-color: var(--blue); transform: scale(1.02); }
-        .card img { width: 100%; height: 320px; object-fit: cover; }
-
-        /* THEATER MODAL OVERLAY */
+        /* SEATING ENGINE (FIXED CLICKING) */
         #theater-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            overflow-y: auto; padding: 50px 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999; /* Zorgt dat het boven alles staat */
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* AFAS SEATING */
-        .afas-grid {
-            display: inline-grid;
+        .stage-bar {
+            width: 350px; height: 15px; background: #444; 
+            margin-bottom: 50px; border-radius: 0 0 50px 50px;
+            text-align: center; font-size: 10px; color: #888;
+        }
+
+        .seating-grid {
+            display: grid;
             grid-template-columns: repeat(3, 30px) 40px repeat(8, 30px) 40px repeat(3, 30px);
-            gap: 10px; padding: 20px;
+            gap: 10px;
+            padding: 20px;
+            pointer-events: all; /* Forceert klikbaarheid */
         }
-        .seat { width: 30px; height: 30px; background: var(--free); border-radius: 5px; cursor: pointer; transition: 0.2s; }
-        .seat.selected { background: var(--select); box-shadow: 0 0 10px var(--select); }
-        .seat.occupied { background: var(--occ); cursor: not-allowed; opacity: 0.3; }
-        .gap { width: 40px; }
 
-        /* EFTELING RANGEN */
-        .rang-box { width: 400px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        .rang-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #1a1a1a; border-radius: 5px; }
-        .counter { display: flex; align-items: center; gap: 15px; }
+        .seat {
+            width: 30px; height: 30px;
+            background: var(--free);
+            border: none; border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s transform;
+        }
 
-        .btn { background: var(--blue); color: #fff; padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin: 10px; }
-        .btn-sm { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--blue); color: #fff; cursor: pointer; font-weight: bold; }
-        
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #111; border: 1px solid #444; color: #fff; border-radius: 5px; }
+        .seat:hover { transform: scale(1.2); }
+        .seat.selected { background: var(--select) !important; box-shadow: 0 0 15px var(--select); }
+        .seat.occupied { background: var(--occ) !important; cursor: not-allowed; opacity: 0.3; }
+
+        .spacer { width: 40px; pointer-events: none; }
+
+        /* UI BUTTONS */
+        .btn {
+            background: var(--blue); color: white; border: none;
+            padding: 15px 40px; font-weight: bold; border-radius: 5px;
+            cursor: pointer; text-transform: uppercase; margin: 10px;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: rgba(0,0,0,0.8); border: 1px solid #333; cursor: pointer; border-radius: 10px; overflow: hidden; }
+        .card img { width: 100%; height: 300px; object-fit: cover; }
     </style>
 </head>
 <body>
 
-<div class="overlay">
+<div class="page-overlay">
     <nav>
-        <div onclick="showPage('home')" style="cursor:pointer; font-weight:bold; color:var(--blue)">VE OFFICIAL</div>
+        <div style="font-weight: 800; color: var(--blue); font-size: 20px;">VIRTUAL ENT.</div>
         <div>
-            <span class="nav-link" onclick="showPage('home')">Musicals</span>
-            <span class="nav-link" onclick="showPage('explore')">Explore</span>
-            <span class="nav-link" onclick="showPage('tickets')">Tickets</span>
-            <span class="nav-link" onclick="showPage('login')">Admin</span>
+            <span class="nav-link" onclick="showSec('home')">Musicals</span>
+            <span class="nav-link" onclick="showSec('explore')">Theaters</span>
+            <span class="nav-link" onclick="showSec('admin')">Beheer</span>
         </div>
     </nav>
 
-    <section id="home" class="section active"><h2>Live Shows</h2><br><div id="show-grid" class="grid"></div></section>
-    
-    <section id="explore" class="section">
-        <h2>Theaters</h2><br><div id="theater-grid" class="grid"></div><br>
-        <h2>Latest News</h2><br><div id="news-list"></div>
+    <section id="home" class="section active">
+        <h2>Beschikbare Shows</h2><br>
+        <div id="musical-list" class="grid"></div>
     </section>
 
-    <section id="tickets" class="section"><h2>My Reservations</h2><br><div id="ticket-list"></div></section>
-
-    <section id="login" class="section">
-        <div style="max-width:300px; margin:auto; text-align:center;">
-            <input type="password" id="pw" placeholder="Admin Password">
-            <button class="btn" onclick="auth()">Login</button>
-        </div>
+    <section id="explore" class="section">
+        <h2>Ontdek Theaters</h2><br>
+        <div id="theater-list" class="grid"></div>
     </section>
 
     <section id="admin" class="section">
-        <div style="max-width:500px; margin:auto; background:rgba(0,0,0,0.9); padding:30px; border:1px solid var(--blue);">
-            <h3>Add Content</h3><br>
-            <select id="a-type"><option value="shows">Musical</option><option value="theaters">Theater</option><option value="news">News</option></select>
-            <input type="text" id="a-name" placeholder="Title">
-            <input type="text" id="a-img" placeholder="Image URL">
-            <select id="a-theater">
-                <option value="AFAS">AFAS Circustheater (Seating Chart)</option>
-                <option value="Efteling">Efteling Theater (Ranks Only)</option>
-            </select>
-            <textarea id="a-info" placeholder="Description"></textarea>
-            <button class="btn" style="width:100%" onclick="save()">Publish</button>
+        <div style="max-width: 400px; margin: auto; background: rgba(0,0,0,0.9); padding: 30px; border: 1px solid var(--blue);">
+            <h3>Inloggen Beheer</h3><br>
+            <input type="password" id="admin-pw" style="width: 100%; padding: 10px; margin-bottom: 10px;" placeholder="Wachtwoord">
+            <button class="btn" style="width: 100%;" onclick="checkLogin()">Inloggen</button>
         </div>
     </section>
 </div>
 
 <div id="theater-overlay">
-    <h1 id="t-title">Show Name</h1>
-    <p id="t-type-label" style="color:var(--blue); margin-bottom: 20px;"></p>
-
-    <div id="afas-container" style="display:none; text-align:center;">
-        <div style="width:300px; height:20px; background:#333; margin: 0 auto 40px; border-radius: 0 0 40px 40px;">STAGE</div>
-        <div class="afas-grid" id="afas-grid"></div>
-    </div>
-
-    <div id="efteling-container" style="display:none;">
-        <div class="rang-box">
-            <div class="rang-row"><span>Rang 1</span><div class="counter"><button class="btn-sm" onclick="cnt('r1',-1)">-</button><span id="r1">0</span><button class="btn-sm" onclick="cnt('r1',1)">+</button></div></div>
-            <div class="rang-row"><span>Rang 2</span><div class="counter"><button class="btn-sm" onclick="cnt('r2',-1)">-</button><span id="r2">0</span><button class="btn-sm" onclick="cnt('r2',1)">+</button></div></div>
-            <div class="rang-row"><span>Rang 3</span><div class="counter"><button class="btn-sm" onclick="cnt('r3',-1)">-</button><span id="r3">0</span><button class="btn-sm" onclick="cnt('r3',1)">+</button></div></div>
+    <h1 id="active-title">Laden...</h1>
+    <div class="stage-bar">PODIUM / SCHERM</div>
+    
+    <div class="seating-grid" id="main-grid">
         </div>
-    </div>
 
-    <div style="margin-top:30px;">
-        <button class="btn" onclick="book()">Confirm Booking</button>
-        <button class="btn" style="background:#333;" onclick="closeOverlay()">Close</button>
+    <div style="margin-top: 40px;">
+        <button class="btn" onclick="confirmBooking()">Reserveren</button>
+        <button class="btn" style="background: #444;" onclick="closeSeating()">Sluiten</button>
     </div>
 </div>
 
 <script>
+    // FIREBASE INITIALISATIE (Vervang met jouw eigen databaseURL)
     const firebaseConfig = { databaseURL: "https://vrtrtr-b9978-default-rtdb.europe-west1.firebasedatabase.app" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let activeShow = null;
-    let selectedSeats = [];
-    let rangen = {r1:0, r2:0, r3:0};
-    const userUID = "User_" + Math.floor(Math.random() * 9999);
+    let currentShowId = null;
+    let mySelection = [];
 
-    function showPage(id) {
+    function showSec(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        closeOverlay();
     }
 
-    // Sync
-    db.ref('/').on('value', snap => {
-        const d = snap.val() || {};
-        renderList(d.shows, 'show-grid', true);
-        renderList(d.theaters, 'theater-grid', false);
-        if(d.news) document.getElementById('news-list').innerHTML = Object.values(d.news).map(n => `<div style="background:#111; padding:20px; border-left:4px solid var(--blue); margin-bottom:10px;"><h3>${n.name}</h3><p>${n.info}</p></div>`).join('');
+    // DATA OPHALEN
+    db.ref('shows').on('value', snap => {
+        const data = snap.val();
+        const list = document.getElementById('musical-list');
+        list.innerHTML = "";
+        for(let id in data) {
+            list.innerHTML += `
+                <div class="card" onclick="openSeating('${id}', '${data[id].name}')">
+                    <img src="${data[id].img}">
+                    <div style="padding: 15px;"><h3>${data[id].name}</h3></div>
+                </div>`;
+        }
     });
 
-    function renderList(obj, target, isShow) {
-        const t = document.getElementById(target); t.innerHTML = "";
-        if(!obj) return;
-        Object.values(obj).forEach(i => {
-            t.innerHTML += `<div class="card" onclick="${isShow ? `openTheater('${i.id}')` : ''}"><img src="${i.img}"><div style="padding:15px;"><h3>${i.name}</h3></div></div>`;
-        });
-    }
+    // SEATING LOGIC (HET NIEUWE SYSTEEM)
+    function openSeating(id, name) {
+        currentShowId = id;
+        mySelection = [];
+        document.getElementById('active-title').innerText = name;
+        document.getElementById('theater-overlay').style.display = 'flex';
+        
+        // Luister naar bezette stoelen
+        db.ref('seats/' + id).on('value', snap => {
+            const occupied = snap.val() || {};
+            const grid = document.getElementById('main-grid');
+            grid.innerHTML = "";
 
-    function openTheater(id) {
-        db.ref('shows/'+id).once('value', snap => {
-            const s = snap.val(); activeShow = s;
-            selectedSeats = []; rangen = {r1:0, r2:0, r3:0};
-            document.getElementById('r1').innerText = 0; document.getElementById('r2').innerText = 0; document.getElementById('r3').innerText = 0;
-
-            document.getElementById('t-title').innerText = s.name;
-            document.getElementById('theater-overlay').style.display = 'flex';
-            
-            if(s.theaterType === "AFAS") {
-                document.getElementById('afas-container').style.display = 'block';
-                document.getElementById('efteling-container').style.display = 'none';
-                document.getElementById('t-type-label').innerText = "AFAS Circustheater - Select Seats";
-                loadAFAS(id);
-            } else {
-                document.getElementById('afas-container').style.display = 'none';
-                document.getElementById('efteling-container').style.display = 'block';
-                document.getElementById('t-type-label').innerText = "Efteling Theater - Choose Ranks";
-            }
-        });
-    }
-
-    function loadAFAS(sid) {
-        db.ref('seats/'+sid).on('value', snap => {
-            const taken = snap.val() || {};
-            const grid = document.getElementById('afas-grid'); grid.innerHTML = "";
+            // Genereer 8 rijen stoelen
             for(let r=1; r<=8; r++) {
-                for(let s=1; s<=3; s++) createSeat(grid, `L${r}-${s}`, taken);
-                grid.innerHTML += `<div class="gap"></div>`;
-                for(let s=1; s<=8; s++) createSeat(grid, `C${r}-${s}`, taken);
-                grid.innerHTML += `<div class="gap"></div>`;
-                for(let s=1; s<=3; s++) createSeat(grid, `R${r}-${s}`, taken);
+                // Links (3 stoelen)
+                for(let s=1; s<=3; s++) createSeat(grid, `L${r}-${s}`, occupied);
+                grid.innerHTML += `<div class="spacer"></div>`;
+                // Midden (8 stoelen)
+                for(let s=1; s<=8; s++) createSeat(grid, `C${r}-${s}`, occupied);
+                grid.innerHTML += `<div class="spacer"></div>`;
+                // Rechts (3 stoelen)
+                for(let s=1; s<=3; s++) createSeat(grid, `R${r}-${s}`, occupied);
             }
         });
     }
 
-    function createSeat(target, sid, taken) {
-        const s = document.createElement('div');
-        s.className = "seat " + (taken[sid] ? "occupied" : "");
-        if(!taken[sid]) {
-            s.onclick = () => {
-                s.classList.toggle('selected');
-                if(selectedSeats.includes(sid)) selectedSeats = selectedSeats.filter(x => x !== sid);
-                else selectedSeats.push(sid);
+    function createSeat(parent, sid, occupied) {
+        const btn = document.createElement('button');
+        btn.className = "seat " + (occupied[sid] ? "occupied" : "");
+        
+        if(!occupied[sid]) {
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Voorkomt dat de klik doorgegeven wordt aan de laag eronder
+                btn.classList.toggle('selected');
+                if(mySelection.includes(sid)) {
+                    mySelection = mySelection.filter(x => x !== sid);
+                } else {
+                    mySelection.push(sid);
+                }
             };
         }
-        target.appendChild(s);
+        parent.appendChild(btn);
     }
 
-    function cnt(r, val) { rangen[r] = Math.max(0, rangen[r] + val); document.getElementById(r).innerText = rangen[r]; }
-
-    function book() {
-        let detail = "";
-        if(activeShow.theaterType === "AFAS") {
-            if(selectedSeats.length === 0) return alert("Select seats!");
-            selectedSeats.forEach(s => db.ref('seats/'+activeShow.id+'/'+s).set(true));
-            detail = "Seats: " + selectedSeats.join(', ');
-        } else {
-            if(rangen.r1 + rangen.r2 + rangen.r3 === 0) return alert("Choose tickets!");
-            detail = `R1: ${rangen.r1}, R2: ${rangen.r2}, R3: ${rangen.r3}`;
-        }
-        
-        db.ref('bookings/'+userUID+'/'+Date.now()).set({ title: activeShow.name, detail: detail, date: new Date().toLocaleString() });
-        alert("Success!"); closeOverlay(); showPage('tickets');
-    }
-
-    function closeOverlay() { document.getElementById('theater-overlay').style.display = 'none'; }
-    function auth() { if(document.getElementById('pw').value === "Virtual2025") showPage('admin'); else alert("Wrong!"); }
-    
-    function save() {
-        const id = Date.now();
-        const type = document.getElementById('a-type').value;
-        db.ref(type+'/'+id).set({
-            id, name: document.getElementById('a-name').value, 
-            img: document.getElementById('a-img').value, 
-            theaterType: document.getElementById('a-theater').value,
-            info: document.getElementById('a-info').value
-        }).then(() => { alert("Saved!"); showPage('home'); });
-    }
-
-    function loadTickets() {
-        db.ref('bookings/'+userUID).on('value', snap => {
-            const b = snap.val();
-            document.getElementById('ticket-list').innerHTML = b ? Object.values(b).map(t => `<div style="background:#111; padding:20px; border-left:4px solid #0f0; margin-bottom:10px;"><b>${t.title}</b><br>${t.detail}</div>`).join('') : "No tickets.";
+    function confirmBooking() {
+        if(mySelection.length === 0) return alert("Kies eerst een stoel!");
+        mySelection.forEach(sid => {
+            db.ref('seats/' + currentShowId + '/' + sid).set(true);
         });
+        alert("Gereserveerd!");
+        closeSeating();
     }
-    loadTickets();
+
+    function closeSeating() {
+        document.getElementById('theater-overlay').style.display = 'none';
+    }
+
+    function checkLogin() {
+        if(document.getElementById('admin-pw').value === "Virtual2025") {
+            alert("Toegang verleend.");
+            // Hier kun je beheerfuncties toevoegen
+        } else {
+            alert("Fout wachtwoord!");
+        }
+    }
 </script>
+
 </body>
 </html>
