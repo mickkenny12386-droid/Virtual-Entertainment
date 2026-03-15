@@ -177,9 +177,9 @@
         const date = document.getElementById('date-select').value;
         db.ref('sales/'+activeID+'/'+date).on('value', s => {
             const v = s.val() || {r1:0, r2:0, r3:0};
-            updateLabel('r1-count', 28 - v.r1);
-            updateLabel('r2-count', 28 - v.r2);
-            updateLabel('r3-count', 42 - v.r3);
+            updateLabel('r1-count', 60 - v.r1);
+            updateLabel('r2-count', 60 - v.r2);
+            updateLabel('r3-count', 60 - v.r3);
         });
     }
 
