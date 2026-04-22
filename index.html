@@ -1,263 +1,287 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Entertainment | Live Stock Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musical Awards | Excellence in Theater</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Oswald:wght@300;500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #0044ff; --red: #ff3030; --green: #00ff88; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { 
+            --gold: #d4af37; --gold-bright: #f9e29b; --black-deep: #050505; 
+            --black-soft: #121212; --white: #ffffff; --velvet: #8b0000;
+        }
         
         body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: url('https://www.theaterkrant.nl/wp-content/uploads/2024/06/FRO-Let-it-Go-c-Disney-Johan-Persson-NL2354-press-lr-1240x814.jpg') no-repeat center center fixed; 
-            background-size: cover; 
-            color: #fff; overflow-x: hidden;
+            background: var(--black-deep); color: var(--white); font-family: 'Montserrat', sans-serif; 
+            margin: 0; background-image: radial-gradient(circle at top, #1a150a 0%, #050505 100%);
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        .page-layer { min-height: 100vh; padding-top: 80px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); transition: 0.5s; }
-        nav { background: #000; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0; z-index: 1000; border-bottom: 2px solid var(--blue); }
-        .nav-link { cursor: pointer; text-transform: uppercase; font-weight: 700; margin-left: 20px; font-size: 11px; }
+        /* Navigatie */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; 
+            border-bottom: 2px solid var(--gold); background: rgba(0,0,0,0.95);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.8rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+        .nav-links a { color: var(--white); text-decoration: none; margin-left: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        .nav-links a:hover { color: var(--gold); }
 
-        .section { padding: 40px 5%; display: none; }
-        .section.active { display: block; }
+        section { padding: 60px 8%; display: none; }
+        .active { display: block; animation: pageIn 0.8s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .card { background: #000; border-radius: 15px; overflow: hidden; position: relative; height: 450px; border: 1px solid #333; }
-        .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-info { position: absolute; bottom: 0; width: 100%; height: 100%; background: linear-gradient(transparent, #000 80%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; opacity: 0; transition: 0.4s; }
-        .card:hover .card-info { opacity: 1; backdrop-filter: blur(5px); }
+        .section-title { font-family: 'Cinzel', serif; font-size: 2.5rem; text-align: center; color: var(--gold); letter-spacing: 5px; margin-bottom: 50px; text-shadow: 0 0 15px var(--gold); }
 
-        .btn { background: var(--blue); color: #fff; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-red { background: var(--red); }
-        .btn-off { background: #444; }
-
-        input, textarea, select { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 10px; }
+        /* Luxe Show Cards */
+        .show-list-container { display: flex; flex-direction: column; gap: 30px; }
+        .show-card-luxe { 
+            display: flex; background: #000; border: 1px solid #222; border-radius: 8px; 
+            overflow: hidden; height: 300px; transition: 0.4s;
+        }
+        .show-card-luxe:hover { border-color: var(--gold); transform: scale(1.01); }
         
-        .stock-label { font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .sold-out { color: var(--red); }
-        .in-stock { color: var(--green); }
+        .show-image-section { width: 40%; position: relative; }
+        .show-image-section img { width: 100%; height: 100%; object-fit: cover; }
+        .show-image-fade { 
+            position: absolute; top: 0; right: 0; width: 40%; height: 100%; 
+            background: linear-gradient(to right, transparent, #000); 
+        }
 
-        .admin-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--blue); }
+        .show-details-section { width: 60%; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .show-details-section h3 { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold); margin: 0; }
+
+        /* Seating Chart Luxe */
+        .seating-area { 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            padding: 50px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.2); text-align: center;
+        }
+        .stage { 
+            width: 50%; height: 10px; background: var(--gold); margin: 0 auto 50px; 
+            border-radius: 50%; box-shadow: 0 10px 30px var(--gold); 
+        }
+        .theater-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .seat { 
+            width: 30px; height: 34px; background: #441111; border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 5px 5px 10px 10px; cursor: pointer; transition: 0.3s; color: transparent; font-size: 0.6rem;
+        }
+        .seat:hover:not(.occupied) { background: var(--gold); transform: translateY(-5px); color: black; }
+        .seat.selected { background: white; box-shadow: 0 0 15px white; transform: translateY(-5px); color: black; }
+        .seat.occupied { background: #111; border-color: #222; cursor: not-allowed; opacity: 0.3; }
+
+        /* UI Knoppen & Inputs */
+        .luxury-box { background: var(--black-soft); border: 1px solid var(--gold); padding: 40px; max-width: 600px; margin: 0 auto; }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 4px; }
+        .btn { 
+            background: var(--gold); color: black; border: none; padding: 15px; cursor: pointer; 
+            font-weight: bold; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+        }
+        .btn:hover { background: white; box-shadow: 0 0 20px var(--gold); }
+        .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); margin-top: 15px; }
+
+        .whitelist-item { display: flex; justify-content: space-between; background: #111; padding: 10px; border: 1px solid #222; margin-bottom: 5px; }
+        .remove-btn { color: red; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="page-layer">
-    <nav>
-        <div onclick="goTo('home')" style="cursor:pointer; font-weight:800; color:var(--blue);">VIRTUAL ENT.</div>
-        <div>
-            <span class="nav-link" onclick="goTo('home')">Shows</span>
-            <span class="nav-link" onclick="goTo('news-page')">Nieuws</span>
-            <span class="nav-link" onclick="goTo('theaters-page')">Theaters</span>
-            <span class="nav-link" onclick="goTo('account')">Account</span>
-            <span class="nav-link" onclick="goTo('admin-login')" style="opacity:0.4">Admin</span>
+<nav>
+    <div class="logo">MUSICAL AWARDS</div>
+    <div class="nav-links">
+        <a onclick="showPage('home')">HOME</a>
+        <a onclick="authAdmin()">OWNER PANEL</a>
+    </div>
+</nav>
+
+<section id="home" class="active">
+    <h1 class="section-title">EXCLUSIVE SHOWS</h1>
+    <div id="show-list" class="show-list-container"></div>
+</section>
+
+<section id="booking-login">
+    <div class="luxury-box">
+        <h2 style="color:var(--gold); font-family:'Cinzel';">GALA REGISTRATION</h2>
+        <input type="text" id="user-discord" placeholder="Discord Username">
+        <input type="text" id="user-roblox" placeholder="Roblox Username">
+        <button class="btn" onclick="openSeating()">VIEW SEATING CHART</button>
+    </div>
+</section>
+
+<section id="seating">
+    <h1 class="section-title">CHOOSE YOUR SEAT</h1>
+    <div class="seating-area">
+        <div class="stage"></div>
+        <div id="chart-render"></div>
+        <div style="margin-top: 30px;">
+            <p>Selected Seat: <span id="selected-seat-display" style="color:var(--gold); font-weight:bold;">-</span></p>
+            <button class="btn" style="max-width:300px;" onclick="confirmBooking()">CONFIRM & RESERVE</button>
         </div>
-    </nav>
+    </div>
+</section>
 
-    <section id="home" class="section active">
-        <h2>Live Musicals</h2><br><div id="show-list" class="grid"></div>
-    </section>
-
-    <section id="news-page" class="section">
-        <h2>Nieuws Updates</h2><br><div id="news-list" style="max-width:800px; margin:auto;"></div>
-    </section>
-
-    <section id="theaters-page" class="section">
-        <h2>Locaties</h2><br><div id="theater-list" class="grid"></div>
-    </section>
-
-    <section id="account" class="section">
-        <h2>Mijn Reserveringen</h2><br><div id="my-tickets" style="max-width:600px;"></div>
-    </section>
-
-    <section id="booking-page" class="section">
-        <div style="max-width:500px; margin:auto; background:rgba(0,0,0,0.9); padding:30px; border-radius:15px; border:1px solid var(--blue);">
-            <h2 id="book-title">Show</h2><br>
-            <select id="date-select" onchange="loadStock()"></select>
-            
-            <div id="stock-container">
-                <div class="stock-label">Rang I <span id="r1-count"></span></div>
-                <input type="number" id="q1" value="0" min="0">
-                
-                <div class="stock-label">Rang II <span id="r2-count"></span></div>
-                <input type="number" id="q2" value="0" min="0">
-                
-                <div class="stock-label">Rang III <span id="r3-count"></span></div>
-                <input type="number" id="q3" value="0" min="0">
-            </div>
-
-            <button class="btn" style="width:100%; margin-top:20px;" onclick="confirmBooking()">Reserveer nu</button>
-            <button class="btn btn-off" style="width:100%; margin-top:10px;" onclick="goTo('home')">Annuleren</button>
+<section id="admin">
+    <h1 class="section-title">OWNER DASHBOARD</h1>
+    <div class="luxury-box" style="margin-bottom:30px;">
+        <h3 style="color:var(--gold);">SCANNER WHITELIST</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="manual-roblox-name" placeholder="Roblox Name" style="margin:0;">
+            <button class="btn" style="width:100px;" onclick="addToWhitelist()">ADD</button>
         </div>
-    </section>
-
-    <section id="admin-panel" class="section">
-        <h2>Beheer Center</h2><br>
-        <div class="grid" style="align-items: start;">
-            <div style="background:#111; padding:20px; border-radius:10px;">
-                <h3>Toevoegen</h3><br>
-                <select id="adm-type">
-                    <option value="shows">Musical</option>
-                    <option value="news">Nieuwsbericht</option>
-                    <option value="theaters">Theater</option>
-                </select>
-                <input id="adm-name" placeholder="Naam">
-                <input id="adm-img" placeholder="Afbeelding URL">
-                <input id="adm-dates" placeholder="Datums (bijv: 1 Feb, 3 Feb)">
-                <textarea id="adm-info" placeholder="Informatie"></textarea>
-                <button class="btn" style="width:100%" onclick="saveAdmin()">Opslaan</button>
-            </div>
-            <div id="admin-manage-list"></div>
-        </div>
-    </section>
-
-    <section id="admin-login" class="section">
-        <div style="max-width:300px; margin:auto; text-align:center;">
-            <input type="password" id="adm-pass" placeholder="Wachtwoord">
-            <button class="btn" onclick="if(document.getElementById('adm-pass').value=='Virtual2025') goTo('admin-panel')">Inloggen</button>
-        </div>
-    </section>
-</div>
+        <div id="whitelist-display" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
+    </div>
+    <div class="luxury-box">
+        <h3 style="color:var(--gold);">CREATE SHOW</h3>
+        <input type="text" id="new-name" placeholder="Show Name">
+        <input type="date" id="new-date">
+        <input type="text" id="new-img" placeholder="Image URL (Imgur)">
+        <button class="btn" onclick="saveShow()">PUBLISH SHOW</button>
+    </div>
+    <div id="admin-manage-list" style="margin-top:30px;"></div>
+</section>
 
 <script>
-    const firebaseConfig = { databaseURL: "https://vrtrtr-b9978-default-rtdb.europe-west1.firebasedatabase.app" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let shows = JSON.parse(localStorage.getItem('ma_luxe_shows')) || [];
+    let whitelist = JSON.parse(localStorage.getItem('ma_whitelist')) || [];
+    let currentShow = null;
+    let selectedSeat = null;
+    const WEBHOOK = "https://discord.com/api/webhooks/1495954546743316644/QkS7uzzhImZ9nSZuVzLe113MMQ9X9xqsvdePzpxSEiq66DxneFRINjvxOKfcnhwBLmvx";
 
-    const userID = "U-" + Math.floor(Math.random()*9999);
-    let activeID = null;
-
-    function goTo(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    function showPage(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        if(id === 'admin') renderWhitelist();
         window.scrollTo(0,0);
     }
 
-    db.ref('/').on('value', snap => {
-        const d = snap.val() || {};
-        renderHome(d.shows);
-        renderNews(d.news);
-        renderTheaters(d.theaters);
-        renderAdmin(d);
-        renderAccount(d.bookings ? d.bookings[userID] : null);
-    });
+    function authAdmin() {
+        if(prompt("Password:") === "firsteditionmusical") showPage('admin');
+    }
 
-    function renderHome(shows) {
-        const c = document.getElementById('show-list'); c.innerHTML = "";
-        for(let id in shows) {
-            let s = shows[id]; if(s.status == 'offline') continue;
-            c.innerHTML += `
-                <div class="card">
-                    <img src="${s.img}">
-                    <div class="card-info">
-                        <h3>${s.name}</h3>
-                        <button class="btn" style="margin-top:15px;" onclick="openBooking('${id}')">Tickets Reserveren</button>
-                    </div>
-                </div>`;
+    // WHITELIST
+    function addToWhitelist(nameFromBooking) {
+        const name = nameFromBooking || document.getElementById('manual-roblox-name').value;
+        if(name && !whitelist.includes(name)) {
+            whitelist.push(name);
+            localStorage.setItem('ma_whitelist', JSON.stringify(whitelist));
+            renderWhitelist();
+            document.getElementById('manual-roblox-name').value = "";
         }
     }
 
-    function openBooking(id) {
-        activeID = id;
-        db.ref('shows/'+id).once('value', s => {
-            let v = s.val();
-            document.getElementById('book-title').innerText = v.name;
-            const ds = document.getElementById('date-select'); ds.innerHTML = "";
-            v.dates.split(',').forEach(d => ds.innerHTML += `<option>${d.trim()}</option>`);
-            loadStock();
-            goTo('booking-page');
-        });
+    function renderWhitelist() {
+        document.getElementById('whitelist-display').innerHTML = whitelist.map(n => `
+            <div class="whitelist-item"><span>${n}</span><span class="remove-btn" onclick="removeFromWhitelist('${n}')">X</span></div>
+        `).join('');
     }
 
-    function loadStock() {
-        const date = document.getElementById('date-select').value;
-        db.ref('sales/'+activeID+'/'+date).on('value', s => {
-            const v = s.val() || {r1:0, r2:0, r3:0};
-            updateLabel('r1-count', 60 - v.r1);
-            updateLabel('r2-count', 60 - v.r2);
-            updateLabel('r3-count', 60 - v.r3);
-        });
+    function removeFromWhitelist(n) {
+        whitelist = whitelist.filter(x => x !== n);
+        localStorage.setItem('ma_whitelist', JSON.stringify(whitelist));
+        renderWhitelist();
     }
 
-    function updateLabel(id, left) {
-        const el = document.getElementById(id);
-        el.innerText = left > 0 ? left + " over" : "VOL";
-        el.className = left > 0 ? "in-stock" : "sold-out";
+    // SHOWS
+    function saveShow() {
+        const name = document.getElementById('new-name').value;
+        const date = document.getElementById('new-date').value;
+        const img = document.getElementById('new-img').value || "https://i.imgur.com/2Y4uT6K.jpeg";
+        if(name && date) {
+            shows.push({ id: Date.now(), name, date, img, occupied: [] });
+            updateAll();
+        }
+    }
+
+    function updateAll() {
+        localStorage.setItem('ma_luxe_shows', JSON.stringify(shows));
+        renderHome();
+        renderAdminList();
+    }
+
+    function renderHome() {
+        document.getElementById('show-list').innerHTML = shows.map(s => `
+            <div class="show-card-luxe">
+                <div class="show-image-section"><img src="${s.img}"><div class="show-image-fade"></div></div>
+                <div class="show-details-section">
+                    <h3>${s.name}</h3><p>${s.date}</p>
+                    <button class="btn btn-outline" onclick="startBooking(${s.id})">RESERVE TICKET</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderAdminList() {
+        document.getElementById('admin-manage-list').innerHTML = shows.map(s => `
+            <div class="whitelist-item"><span>${s.name}</span><span class="remove-btn" onclick="deleteShow(${s.id})">DELETE</span></div>
+        `).join('');
+    }
+
+    function deleteShow(id) {
+        shows = shows.filter(s => s.id !== id);
+        updateAll();
+    }
+
+    // BOOKING
+    function startBooking(id) {
+        currentShow = shows.find(s => s.id === id);
+        showPage('booking-login');
+    }
+
+    function openSeating() {
+        if(!document.getElementById('user-roblox').value) return alert("Enter Roblox Name");
+        showPage('seating');
+        renderTheater();
+    }
+
+    function renderTheater() {
+        const container = document.getElementById('chart-render');
+        container.innerHTML = '';
+        for(let r=1; r<=6; r++) {
+            const row = document.createElement('div');
+            row.className = 'theater-row';
+            // Curve effect
+            row.style.transform = `translateY(${r*3}px) scale(${1 + (r*0.01)})`;
+            for(let s=1; s<=12; s++) {
+                const label = `R${r}-S${s}`;
+                const seat = document.createElement('div');
+                seat.className = 'seat';
+                if(currentShow.occupied.includes(label)) seat.classList.add('occupied');
+                seat.onclick = () => {
+                    if(seat.classList.contains('occupied')) return;
+                    document.querySelectorAll('.seat').forEach(x => x.classList.remove('selected'));
+                    seat.classList.add('selected');
+                    selectedSeat = label;
+                    document.getElementById('selected-seat-display').innerText = label;
+                };
+                row.appendChild(seat);
+            }
+            container.appendChild(row);
+        }
     }
 
     function confirmBooking() {
-        const date = document.getElementById('date-select').value;
-        const q = [parseInt(document.getElementById('q1').value), parseInt(document.getElementById('q2').value), parseInt(document.getElementById('q3').value)];
+        const robloxName = document.getElementById('user-roblox').value;
+        if(!selectedSeat) return alert("Select a seat");
         
-        db.ref('sales/'+activeID+'/'+date).transaction(cur => {
-            cur = cur || {r1:0, r2:0, r3:0};
-            if((cur.r1+q[0])>28 || (cur.r2+q[1])>28 || (cur.r3+q[2])>42) return;
-            cur.r1 += q[0]; cur.r2 += q[1]; cur.r3 += q[2];
-            return cur;
-        }).then(res => {
-            if(!res.committed) return alert("Niet genoeg tickets!");
-            db.ref('bookings/'+userID+'/'+Date.now()).set({ show: document.getElementById('book-title').innerText, date, tickets: q.join('/') });
-            alert("Reservering gelukt!"); goTo('account');
+        currentShow.occupied.push(selectedSeat);
+        addToWhitelist(robloxName);
+
+        fetch(WEBHOOK, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                embeds: [{ title: "🎟️ TICKET BOUGHT", color: 13936439, fields: [
+                    {name: "Show", value: currentShow.name, inline: true},
+                    {name: "Seat", value: selectedSeat, inline: true},
+                    {name: "User", value: robloxName}
+                ]}]
+            })
         });
+
+        confetti({ particleCount: 150, colors: ['#d4af37', '#ffffff'] });
+        alert("Success! You are whitelisted.");
+        updateAll(); showPage('home');
     }
 
-    function saveAdmin() {
-        const type = document.getElementById('adm-type').value;
-        const id = Date.now();
-        db.ref(type+'/'+id).set({
-            id, name: document.getElementById('adm-name').value,
-            img: document.getElementById('adm-img').value,
-            info: document.getElementById('adm-info').value,
-            dates: document.getElementById('adm-dates').value || "",
-            status: 'online', posted: new Date().toLocaleString()
-        }).then(() => alert("Opgeslagen!"));
-    }
-
-    function renderAdmin(data) {
-        const c = document.getElementById('admin-manage-list'); c.innerHTML = "<h3>Database Beheer</h3><br>";
-        ['shows', 'news', 'theaters'].forEach(type => {
-            if(!data[type]) return;
-            for(let id in data[type]) {
-                let i = data[type][id];
-                c.innerHTML += `
-                    <div class="admin-item">
-                        <span><b>[${type}]</b> ${i.name}</span>
-                        <div>
-                            <button class="btn btn-off" onclick="db.ref('${type}/${id}/status').set('${i.status=='online'?'offline':'online'}')">Status</button>
-                            <button class="btn btn-red" onclick="db.ref('${type}/${id}').remove()">X</button>
-                        </div>
-                    </div>`;
-            }
-        });
-    }
-
-    function renderNews(news) {
-        const c = document.getElementById('news-list'); c.innerHTML = "";
-        if(!news) return;
-        Object.values(news).reverse().forEach(n => {
-            c.innerHTML += `<div class="admin-item" style="display:block;"><small>${n.posted}</small><h3>${n.name}</h3><p>${n.info}</p></div>`;
-        });
-    }
-
-    function renderTheaters(th) {
-        const c = document.getElementById('theater-list'); c.innerHTML = "";
-        if(!th) return;
-        Object.values(th).forEach(t => {
-            c.innerHTML += `<div class="card" style="height:300px;"><img src="${t.img}"><div class="card-info" style="opacity:1;"><h3>${t.name}</h3><p style="font-size:11px;">${t.info}</p></div></div>`;
-        });
-    }
-
-    function renderAccount(b) {
-        const c = document.getElementById('my-tickets'); c.innerHTML = "";
-        if(!b) return c.innerHTML = "Geen tickets.";
-        Object.values(b).forEach(t => {
-            c.innerHTML += `<div class="admin-item" style="border-color:var(--green);"><b>${t.show}</b><br>${t.date}<br><small>Tickets: ${t.tickets}</small></div>`;
-        });
-    }
+    renderHome();
 </script>
 </body>
 </html>
