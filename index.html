@@ -3,574 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Entertainment</title>
-    <!-- Tailwind CSS voor de styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter (lijkt sterk op de font van de originele site) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome voor de icoontjes (pijltjes, ticket) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Virtual Entertainment | Official Website</title>
     
-    <!-- Custom instellingen voor de exacte kleuren en animaties -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-blue': '#1a56db', // Het hoofdkleur blauw (ter vervanging van rood)
-                        'brand-dark': '#111111',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
+        :root {
+            --brand-red: #E60000;
+            --stage-gold: #E5C158; /* Exact gold from the screenshot */
+            --bg-black: #000000;
+        }
+
         body {
-            background-color: #ffffff;
+            background-color: var(--bg-black);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
             overflow-x: hidden;
         }
 
-        /* Hero Sectie Animatie */
-        .hero-container {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background-color: #000;
+        .font-serif {
+            font-family: 'Playfair Display', serif;
         }
 
-        .hero-panel {
+        .text-gold {
+            color: var(--stage-gold);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Navigation styling mimicking the screenshot */
+        .main-nav {
+            background-color: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link {
             position: relative;
-            flex: 1;
-            background-size: cover;
-            background-position: center top;
-            transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s;
         }
-
-        /* Donkere overlay over de panelen zodat tekst leesbaar is */
-        .hero-panel::after {
+        .nav-link:hover {
+            color: var(--stage-gold);
+        }
+        .nav-link.active::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            transition: background 0.7s ease;
+            bottom: -24px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--brand-red);
         }
 
-        /* Als je met je muis over een paneel gaat, wordt deze breder */
-        .hero-panel:hover {
-            flex: 1.8;
-        }
-
-        /* Maak de overlay lichter op het paneel waar je muis op staat */
-        .hero-panel:hover::after {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        /* Verberg de tekst in de niet-actieve panelen (optioneel, maar maakt het rustiger) */
-        .hero-panel .panel-content {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            transition-delay: 0s;
-        }
-
-        .hero-panel:hover .panel-content,
-        .hero-panel.active-panel .panel-content {
-            opacity: 1;
-            transition-delay: 0.4s;
-        }
-
-        /* Carousel verbergen scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
+        /* View toggling classes */
+        .view-section {
             display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        .view-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Video play button overlay styling */
+        .play-button-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: var(--brand-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+        .play-button-overlay:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .play-button-overlay::after {
+            content: '';
+            width: 0; 
+            height: 0; 
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid white;
+            margin-left: 5px;
         }
     </style>
 </head>
-<body class="antialiased text-gray-800">
+<body>
 
-    <!-- Navigatiebalk (Zwevend over de hero sectie) -->
-    <nav class="absolute top-0 w-full z-50 flex items-center justify-between px-8 py-6 bg-gradient-to-b from-black/80 to-transparent text-white">
-        <!-- Logo -->
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-xl tracking-tighter shadow-lg">
-                VE
-            </div>
-            <span class="font-bold text-lg tracking-tight hidden sm:block">Virtual Entertainment</span>
+    <nav class="main-nav fixed w-full top-0 z-50 px-6 py-4 flex justify-between items-center h-20">
+        <!-- Left: Logo & Menu -->
+        <div class="flex items-center gap-6">
+            <a href="#" onclick="switchView('home-view')" class="flex items-center gap-2 cursor-pointer group">
+                <!-- Abstract Red Logo Mark (like Stage) -->
+                <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[--brand-red] group-hover:opacity-80 transition">
+                    <path d="M0 12C0 5.37258 5.37258 0 12 0H20C26.6274 0 32 5.37258 32 12C32 18.6274 26.6274 24 20 24H12C5.37258 24 0 18.6274 0 12Z" fill="currentColor" fill-opacity="0.2"/>
+                    <path d="M4 12C4 7.58172 7.58172 4 12 4H20C24.4183 4 28 7.58172 28 12C28 16.4183 24.4183 20 20 20H12C7.58172 20 4 16.4183 4 12Z" fill="currentColor"/>
+                </svg>
+                <span class="text-white font-bold text-lg tracking-tight hidden sm:block">Virtual</span>
+            </a>
+            
+            <button class="flex items-center gap-2 text-white hover:text-[--stage-gold] transition">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span class="text-sm font-medium uppercase tracking-wider hidden sm:block">Menu</span>
+            </button>
         </div>
 
-        <!-- Menu Links -->
-        <ul class="hidden lg:flex items-center gap-6 text-sm font-semibold tracking-wide">
-            <!-- Actieve link heeft een blauwe rand aan de onderkant -->
-            <li class="border-b-2 border-brand-blue pb-1"><a href="#" class="hover:text-gray-300 transition">Home</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-gray-400 transition"><a href="#">About us</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-gray-400 transition"><a href="#productions">Productions</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-gray-400 transition"><a href="#theatres">Theatres</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-gray-400 transition"><a href="#careers">Careers</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-gray-400 transition"><a href="#">Responsibility</a></li>
-            <li class="pb-1 border-b-2 border-transparent hover:border-brand-blue transition text-brand-blue"><a href="#" onclick="openLoginModal(event)"><i class="fa-solid fa-lock"></i> Admin</a></li>
-        </ul>
-
-        <!-- Zoek tickets knop -->
-        <button class="bg-brand-blue hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-bold transition flex items-center gap-2 shadow-lg">
-            <i class="fa-solid fa-ticket"></i> Find tickets
-        </button>
+        <!-- Center/Right: Show specific nav (Only visible on Show page) -->
+        <div id="show-nav-items" class="hidden md:flex items-center gap-8">
+            <span class="font-serif text-[--stage-gold] font-bold text-xl mr-4 uppercase tracking-wider" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Moulin Rouge!</span>
+            <a href="#" class="nav-link active text-white">More about <span class="text-[10px] ml-1">▼</span></a>
+            <a href="#" class="nav-link text-gray-300">Practical <span class="text-[10px] ml-1">▼</span></a>
+            <a href="#" class="nav-link text-gray-300">Press <span class="text-[10px] ml-1">▼</span></a>
+            <a href="#" class="nav-link text-gray-300">Service & info</a>
+        </div>
     </nav>
 
-    <!-- Hero Sectie met 5 uitklapbare foto's -->
-    <header class="hero-container" id="hero-container">
-        <!-- De foto's worden hier via Javascript ingeladen zodat je ze makkelijk kunt aanpassen -->
-    </header>
-
-    <!-- Discover our productions Sectie -->
-    <section id="productions" class="py-24 bg-white relative">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-8">
+    <main id="home-view" class="view-section active pt-20">
+        <!-- Corporate Hero -->
+        <header class="relative h-[60vh] flex items-center justify-center bg-[#050505] overflow-hidden">
+            <div class="absolute inset-0 opacity-40">
+                <img src="https://images.unsplash.com/photo-1507676184212-d0330a15183c?q=80&w=2000&auto=format&fit=crop" alt="Theatre Audience" class="w-full h-full object-cover grayscale">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
             
-            <!-- Titel -->
-            <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-16 tracking-tight text-gray-900">
-                Discover our productions
-            </h2>
+            <div class="relative z-10 text-center px-6">
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-4 uppercase tracking-widest">Virtual <br><span class="text-[--stage-gold]">Entertainment</span></h1>
+                <p class="text-gray-300 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto">Delivering world-class theatrical experiences to audiences worldwide.</p>
+            </div>
+        </header>
 
-            <!-- Carousel Wrapper -->
-            <div class="relative group">
-                
-                <!-- Vorige Knop -->
-                <button id="prevBtn" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 md:-ml-6 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] flex items-center justify-center text-gray-600 hover:text-brand-blue hover:scale-110 transition cursor-pointer border border-gray-100">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-
-                <!-- De Track (hier komen de foto's in) -->
-                <div class="overflow-hidden no-scrollbar px-2 py-4">
-                    <div id="carousel-track" class="flex gap-8 transition-transform duration-500 ease-out">
-                        <!-- De producties worden hier via Javascript ingeladen -->
+        <!-- Productions Grid -->
+        <section class="py-24 px-6 md:px-16 max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-12 uppercase tracking-widest border-b border-gray-800 pb-4">Current Productions</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Moulin Rouge Card -->
+                <div onclick="switchView('moulin-rouge-view')" class="group cursor-pointer bg-[#111] overflow-hidden hover:shadow-2xl hover:shadow-[--brand-red]/20 transition-all duration-300">
+                    <div class="relative h-96 overflow-hidden">
+                        <img src="https://www.focusdailynews.com/wp-content/uploads/2023/03/moulin-rouge-company-scaled.jpeg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <h3 class="font-serif text-3xl font-bold text-white mb-1">Moulin Rouge!</h3>
+                            <p class="text-[--stage-gold] text-sm uppercase tracking-widest">The Musical</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">Enter a world of splendor and romance, of eye-popping excess, of glitz, grandeur, and glory!</p>
+                        <span class="text-white text-sm font-semibold flex items-center gap-2 group-hover:text-[--brand-red] transition">
+                            Explore Show <span class="text-lg">→</span>
+                        </span>
                     </div>
                 </div>
 
-                <!-- Volgende Knop -->
-                <button id="nextBtn" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 md:-mr-6 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] flex items-center justify-center text-gray-600 hover:text-brand-blue hover:scale-110 transition cursor-pointer border border-gray-100">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-
-            <!-- Progress Bar (Blauwe streep) -->
-            <div class="max-w-3xl mx-auto mt-12">
-                <div class="h-[2px] w-full bg-gray-200 relative">
-                    <div id="progress-bar" class="absolute top-0 left-0 h-full bg-brand-blue transition-all duration-300 w-0"></div>
-                </div>
-                <div class="text-center mt-4 text-brand-blue text-sm font-semibold tracking-wide" id="progress-text">
-                    1 of 14
+                <!-- Placeholder for future productions -->
+                <div class="border border-gray-800 border-dashed flex flex-col items-center justify-center h-full min-h-[400px] text-gray-600">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <p class="uppercase tracking-widest text-sm font-medium">More to come</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Theatres Sectie -->
-    <section id="theatres" class="py-24 bg-gray-50 relative">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-8">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-16 tracking-tight text-gray-900">
-                Our Theatres
-            </h2>
-            <div id="theatres-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Theaters ingeladen via JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Careers Sectie -->
-    <section id="careers" class="py-24 bg-white relative">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-8">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-16 tracking-tight text-gray-900">
-                Careers
-            </h2>
-            <div id="careers-list" class="max-w-4xl mx-auto flex flex-col gap-4">
-                <!-- Careers ingeladen via JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Login Modal -->
-    <div id="login-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md relative">
-            <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-black"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 class="text-2xl font-bold mb-6 text-center">Admin Login</h3>
-            <p class="text-sm text-gray-500 mb-4 text-center">Gebruik wachtwoord: <strong>admin</strong></p>
-            <input type="password" id="admin-password" class="w-full border border-gray-300 p-3 rounded-md mb-4 focus:outline-none focus:border-brand-blue" placeholder="Wachtwoord">
-            <button onclick="checkLogin()" class="w-full bg-brand-blue text-white font-bold py-3 rounded-md hover:bg-blue-700 transition">Inloggen</button>
-            <p id="login-error" class="text-red-500 text-sm mt-2 hidden text-center">Onjuist wachtwoord</p>
-        </div>
-    </div>
-
-    <!-- Admin Paneel Modal -->
-    <div id="admin-modal" class="hidden fixed inset-0 bg-gray-100 z-[100] overflow-y-auto">
-        <div class="bg-brand-dark text-white p-6 sticky top-0 z-10 flex justify-between items-center shadow-lg">
-            <h2 class="text-2xl font-bold"><i class="fa-solid fa-gear mr-2"></i> Content Beheer</h2>
-            <button onclick="closeModals()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold transition">Afsluiten</button>
-        </div>
+    <main id="moulin-rouge-view" class="view-section pt-20">
         
-        <div class="max-w-7xl mx-auto p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Massive Hero Banner exactly like the screenshot -->
+        <header class="relative w-full h-[75vh] min-h-[600px] flex items-center justify-end overflow-hidden">
+            <!-- Background Image -->
+            <div class="absolute inset-0">
+                <img src="https://www.focusdailynews.com/wp-content/uploads/2023/03/moulin-rouge-company-scaled.jpeg" alt="Theatrical Stage Red" class="w-full h-full object-cover">
+                <!-- Overlay gradient to darken left side and bottom -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            </div>
+
+            <!-- Text Content aligned to the right (as seen in screenshot) -->
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-8 md:px-16 flex justify-end">
+                <div class="text-right mt-32 max-w-xl">
+                    <p class="text-white text-xs md:text-sm font-bold tracking-[0.2em] mb-2 uppercase">Virtual Theatre</p>
+                    <h1 class="font-serif text-[--stage-gold] text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-tight tracking-wide" style="text-shadow: 2px 2px 10px rgba(0,0,0,0.8);">
+                        English Premiere<br>
+                        Moulin Rouge! The<br>
+                        Musical
+                    </h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Block 1: Black background, 50/50 split (Text / Video) -->
+        <section class="bg-black py-24 border-b border-[#1a1a1a]">
+            <div class="max-w-7xl mx-auto px-8 md:px-16 flex flex-col lg:flex-row items-center gap-16">
+                
+                <!-- Left: Text content -->
+                <div class="lg:w-1/2">
+                    <h2 class="font-serif text-[--stage-gold] text-2xl md:text-3xl font-bold uppercase tracking-wider mb-6 leading-snug">
+                        Exclusive footage from the red carpet
+                    </h2>
+                    <div class="text-white text-base md:text-lg font-light leading-relaxed space-y-4 max-w-lg">
+                        <p>
+                            Moulin Rouge! The Musical experienced an overwhelming premiere at the Virtual Theatre. Enthusiastic reactions and sheer wonder filled the auditorium.
+                        </p>
+                        <p>
+                            Moulin Rouge! The Musical is unique and spectacular; in short, this is one you simply cannot miss! Curious? Quickly watch the atmospheric footage and the reactions on the red carpet!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right: Video/Image block with Play button -->
+                <div class="lg:w-1/2 relative w-full">
+                    <div class="relative w-full aspect-video bg-gray-900 border border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1546850402-9905fa813088?q=80&w=1000&auto=format&fit=crop" alt="Red Carpet Premiere" class="w-full h-full object-cover opacity-80">
+                        <div class="play-button-overlay"></div>
+                        <!-- Fake video progress bar at bottom -->
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gray-700">
+                            <div class="h-full bg-[--brand-red] w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Content Block 2: Dark red/misty background, Text left aligned (as seen in screenshot bottom part) -->
+        <section class="relative py-32 bg-[#0a0000] overflow-hidden">
+            <!-- Background effects -->
+            <div class="absolute inset-0 opacity-30">
+                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2000&auto=format&fit=crop" alt="Red Mist" class="w-full h-full object-cover">
+            </div>
             
-            <!-- Productions Admin -->
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-masks-theater text-brand-blue"></i> Producties</h3>
-                
-                <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-                    <h4 class="font-semibold mb-3 text-sm">Nieuwe toevoegen</h4>
-                    <input type="text" id="prod-title" placeholder="Titel (bijv. DIE AMME)" class="w-full mb-2 p-2 border rounded text-sm">
-                    <input type="text" id="prod-location" placeholder="Locatie (bijv. Berlin)" class="w-full mb-2 p-2 border rounded text-sm">
-                    <input type="text" id="prod-image" placeholder="Afbeelding URL (optioneel)" class="w-full mb-3 p-2 border rounded text-sm">
-                    <button onclick="addProduction()" class="w-full bg-brand-blue text-white text-sm font-bold py-2 rounded hover:bg-blue-700 transition">Toevoegen</button>
-                </div>
-
-                <div id="admin-prod-list" class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2">
-                    <!-- Beheer lijst JS -->
-                </div>
-            </div>
-
-            <!-- Theatres Admin -->
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-building text-brand-blue"></i> Theaters</h3>
-                
-                <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-                    <h4 class="font-semibold mb-3 text-sm">Nieuwe toevoegen</h4>
-                    <input type="text" id="theatre-name" placeholder="Naam Theater" class="w-full mb-2 p-2 border rounded text-sm">
-                    <textarea id="theatre-desc" placeholder="Korte beschrijving" class="w-full mb-3 p-2 border rounded text-sm h-20 resize-none"></textarea>
-                    <button onclick="addTheatre()" class="w-full bg-brand-blue text-white text-sm font-bold py-2 rounded hover:bg-blue-700 transition">Toevoegen</button>
-                </div>
-
-                <div id="admin-theatre-list" class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2">
-                    <!-- Beheer lijst JS -->
+            <div class="relative z-10 max-w-7xl mx-auto px-8 md:px-16">
+                <div class="lg:w-1/2">
+                    <h2 class="font-serif text-[--stage-gold] text-2xl md:text-4xl font-bold uppercase tracking-wider leading-snug max-w-md">
+                        Moulin Rouge! The Musical Grand!<br>
+                        Extravagant!
+                    </h2>
+                    <!-- Extra text to make it look like a complete page -->
+                    <p class="text-gray-300 mt-6 font-light leading-relaxed max-w-lg">
+                        Enter a world of splendor and romance, of eye-popping excess, of glitz, grandeur, and glory! A world where Bohemians and aristocrats rub elbows and revel in electrifying enchantment. Pop the champagne and prepare for the spectacular spectacular...
+                    </p>
+                    
+                    <button class="mt-10 border border-gray-600 text-gray-400 px-8 py-3 uppercase tracking-widest text-sm font-semibold opacity-60 cursor-not-allowed hover:bg-white/5 transition">
+                        Ticket Sales Opening Soon
+                    </button>
                 </div>
             </div>
+        </section>
 
-            <!-- Careers Admin -->
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-brand-blue"></i> Careers</h3>
-                
-                <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-                    <h4 class="font-semibold mb-3 text-sm">Nieuwe toevoegen</h4>
-                    <input type="text" id="career-title" placeholder="Functietitel" class="w-full mb-2 p-2 border rounded text-sm">
-                    <input type="text" id="career-location" placeholder="Locatie / Type (bijv. Amsterdam - Fulltime)" class="w-full mb-3 p-2 border rounded text-sm">
-                    <button onclick="addCareer()" class="w-full bg-brand-blue text-white text-sm font-bold py-2 rounded hover:bg-blue-700 transition">Toevoegen</button>
-                </div>
+    </main>
 
-                <div id="admin-career-list" class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2">
-                    <!-- Beheer lijst JS -->
-                </div>
+    <footer class="bg-black pt-16 pb-8 border-t border-[#1a1a1a]">
+        <div class="max-w-7xl mx-auto px-8 md:px-16 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 grayscale opacity-50">
+                <svg width="24" height="18" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
+                    <path d="M0 12C0 5.37258 5.37258 0 12 0H20C26.6274 0 32 5.37258 32 12C32 18.6274 26.6274 24 20 24H12C5.37258 24 0 18.6274 0 12Z" fill="currentColor" fill-opacity="0.2"/>
+                    <path d="M4 12C4 7.58172 7.58172 4 12 4H20C24.4183 4 28 7.58172 28 12C28 16.4183 24.4183 20 20 20H12C7.58172 20 4 16.4183 4 12Z" fill="currentColor"/>
+                </svg>
+                <span class="text-white font-bold text-sm tracking-tight">Virtual Entertainment</span>
             </div>
-
+            
+            <div class="text-gray-500 text-xs text-center md:text-right font-light">
+                <p>&copy; 2026 Virtual Entertainment. All rights reserved.</p>
+                <p class="mt-1 opacity-20">Confidential: Other productions (H.P.) remain strictly under embargo.</p>
+            </div>
         </div>
-    </div>
-
-    <!-- Blauwe balk onderaan (zoals de rode in je voorbeeld) -->
-    <div class="w-full h-32 bg-brand-blue opacity-90 relative overflow-hidden">
-        <!-- Subtiele wereldkaart/patroon overlay (optioneel, voor de textuur uit je voorbeeld) -->
-        <div class="absolute inset-0 opacity-10 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-cover bg-center"></div>
-    </div>
+    </footer>
 
     <script>
-        // 1. DE 5 GROTE FOTO'S BOVENAAN (HERO)
-        const heroPanelsData = [
-            { image: "https://cdn-imgix.headout.com/media/images/5bb7968847c516880db26b289c9e7134-18161-london-frozen-the-musical-01.jpg?auto=format&q=90&fit=crop&crop=faces0" },
-            { image: "https://tse4.mm.bing.net/th/id/OIP.h1BGslWtQJPfIGlkhN3UpgHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" },
-            { image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }, 
-            { image: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-            { image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
-        ];
-
-        // 2. STATE VARIABELEN (Aanpasbaar via Admin Paneel)
-        let productionsData = [
-            { id: 1, title: "DIE AMME", location: "Berlin", image: "https://placehold.co/400x400/e2e8f0/1e293b?text=Die+Amme" },
-            { id: 2, title: "FROZEN", location: "The Hague", image: "https://placehold.co/400x400/bfdbfe/1e3a8a?text=Frozen" },
-            { id: 3, title: "MOULIN ROUGE", location: "Utrecht", image: "https://placehold.co/400x400/1e1e1e/ef4444?text=Moulin+Rouge" },
-            { id: 4, title: "ROMEO & JULIA", location: "Berlin", image: "https://placehold.co/400x400/93c5fd/1e3a8a?text=Romeo+Julia" },
-            { id: 5, title: "LE ROI LION", location: "Paris", image: "https://placehold.co/400x400/fde047/854d0e?text=Le+Roi+Lion" },
-            { id: 6, title: "HAMILTON", location: "London", image: "https://placehold.co/400x400/d1d5db/111827?text=Hamilton" }
-        ];
-
-        let theatresData = [
-            { id: 1, name: "Stage Apollo Theater", description: "Een van de grootste theaters in Stuttgart, bekend om zijn spectaculaire musical producties en adembenemende architectuur." },
-            { id: 2, name: "AFAS Circustheater", description: "Gelegen in Scheveningen, dit iconische theater biedt al decennia lang ruimte aan de grootste musicals van Nederland." }
-        ];
-
-        let careersData = [
-            { id: 1, title: "Lighting Technician", location: "Berlin - Fulltime" },
-            { id: 2, title: "Marketing Manager", location: "Amsterdam - Hybrid" }
-        ];
-
-        function renderHero() {
-            const heroContainer = document.getElementById('hero-container');
-            heroContainer.innerHTML = '';
-            heroPanelsData.forEach((panel, index) => {
-                let innerContent = '';
-                if (index === 2) {
-                    innerContent = `
-                        <div class="panel-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white p-4 text-center">
-                            <h1 class="text-5xl md:text-6xl font-black mb-4 tracking-tighter drop-shadow-lg">Virtual<br>Entertainment</h1>
-                            <p class="text-lg md:text-xl font-medium mb-8 drop-shadow-md">Touching hearts, creating memories</p>
-                            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                                <a href="#" class="bg-brand-blue hover:bg-blue-700 text-white px-8 py-3 font-bold uppercase tracking-wider text-sm transition text-center w-full sm:w-64">About us</a>
-                                <a href="#" class="bg-transparent border-2 border-white hover:bg-white hover:text-black text-white px-8 py-3 font-bold uppercase tracking-wider text-sm transition text-center w-full sm:w-64">Our business areas</a>
-                            </div>
-                        </div>
-                    `;
-                }
-                heroContainer.innerHTML += `
-                    <div class="hero-panel ${index === 2 ? 'active-panel' : ''}" style="background-image: url('${panel.image}')">
-                        ${innerContent}
-                    </div>
-                `;
-            });
-        }
-
-        // Carousel State
-        let currentIndex = 0;
-        let itemsVisible = window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 5;
-
-        function renderProductionsCarousel() {
-            const track = document.getElementById('carousel-track');
-            track.innerHTML = '';
-            
-            if (productionsData.length === 0) {
-                track.innerHTML = '<div class="w-full text-center py-12 text-gray-500">Geen producties gevonden.</div>';
-                document.getElementById('progress-bar').style.width = '0%';
-                document.getElementById('progress-text').innerText = '0 of 0';
-                return;
-            }
-
-            productionsData.forEach(prod => {
-                track.innerHTML += `
-                    <div class="flex-none w-[calc(50%-1rem)] sm:w-[calc(33.333%-1.33rem)] lg:w-[calc(20%-1.6rem)] group cursor-pointer">
-                        <div class="relative overflow-hidden mb-4 rounded-md shadow-sm">
-                            <img src="${prod.image}" alt="${prod.title}" class="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/400x400/e2e8f0/1e293b?text=Geen+Foto'">
-                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition"></div>
-                        </div>
-                        <div class="text-center">
-                            <h3 class="font-bold text-gray-900 text-sm md:text-base uppercase tracking-tight">${prod.title}</h3>
-                            <p class="text-gray-500 text-xs md:text-sm mt-1">${prod.location}</p>
-                        </div>
-                    </div>
-                `;
+        function switchView(viewId) {
+            // Hide all views
+            const views = document.querySelectorAll('.view-section');
+            views.forEach(view => {
+                view.classList.remove('active');
+                // Short timeout to allow fade out before display:none (handled by CSS transition partially, but for instant snap here)
+                setTimeout(() => { view.style.display = 'none'; }, 50); 
             });
 
-            const maxIndex = Math.max(0, productionsData.length - itemsVisible);
-            if (currentIndex > maxIndex) currentIndex = maxIndex;
+            // Show target view
+            const targetView = document.getElementById(viewId);
+            setTimeout(() => {
+                targetView.style.display = 'block';
+                // Trigger reflow
+                void targetView.offsetWidth;
+                targetView.classList.add('active');
+            }, 60);
 
-            updateCarouselView();
-        }
-
-        function updateCarouselView() {
-            const track = document.getElementById('carousel-track');
-            const totalItems = productionsData.length;
-            const maxIndex = Math.max(0, totalItems - itemsVisible);
-            
-            const slidePercentage = totalItems > 0 ? (100 / itemsVisible) * currentIndex : 0;
-            track.style.transform = `translateX(-${slidePercentage}%)`;
-
-            if (totalItems > 0) {
-                const currentDisplayNum = Math.min(currentIndex + itemsVisible, totalItems);
-                const progressPercentage = (currentDisplayNum / totalItems) * 100;
-                document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
-                document.getElementById('progress-text').innerText = `${currentDisplayNum} of ${totalItems}`;
-            }
-
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
-            prevBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
-            
-            nextBtn.style.opacity = (currentIndex >= maxIndex || totalItems === 0) ? '0.3' : '1';
-            nextBtn.style.cursor = (currentIndex >= maxIndex || totalItems === 0) ? 'not-allowed' : 'pointer';
-        }
-
-        function renderTheatres() {
-            const grid = document.getElementById('theatres-grid');
-            grid.innerHTML = '';
-            if (theatresData.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 text-center col-span-full">Geen theaters gevonden.</p>';
-                return;
-            }
-            theatresData.forEach(theatre => {
-                grid.innerHTML += `
-                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">${theatre.name}</h3>
-                        <p class="text-gray-600 leading-relaxed text-sm">${theatre.description}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function renderCareers() {
-            const list = document.getElementById('careers-list');
-            list.innerHTML = '';
-            if (careersData.length === 0) {
-                list.innerHTML = '<p class="text-gray-500 text-center">Geen vacatures op dit moment.</p>';
-                return;
-            }
-            careersData.forEach(job => {
-                list.innerHTML += `
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-brand-blue transition">
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-900">${job.title}</h3>
-                            <p class="text-brand-blue text-sm font-semibold mt-1"><i class="fa-solid fa-location-dot mr-1"></i> ${job.location}</p>
-                        </div>
-                        <button class="bg-transparent border border-gray-300 hover:border-brand-blue hover:text-brand-blue px-6 py-2 rounded text-sm font-bold transition whitespace-nowrap">Bekijk Vacature</button>
-                    </div>
-                `;
-            });
-        }
-
-        function openLoginModal(e) {
-            e.preventDefault();
-            document.getElementById('login-modal').classList.remove('hidden');
-            document.getElementById('admin-password').value = '';
-            document.getElementById('login-error').classList.add('hidden');
-            setTimeout(() => document.getElementById('admin-password').focus(), 100);
-        }
-
-        function closeModals() {
-            document.getElementById('login-modal').classList.add('hidden');
-            document.getElementById('admin-modal').classList.add('hidden');
-        }
-
-        function checkLogin() {
-            const pass = document.getElementById('admin-password').value;
-            // Eenvoudig wachtwoord voor de demo
-            if (pass === 'admin') {
-                document.getElementById('login-modal').classList.add('hidden');
-                document.getElementById('admin-modal').classList.remove('hidden');
-                renderAdminPanels();
+            // Toggle specific navigation items
+            const showNavItems = document.getElementById('show-nav-items');
+            if (viewId === 'moulin-rouge-view') {
+                showNavItems.classList.remove('hidden');
+                showNavItems.classList.add('md:flex');
             } else {
-                document.getElementById('login-error').classList.remove('hidden');
+                showNavItems.classList.add('hidden');
+                showNavItems.classList.remove('md:flex');
             }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function renderAdminPanels() {
-            const prodList = document.getElementById('admin-prod-list');
-            prodList.innerHTML = '';
-            productionsData.forEach(p => {
-                prodList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 bg-white border border-gray-200 rounded text-sm shadow-sm">
-                        <div class="flex items-center gap-3 overflow-hidden pr-2">
-                            <img src="${p.image}" class="w-10 h-10 object-cover rounded bg-gray-100 flex-shrink-0" onerror="this.src='https://placehold.co/40x40/e2e8f0/1e293b?text=Err'">
-                            <div class="truncate"><strong class="block truncate">${p.title}</strong><span class="text-gray-500 text-xs truncate block">${p.location}</span></div>
-                        </div>
-                        <button onclick="deleteItem('prod', ${p.id})" class="text-red-500 hover:text-red-700 px-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-
-            const theatreList = document.getElementById('admin-theatre-list');
-            theatreList.innerHTML = '';
-            theatresData.forEach(t => {
-                theatreList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 bg-white border border-gray-200 rounded text-sm shadow-sm">
-                        <div class="overflow-hidden pr-2"><strong class="block truncate">${t.name}</strong><span class="text-gray-500 text-xs truncate block">${t.description}</span></div>
-                        <button onclick="deleteItem('theatre', ${t.id})" class="text-red-500 hover:text-red-700 px-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-
-            const careerList = document.getElementById('admin-career-list');
-            careerList.innerHTML = '';
-            careersData.forEach(c => {
-                careerList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 bg-white border border-gray-200 rounded text-sm shadow-sm">
-                        <div class="overflow-hidden pr-2"><strong class="block truncate">${c.title}</strong><span class="text-gray-500 text-xs truncate block">${c.location}</span></div>
-                        <button onclick="deleteItem('career', ${c.id})" class="text-red-500 hover:text-red-700 px-2 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-        }
-
-        function addProduction() {
-            const title = document.getElementById('prod-title').value.trim();
-            const loc = document.getElementById('prod-location').value.trim();
-            let img = document.getElementById('prod-image').value.trim();
-            if(!title) return;
-            if(!img) img = `https://placehold.co/400x400/e2e8f0/1e293b?text=${encodeURIComponent(title)}`;
-            
-            productionsData.push({ id: Date.now(), title, location: loc, image: img });
-            document.getElementById('prod-title').value = '';
-            document.getElementById('prod-location').value = '';
-            document.getElementById('prod-image').value = '';
-            
-            fullReRender();
-        }
-
-        function addTheatre() {
-            const name = document.getElementById('theatre-name').value.trim();
-            const desc = document.getElementById('theatre-desc').value.trim();
-            if(!name) return;
-
-            theatresData.push({ id: Date.now(), name, description: desc });
-            document.getElementById('theatre-name').value = '';
-            document.getElementById('theatre-desc').value = '';
-            
-            fullReRender();
-        }
-
-        function addCareer() {
-            const title = document.getElementById('career-title').value.trim();
-            const loc = document.getElementById('career-location').value.trim();
-            if(!title) return;
-
-            careersData.push({ id: Date.now(), title, location: loc });
-            document.getElementById('career-title').value = '';
-            document.getElementById('career-location').value = '';
-            
-            fullReRender();
-        }
-
-        function deleteItem(type, id) {
-            if(type === 'prod') productionsData = productionsData.filter(i => i.id !== id);
-            if(type === 'theatre') theatresData = theatresData.filter(i => i.id !== id);
-            if(type === 'career') careersData = careersData.filter(i => i.id !== id);
-            fullReRender();
-        }
-
-        function fullReRender() {
-            renderProductionsCarousel();
-            renderTheatres();
-            renderCareers();
-            renderAdminPanels();
-        }
-
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarouselView();
-            }
+        // Initialize: Ensure home is shown properly on load
+        document.addEventListener('DOMContentLoaded', () => {
+            switchView('home-view');
         });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            const maxIndex = productionsData.length - itemsVisible;
-            if (currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarouselView();
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            itemsVisible = window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 5;
-            updateCarouselView();
-        });
-
-        document.getElementById('admin-password').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkLogin();
-        });
-
-        // Initialize App
-        renderHero();
-        fullReRender();
-
     </script>
 </body>
 </html>
